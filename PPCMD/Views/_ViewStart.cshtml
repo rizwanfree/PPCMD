@@ -1,0 +1,8 @@
+﻿@* @{
+    Layout = "_Layout";
+} *@
+
+@{
+    Layout = Context.User.Identity!.IsAuthenticated ? "_AppLayout" : "_Layout";
+}
+

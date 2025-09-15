@@ -1,0 +1,176 @@
+﻿@* Views/Shared/_AppLayout.cshtml *@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - PPCMD</title>
+    <link rel="stylesheet" href="~/css/output.css" asp-append-version="true" />
+</head>
+<body class="bg-gray-100 h-screen flex">
+
+    <!-- Sidebar -->
+    <aside class="hidden md:flex flex-col w-64 bg-gray-800 rounded-2xl">
+        <div class="flex flex-col flex-1 overflow-y-auto">
+            <nav class="flex flex-col flex-1 bg-gradient-to-b from-gray-700 to-blue-500 px-2 py-4 gap-6 rounded-2xl">
+
+                <!-- Brand (Full Width) -->
+                <div class="flex flex-col items-center justify-center px-4 py-6 border-b border-gray-700">
+                    <img src="~/logoHolder.png" alt="Company Logo" class="h-16 w-16 rounded-full object-cover mb-2">
+                    @* <span class="text-white text-lg font-bold text-center">@ViewBag.CompanyName</span> *@
+                </div>
+
+                <!-- Menu -->
+                <div class="flex flex-col gap-2">
+
+                    <!-- Dashboard -->
+                    <a asp-controller="Dashboard" asp-action="Index"
+                       class="block px-4 py-2 text-gray-100 hover:bg-gray-700 rounded-xl">
+                        Dashboard
+                    </a>
+
+                    <!-- Dropdown 1 -->
+                    <div x-data="{ open: false }" class="flex flex-col">
+                        <button @@click ="open = !open"
+                                class="flex items-center justify-between px-4 py-2 text-gray-100 hover:bg-gray-700 rounded-xl">
+                            <span>Menu 1</span>
+                            <svg :class="{ 'rotate-180': open }" class="w-4 h-4 transform transition-transform duration-200"
+                                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div x-show="open" x-transition class="flex flex-col ml-4">
+                            <a href="#" class="px-4 py-2 text-gray-300 hover:bg-gray-700 rounded-lg">Test Link 1</a>
+                            <a href="#" class="px-4 py-2 text-gray-300 hover:bg-gray-700 rounded-lg">Test Link 2</a>
+                            <a href="#" class="px-4 py-2 text-gray-300 hover:bg-gray-700 rounded-lg">Test Link 3</a>
+                        </div>
+                    </div>
+
+                    <!-- Dropdown 2 -->
+                    <div x-data="{ open: false }" class="flex flex-col">
+                        <button @@click ="open = !open"
+                                class="flex items-center justify-between px-4 py-2 text-gray-100 hover:bg-gray-700 rounded-xl">
+                            <span>Menu 2</span>
+                            <svg :class="{ 'rotate-180': open }" class="w-4 h-4 transform transition-transform duration-200"
+                                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div x-show="open" x-transition class="flex flex-col ml-4">
+                            <a href="#" class="px-4 py-2 text-gray-300 hover:bg-gray-700 rounded-lg">Test Link 1</a>
+                            <a href="#" class="px-4 py-2 text-gray-300 hover:bg-gray-700 rounded-lg">Test Link 2</a>
+                            <a href="#" class="px-4 py-2 text-gray-300 hover:bg-gray-700 rounded-lg">Test Link 3</a>
+                        </div>
+                    </div>
+
+                    <!-- Dropdown 3 -->
+                    <div x-data="{ open: false }" class="flex flex-col">
+                        <button @@click ="open = !open"
+                                class="flex items-center justify-between px-4 py-2 text-gray-100 hover:bg-gray-700 rounded-xl">
+                            <span>Menu 3</span>
+                            <svg :class="{ 'rotate-180': open }" class="w-4 h-4 transform transition-transform duration-200"
+                                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div x-show="open" x-transition class="flex flex-col ml-4">
+                            <a href="#" class="px-4 py-2 text-gray-300 hover:bg-gray-700 rounded-lg">Test Link 1</a>
+                            <a href="#" class="px-4 py-2 text-gray-300 hover:bg-gray-700 rounded-lg">Test Link 2</a>
+                            <a href="#" class="px-4 py-2 text-gray-300 hover:bg-gray-700 rounded-lg">Test Link 3</a>
+                        </div>
+                    </div>
+
+                    <!-- Dropdown 4 -->
+                    <div x-data="{ open: false }" class="flex flex-col">
+                        <button @@click ="open = !open"
+                                class="flex items-center justify-between px-4 py-2 text-gray-100 hover:bg-gray-700 rounded-xl">
+                            <span>Menu 4</span>
+                            <svg :class="{ 'rotate-180': open }" class="w-4 h-4 transform transition-transform duration-200"
+                                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div x-show="open" x-transition class="flex flex-col ml-4">
+                            <a href="#" class="px-4 py-2 text-gray-300 hover:bg-gray-700 rounded-lg">Test Link 1</a>
+                            <a href="#" class="px-4 py-2 text-gray-300 hover:bg-gray-700 rounded-lg">Test Link 2</a>
+                            <a href="#" class="px-4 py-2 text-gray-300 hover:bg-gray-700 rounded-lg">Test Link 3</a>
+                        </div>
+                    </div>
+
+                </div>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex flex-col flex-1 overflow-y-auto">
+
+        <!-- Topbar -->
+        <header class="flex items-center justify-between h-16 bg-white border-b border-gray-200 px-4">
+            <!-- Left Side (Breadcrumbs or Page Title) -->
+            <div class="text-lg font-semibold text-gray-700">
+                @ViewBag.CompanyName
+            </div>
+
+            <!-- Right Side (Profile Dropdown) -->
+            <div class="relative">
+                <button id="profileMenuButton" class="flex items-center space-x-2 focus:outline-none">
+                    <img src="@ViewBag.userProfilePicture" alt="Profile" class="h-10 w-10 rounded-full object-cover border border-gray-300">
+                    <span class="text-gray-800 font-medium">Hi, @ViewBag.userFullName</span>
+                    <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+
+                <!-- Dropdown Menu -->
+                <div id="profileMenu"
+                     class="hidden absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-xl py-2 border border-gray-200">
+
+
+                    <a asp-controller="Dashboard" asp-action="UserProfile"
+                       class="block px-4 py-2 text-gray-100 hover:bg-gray-700 rounded-xl">
+                        Profile
+                    </a>
+                     @* <a href="/Profile" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Profile</a> *@
+                    
+                     <form method="post" asp-area="Identity" asp-page="/Account/Logout" class="m-0">
+                        <button type="submit" class="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100">
+                            Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </header>
+
+
+
+        <!-- Page Content -->
+        <main class="p-6">
+            @RenderBody()
+        </main>
+    </div>
+
+    <script>
+        const profileButton = document.getElementById('profileMenuButton');
+        const profileMenu = document.getElementById('profileMenu');
+
+        profileButton.addEventListener('click', () => {
+            profileMenu.classList.toggle('hidden');
+        });
+
+        // Optional: close when clicking outside
+        window.addEventListener('click', (e) => {
+            if (!profileButton.contains(e.target) && !profileMenu.contains(e.target)) {
+                profileMenu.classList.add('hidden');
+            }
+        });
+    </script>
+    <script src="//unpkg.com/alpinejs" defer></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

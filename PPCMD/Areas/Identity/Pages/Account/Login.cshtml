@@ -1,0 +1,54 @@
+﻿@page
+@model LoginModel
+@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="max-w-md mx-auto bg-white shadow-md rounded-xl p-6 mt-12">
+    <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">@ViewData["Title"]</h1>
+
+    <form method="post" class="space-y-6">
+        <div asp-validation-summary="ModelOnly" class="text-red-600 mb-4"></div>
+
+        <!-- Username -->
+        <div>
+            <label asp-for="Input.Username" class="form-label"></label>
+            <input asp-for="Input.Username"
+                   class="form-input"
+                   placeholder="Enter your username" />
+            <span asp-validation-for="Input.Username" class="form-error"></span>
+        </div>
+
+        <!-- Password -->
+        <div>
+            <label asp-for="Input.Password" class="form-label"></label>
+            <input asp-for="Input.Password"
+                   type="password"
+                   class="form-input"
+                   placeholder="Enter your password" />
+            <span asp-validation-for="Input.Password" class="form-error"></span>
+        </div>
+
+        <!-- Remember Me -->
+        <div class="flex items-center">
+            <input asp-for="Input.RememberMe" class="h-4 w-4 text-blue-600 focus:ring focus:ring-blue-500 border-gray-300 rounded" />
+            <label asp-for="Input.RememberMe" class="ml-2 text-sm text-gray-700"></label>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow">
+            Sign In
+        </button>
+
+        <!-- Extra Links -->
+        <div class="flex flex-col sm:flex-row sm:justify-between text-sm text-gray-600 mt-4">
+            <a asp-page="./ForgotPassword" class="hover:text-blue-600">Forgot your password?</a>
+            <a asp-page="./Register" class="hover:text-blue-600">Don't have an account? Register</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

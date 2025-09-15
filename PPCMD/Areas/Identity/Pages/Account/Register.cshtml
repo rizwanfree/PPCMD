@@ -1,0 +1,123 @@
+﻿@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Register Company";
+}
+
+<div class="max-w-5xl mx-auto bg-white shadow-lg rounded-2xl p-10 space-y-10">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">@ViewData["Title"]</h1>
+
+    <form method="post" class="space-y-10">
+        <div asp-validation-summary="ModelOnly" class="text-red-600 mb-4"></div>
+
+        <!-- Company Info Section -->
+        <div class="section-box">
+            <h2 class="section-title">
+                <span class="w-3 h-3 bg-blue-500 rounded-full mr-2"></span>
+                Company Information
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2">
+                <div>
+                    <label asp-for="Input.CompanyName" class="form-label"></label>
+                    <input asp-for="Input.CompanyName" class="form-input" />
+                    <span asp-validation-for="Input.CompanyName" class="form-error"></span>
+                </div>
+                <div>
+                    <label asp-for="Input.License" class="form-label"></label>
+                    <input asp-for="Input.License" type="number" class="form-input" />
+                    <span asp-validation-for="Input.License" class="form-error"></span>
+                </div>
+
+                <div>
+                    <label asp-for="Input.NTN" class="form-label"></label>
+                    <input asp-for="Input.NTN" class="form-input" />
+                    <span asp-validation-for="Input.NTN" class="form-error"></span>
+                </div>
+                <div>
+                    <label asp-for="Input.STN" class="form-label"></label>
+                    <input asp-for="Input.STN" class="form-input" />
+                    <span asp-validation-for="Input.STN" class="form-error"></span>
+                </div>
+
+                <div>
+                    <label asp-for="Input.ProprietorName" class="form-label"></label>
+                    <input asp-for="Input.ProprietorName" class="form-input" />
+                    <span asp-validation-for="Input.ProprietorName" class="form-error"></span>
+                </div>
+                <div>
+                    <label asp-for="Input.CNIC" class="form-label"></label>
+                    <input asp-for="Input.CNIC" class="form-input" />
+                    <span asp-validation-for="Input.CNIC" class="form-error"></span>
+                </div>
+
+                <div>
+                    <label asp-for="Input.Email" class="form-label"></label>
+                    <input asp-for="Input.Email" type="email" class="form-input" />
+                    <span asp-validation-for="Input.Email" class="form-error"></span>
+                </div>
+                <div>
+                    <label asp-for="Input.Website" class="form-label"></label>
+                    <input asp-for="Input.Website" class="form-input" />
+                    <span asp-validation-for="Input.Website" class="form-error"></span>
+                </div>
+
+                <div>
+                    <label asp-for="Input.Landline1" class="form-label"></label>
+                    <input asp-for="Input.Landline1" class="form-input" />
+                    <span asp-validation-for="Input.Landline1" class="form-error"></span>
+                </div>
+                <div>
+                    <label asp-for="Input.Landline2" class="form-label"></label>
+                    <input asp-for="Input.Landline2" class="form-input" />
+                    <span asp-validation-for="Input.Landline2" class="form-error"></span>
+                </div>
+
+                <div>
+                    <label asp-for="Input.Mobile" class="form-label"></label>
+                    <input asp-for="Input.Mobile" class="form-input" />
+                    <span asp-validation-for="Input.Mobile" class="form-error"></span>
+                </div>
+
+                <div class="md:col-span-2">
+                    <label asp-for="Input.Address" class="form-label"></label>
+                    <textarea asp-for="Input.Address" rows="3" class="form-input"></textarea>
+                    <span asp-validation-for="Input.Address" class="form-error"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Account Section -->
+        <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 space-y-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                <span class="w-3 h-3 bg-green-500 rounded-full mr-2"></span>
+                Admin Account
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-6">
+                <div>
+                    <label asp-for="Input.Password" class="form-label"></label>
+                    <input asp-for="Input.Password" type="password" class="form-input" />
+                    <span asp-validation-for="Input.Password" class="form-error"></span>
+                </div>
+
+                <div>
+                    <label asp-for="Input.ConfirmPassword" class="form-label"></label>
+                    <input asp-for="Input.ConfirmPassword" type="password" class="form-input" />
+                    <span asp-validation-for="Input.ConfirmPassword" class="form-error"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition">
+            Register Company
+        </button>
+    </form>
+</div>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

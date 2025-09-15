@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+
+/* Base font size (accessibility-friendly) */
+html {
+  font-size: 16px; /* bigger base font for better readability */
+}
+
+/* Responsive font scaling if you want it slightly bigger on large screens */
+@media (min-width: 1024px) {
+  html {
+    font-size: 17px;
+  }
+}
+
+/* Accessibility focus styles (optional) */
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+/* General layout fix */
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+    margin-bottom: 0 !important;
+    background-color: #f9fafb; /* light gray background for better contrast */
+}
+
+/* ------------------- */
+/* Form Styling (Tailwind + Custom) */
+/* ------------------- */
+
+.form-label {
+  @apply block text-base font-medium text-gray-800 mb-1;
+}
+
+.form-input {
+  @apply mt-1 block w-full rounded-lg border border-gray-300 bg-white 
+         px-3 py-2 text-gray-900 shadow-sm 
+         focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500;
+}
+
+.form-error {
+  @apply text-red-600 text-sm mt-1;
+}
+
+/* Improve grid spacing for forms */
+form .grid {
+  @apply gap-y-6 gap-x-8; /* more breathing room between inputs */
+}
+
+/* Section box styling */
+.section-box {
+  @apply bg-gray-50 p-6 rounded-xl border border-gray-200 shadow-sm;
+}
+
+.section-title {
+  @apply text-lg font-semibold text-gray-900 mb-4 flex items-center;
+}
