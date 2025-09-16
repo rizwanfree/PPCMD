@@ -32,22 +32,22 @@ builder.Services.AddRazorPages();
 var app = builder.Build();
 
 
-//// Inline Role Seeding
-//using (var scope = app.Services.CreateScope())
-//{
-//    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+// Inline Role Seeding
+using (var scope = app.Services.CreateScope())
+{
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-//    string[] roles = { "SuperAdmin", "Admin", "Manager", "Billing", "Data Entry" };
+    string[] roles = { "SuperAdmin", "Admin", "Manager", "Billing", "Data Entry" };
 
-//    foreach (var role in roles)
-//    {
-//        var exists = await roleManager.RoleExistsAsync(role);
-//        if (!exists)
-//        {
-//            await roleManager.CreateAsync(new IdentityRole(role));
-//        }
-//    }
-//}
+    foreach (var role in roles)
+    {
+        var exists = await roleManager.RoleExistsAsync(role);
+        if (!exists)
+        {
+            await roleManager.CreateAsync(new IdentityRole(role));
+        }
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

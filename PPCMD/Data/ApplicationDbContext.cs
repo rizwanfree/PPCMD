@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using PPCMD.Models;
+using System.Reflection.Emit;
 
 namespace PPCMD.Data
 {
@@ -20,6 +21,8 @@ namespace PPCMD.Data
             SetCurrentTenant();
         }
         public DbSet<Company> Companies { get; set; }
+        public DbSet<Client> Clients { get; set; }
+        public DbSet<City> Cities { get; set; }
 
 
         private void SetCurrentTenant()
@@ -63,11 +66,38 @@ namespace PPCMD.Data
             builder.Entity<Company>()
                 .HasIndex(c => c.Website).IsUnique();
 
+            // Client configuration
+            builder.Entity<Client>()
+                .HasOne(c => c.City)
+                .WithMany(city => city.Clients)
+                .HasForeignKey(c => c.CityId)
+                .OnDelete(DeleteBehavior.Restrict); // Prevents cascade delete
+
+            // Indexes
+            builder.Entity<Client>()
+                .HasIndex(c => c.Email)
+                .IsUnique();
+
+            builder.Entity<Client>()
+                .HasIndex(c => c.NTN);
+
+            builder.Entity<Client>()
+                .HasIndex(c => c.GST);
+
 
             // ----- GLOBAL FILTER FOR MULTITENANT -----
             // Filter ApplicationUser by CompanyId
             builder.Entity<ApplicationUser>()
                    .HasQueryFilter(u => !EnableTenantFilter || !_currentCompanyId.HasValue || u.CompanyId == _currentCompanyId);
+
+            // Filter Clients by CompanyId
+            builder.Entity<Client>()
+                    .HasQueryFilter(c => !EnableTenantFilter || !_currentCompanyId.HasValue || c.CompanyId == _currentCompanyId);
+
+
+            // Filter Companies by Id (so users only see their own company)
+            builder.Entity<Company>()
+                    .HasQueryFilter(c => !EnableTenantFilter || !_currentCompanyId.HasValue || c.Id == _currentCompanyId);
 
         }
 

@@ -5,7 +5,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - PPCMD</title>
+    <link href="https://cdn.datatables.net/v/dt/dt-2.3.4/datatables.min.css" rel="stylesheet" integrity="sha384-pmGS6IIcXhAVIhcnh9X/mxffzZNHbuxboycGuQQoP3pAbb0SwlSUUHn2v22bOenI" crossorigin="anonymous">
     <link rel="stylesheet" href="~/css/output.css" asp-append-version="true" />
+
 </head>
 <body class="bg-gray-100 h-screen flex">
 
@@ -33,7 +35,7 @@
                     <div x-data="{ open: false }" class="flex flex-col">
                         <button @@click ="open = !open"
                                 class="flex items-center justify-between px-4 py-2 text-gray-100 hover:bg-gray-700 rounded-xl">
-                            <span>Menu 1</span>
+                            <span>Setups</span>
                             <svg :class="{ 'rotate-180': open }" class="w-4 h-4 transform transition-transform duration-200"
                                  fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -41,7 +43,7 @@
                             </svg>
                         </button>
                         <div x-show="open" x-transition class="flex flex-col ml-4">
-                            <a href="#" class="px-4 py-2 text-gray-300 hover:bg-gray-700 rounded-lg">Test Link 1</a>
+                            <a asp-action="Cities" asp-controller="Dashboard" class="px-4 py-2 text-gray-300 hover:bg-gray-700 rounded-lg">Cities</a>
                             <a href="#" class="px-4 py-2 text-gray-300 hover:bg-gray-700 rounded-lg">Test Link 2</a>
                             <a href="#" class="px-4 py-2 text-gray-300 hover:bg-gray-700 rounded-lg">Test Link 3</a>
                         </div>
@@ -51,7 +53,7 @@
                     <div x-data="{ open: false }" class="flex flex-col">
                         <button @@click ="open = !open"
                                 class="flex items-center justify-between px-4 py-2 text-gray-100 hover:bg-gray-700 rounded-xl">
-                            <span>Menu 2</span>
+                            <span>Clients</span>
                             <svg :class="{ 'rotate-180': open }" class="w-4 h-4 transform transition-transform duration-200"
                                  fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -69,7 +71,7 @@
                     <div x-data="{ open: false }" class="flex flex-col">
                         <button @@click ="open = !open"
                                 class="flex items-center justify-between px-4 py-2 text-gray-100 hover:bg-gray-700 rounded-xl">
-                            <span>Menu 3</span>
+                            <span>Activities</span>
                             <svg :class="{ 'rotate-180': open }" class="w-4 h-4 transform transition-transform duration-200"
                                  fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -87,7 +89,25 @@
                     <div x-data="{ open: false }" class="flex flex-col">
                         <button @@click ="open = !open"
                                 class="flex items-center justify-between px-4 py-2 text-gray-100 hover:bg-gray-700 rounded-xl">
-                            <span>Menu 4</span>
+                            <span>Billing</span>
+                            <svg :class="{ 'rotate-180': open }" class="w-4 h-4 transform transition-transform duration-200"
+                                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div x-show="open" x-transition class="flex flex-col ml-4">
+                            <a href="#" class="px-4 py-2 text-gray-300 hover:bg-gray-700 rounded-lg">Test Link 1</a>
+                            <a href="#" class="px-4 py-2 text-gray-300 hover:bg-gray-700 rounded-lg">Test Link 2</a>
+                            <a href="#" class="px-4 py-2 text-gray-300 hover:bg-gray-700 rounded-lg">Test Link 3</a>
+                        </div>
+                    </div>
+
+                    <!-- Dropdown 5 -->
+                    <div x-data="{ open: false }" class="flex flex-col">
+                        <button @@click="open = !open"
+                                class="flex items-center justify-between px-4 py-2 text-gray-100 hover:bg-gray-700 rounded-xl">
+                            <span>Reports</span>
                             <svg :class="{ 'rotate-180': open }" class="w-4 h-4 transform transition-transform duration-200"
                                  fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -170,7 +190,9 @@
             }
         });
     </script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="//unpkg.com/alpinejs" defer></script>
+    <script src="https://cdn.datatables.net/v/dt/dt-2.3.4/datatables.min.js" integrity="sha384-X2pTSfom8FUa+vGQ+DgTCSyBZYkC1RliOduHa0X96D060s7Q//fnOh3LcazRNHyo" crossorigin="anonymous"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
