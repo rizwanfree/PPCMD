@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Data\Migrations\" />
     <Folder Include="utils\" />
     <Folder Include="wwwroot\images\company\" />
     <Folder Include="wwwroot\images\users\" />

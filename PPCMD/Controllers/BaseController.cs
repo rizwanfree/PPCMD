@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using PPCMD.Data;
 using PPCMD.Models;
+using System.Threading.Tasks;
 
 namespace PPCMD.Controllers
 {
@@ -15,14 +17,24 @@ namespace PPCMD.Controllers
         {
             _context = context;
             _userManager = userManager;
+        }
 
-            // Set current tenant for EF Core global filter
-            var userId = HttpContext?.User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {           
+
+            // HttpContext is available here
+            var userId = HttpContext.User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             if (!string.IsNullOrEmpty(userId))
             {
-                var user = _context.Users.FirstOrDefault(u => u.Id == userId);
-                _context.SetTenant(user?.CompanyId);
+                // Make sure we don't trigger tracking
+                var user = _context.Users.AsNoTracking().FirstOrDefault(u => u.Id == userId);
+                if (user?.CompanyId != null)
+                {
+                    _context.SetTenant(user.CompanyId);
+                }
             }
+            LoadCompanyInfoAsync().GetAwaiter().GetResult();
+            base.OnActionExecuting(context);
         }
 
         protected async Task LoadCompanyInfoAsync()
@@ -30,7 +42,7 @@ namespace PPCMD.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user != null)
             {
-                ViewBag.userFullName = $"{user.FirstName} {user.LastName}";
+                ViewBag.userFullName = $"{user.Employee!.FirstName} {user.Employee.LastName}";
             }
             if (user?.CompanyId != null)
             {
@@ -42,9 +54,7 @@ namespace PPCMD.Controllers
                 {
                     ViewBag.CompanyName = company.CompanyName;
                     ViewBag.CompanyLogo = company.Website ?? "/images/logo-placeholder.png";
-                    //ViewBag.userFullName = user.FullName ?? "Hello User";
-                    ViewBag.userProfilePicture = user.ProfilePictureUrl ?? "/images/user.jpg";
-                    // you can store logo URL in DB later, for now Website is optional
+                    ViewBag.userProfilePicture = user.Employee?.ProfilePictureUrl ?? "/images/user.jpg";
                 }
             }
         }

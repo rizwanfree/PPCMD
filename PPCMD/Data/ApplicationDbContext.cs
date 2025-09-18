@@ -21,6 +21,7 @@ namespace PPCMD.Data
             SetCurrentTenant();
         }
         public DbSet<Company> Companies { get; set; }
+        public DbSet<Employee> Employees { get; set; }
         public DbSet<Client> Clients { get; set; }
         public DbSet<City> Cities { get; set; }
 
@@ -45,60 +46,39 @@ namespace PPCMD.Data
         {
             base.OnModelCreating(builder);
 
-            builder.Entity<Company>()
-                .HasIndex(c => c.CompanyName).IsUnique();
+            // 🔧 Company -> Employees
+            builder.Entity<Employee>()
+                .HasOne(e => e.Company)
+                .WithMany(c => c.Employees)
+                .HasForeignKey(e => e.CompanyId)
+                .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Entity<Company>()
-                .HasIndex(c => c.License).IsUnique();
-
-            builder.Entity<Company>()
-                .HasIndex(c => c.NTN).IsUnique();
-
-            builder.Entity<Company>()
-                .HasIndex(c => c.STN).IsUnique();
-
-            builder.Entity<Company>()
-                .HasIndex(c => c.CNIC).IsUnique();
-
-            builder.Entity<Company>()
-                .HasIndex(c => c.Email).IsUnique();
-
-            builder.Entity<Company>()
-                .HasIndex(c => c.Website).IsUnique();
-
-            // Client configuration
-            builder.Entity<Client>()
-                .HasOne(c => c.City)
-                .WithMany(city => city.Clients)
-                .HasForeignKey(c => c.CityId)
-                .OnDelete(DeleteBehavior.Restrict); // Prevents cascade delete
-
-            // Indexes
-            builder.Entity<Client>()
-                .HasIndex(c => c.Email)
-                .IsUnique();
-
-            builder.Entity<Client>()
-                .HasIndex(c => c.NTN);
-
-            builder.Entity<Client>()
-                .HasIndex(c => c.GST);
-
-
-            // ----- GLOBAL FILTER FOR MULTITENANT -----
-            // Filter ApplicationUser by CompanyId
+            // 🔧 Company -> Users
             builder.Entity<ApplicationUser>()
-                   .HasQueryFilter(u => !EnableTenantFilter || !_currentCompanyId.HasValue || u.CompanyId == _currentCompanyId);
+                .HasOne(u => u.Company)
+                .WithMany(c => c.Users)
+                .HasForeignKey(u => u.CompanyId)
+                .OnDelete(DeleteBehavior.Cascade);
 
-            // Filter Clients by CompanyId
+            // 🔧 Employee -> ApplicationUser (One-to-One)
+            builder.Entity<Employee>()
+                .HasOne(e => e.ApplicationUser)
+                .WithOne(u => u.Employee)
+                .HasForeignKey<ApplicationUser>(u => u.EmployeeId) // FK lives in User table
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // 🔧 Global Tenant Filters
+            builder.Entity<ApplicationUser>()
+                .HasQueryFilter(u => !EnableTenantFilter || !_currentCompanyId.HasValue || u.CompanyId == _currentCompanyId);
+
+            builder.Entity<Employee>()
+                .HasQueryFilter(e => !EnableTenantFilter || !_currentCompanyId.HasValue || e.CompanyId == _currentCompanyId);
+
             builder.Entity<Client>()
-                    .HasQueryFilter(c => !EnableTenantFilter || !_currentCompanyId.HasValue || c.CompanyId == _currentCompanyId);
+                .HasQueryFilter(c => !EnableTenantFilter || !_currentCompanyId.HasValue || c.CompanyId == _currentCompanyId);
 
-
-            // Filter Companies by Id (so users only see their own company)
             builder.Entity<Company>()
-                    .HasQueryFilter(c => !EnableTenantFilter || !_currentCompanyId.HasValue || c.Id == _currentCompanyId);
-
+                .HasQueryFilter(c => !EnableTenantFilter || !_currentCompanyId.HasValue || c.Id == _currentCompanyId);
         }
 
         // Optional: expose a method to set current tenant at runtime

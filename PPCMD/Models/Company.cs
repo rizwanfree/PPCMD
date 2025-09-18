@@ -42,7 +42,10 @@ namespace PPCMD.Models
         [MaxLength(500)]
         public required string Address { get; set; }
 
+
+
         // Navigation property
-        public List<ApplicationUser> Users { get; set; } = new();
+        public ICollection<Employee> Employees { get; set; } = new List<Employee>();
+        public ICollection<ApplicationUser> Users { get; set; } = new List<ApplicationUser>();
     }
 }

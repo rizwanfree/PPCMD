@@ -15,13 +15,13 @@
     }
 
     <div class="bg-white shadow rounded-lg p-6">
-        <form asp-action="UserProfile" method="post" enctype="multipart/form-data" class="space-y-6">
+        @* <form asp-action="UserProfile" method="post" enctype="multipart/form-data" class="space-y-6">
 
             <!-- Profile Picture -->
             <div class="flex items-center space-x-6">
                 <div class="shrink-0">
                     <img class="h-24 w-24 object-cover rounded-full border"
-                         src="@(!string.IsNullOrEmpty(Model.ProfilePictureUrl) ? Model.ProfilePictureUrl : Url.Content("~/user.jpg"))"
+                         src="@(!string.IsNullOrEmpty(Model.Employee?.ProfilePictureUrl) ? Model.Employee?.ProfilePictureUrl : Url.Content("~/user.jpg"))"
                          alt="Profile Picture"
                          name="pic">
                 </div>
@@ -80,6 +80,6 @@
                 </button>
             </div>
 
-        </form>
+        </form> *@
     </div>
 </div>

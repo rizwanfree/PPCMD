@@ -7,9 +7,19 @@
     <title>@ViewData["Title"] - PPCMD</title>
     <link href="https://cdn.datatables.net/v/dt/dt-2.3.4/datatables.min.css" rel="stylesheet" integrity="sha384-pmGS6IIcXhAVIhcnh9X/mxffzZNHbuxboycGuQQoP3pAbb0SwlSUUHn2v22bOenI" crossorigin="anonymous">
     <link rel="stylesheet" href="~/css/output.css" asp-append-version="true" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Huninn&display=swap" rel="stylesheet">
 
+    <style>
+        .huninn-regular {
+            font-family: "Huninn", sans-serif;
+            font-weight: 400;
+            font-style: normal;
+        }
+    </style>
 </head>
-<body class="bg-gray-100 h-screen flex">
+<body class="bg-gray-100 h-screen flex huninn-regular">
 
     <!-- Sidebar -->
     <aside class="hidden md:flex flex-col w-64 bg-gray-800 rounded-2xl">
@@ -43,6 +53,8 @@
                             </svg>
                         </button>
                         <div x-show="open" x-transition class="flex flex-col ml-4">
+                            <a asp-action="Index" asp-controller="User" class="px-4 py-2 text-gray-300 hover:bg-gray-700 rounded-lg">Users</a>
+                            <a asp-action="CompanyProfile" asp-controller="Dashboard" class="px-4 py-2 text-gray-300 hover:bg-gray-700 rounded-lg">Company Profile</a>
                             <a asp-action="Cities" asp-controller="Dashboard" class="px-4 py-2 text-gray-300 hover:bg-gray-700 rounded-lg">Cities</a>
                             <a href="#" class="px-4 py-2 text-gray-300 hover:bg-gray-700 rounded-lg">Test Link 2</a>
                             <a href="#" class="px-4 py-2 text-gray-300 hover:bg-gray-700 rounded-lg">Test Link 3</a>
@@ -130,7 +142,7 @@
     <div class="flex flex-col flex-1 overflow-y-auto">
 
         <!-- Topbar -->
-        <header class="flex items-center justify-between h-16 bg-white border-b border-gray-200 px-4">
+        <header class="flex items-center justify-between h-16 bg-white border-b border-gray-200 px-4 text-base leading-tight">
             <!-- Left Side (Breadcrumbs or Page Title) -->
             <div class="text-lg font-semibold text-gray-700">
                 @ViewBag.CompanyName
@@ -193,6 +205,7 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="//unpkg.com/alpinejs" defer></script>
     <script src="https://cdn.datatables.net/v/dt/dt-2.3.4/datatables.min.js" integrity="sha384-X2pTSfom8FUa+vGQ+DgTCSyBZYkC1RliOduHa0X96D060s7Q//fnOh3LcazRNHyo" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

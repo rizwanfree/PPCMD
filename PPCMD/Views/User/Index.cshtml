@@ -1,0 +1,90 @@
+﻿@model IEnumerable<ApplicationUser>
+@{
+    ViewBag.Title = "User Management";  
+}
+
+<div class="max-w-7xl mx-auto p-6 bg-white rounded-2xl shadow">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6">
+        <h2 class="text-3xl font-bold text-gray-900">Users</h2>
+
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="Create"
+               class="inline-flex items-center px-5 py-2.5 rounded-xl bg-indigo-600 text-white shadow hover:bg-indigo-700 transition">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" stroke-width="2"
+                     viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M12 4v16m8-8H4"></path>
+                </svg>
+                Add New User
+            </a>
+        }
+    </div>
+
+    <!-- Users Table -->
+    <div class="overflow-x-auto">
+        <table id="usersTable" class="min-w-full divide-y divide-gray-300">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Name</th>
+                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Email</th>
+                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Mobile</th>
+                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Role</th>
+                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
+                    <th class="px-4 py-3 text-right text-sm font-semibold text-gray-700">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+                @foreach (var user in Model)
+                {
+                    @* <tr class="hover:bg-gray-50">
+                        <td class="px-4 py-3 text-gray-900 font-medium">@user.FullName</td>
+                        <td class="px-4 py-3 text-gray-700">@user.Email</td>
+                        <td class="px-4 py-3 text-gray-700">@user.Mobile</td>
+                        <td class="px-4 py-3 text-gray-700">
+                            <!-- Show first role only (if multiple) -->
+                            @(user?.Company?.CompanyName ?? "—")
+                        </td>
+                        <td class="px-4 py-3">
+                            <span class="px-3 py-1 text-xs font-medium rounded-full @(user.IsActive ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700")">
+                                @(user.IsActive ? "Active" : "Inactive")
+                            </span>
+                        </td>
+                        <td class="px-4 py-3 text-right space-x-2">
+                            <a asp-action="Edit" asp-route-id="@user.Id"
+                               class="text-indigo-600 hover:text-indigo-800 font-medium">
+                                Edit
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@user.Id"
+                               class="text-red-600 hover:text-red-800 font-medium">
+                                Delete
+                            </a>
+                        </td>
+                    </tr> *@
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- jQuery + DataTables -->
+    @* <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script> *@
+    
+
+    <script>
+        $(document).ready(function () {
+            $('#usersTable').DataTable({
+                responsive: true,
+                pageLength: 10,
+                order: [[0, 'asc']],
+                language: {
+                    search: "_INPUT_",
+                    searchPlaceholder: "Search users..."
+                }
+            });
+        });
+    </script>
+}

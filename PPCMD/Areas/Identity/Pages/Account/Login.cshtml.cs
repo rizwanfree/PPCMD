@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace PPCMD.Areas.Identity.Pages.Account
@@ -125,6 +126,18 @@ namespace PPCMD.Areas.Identity.Pages.Account
                 {
                     // Re-enable tenant filter after login
                     _context.EnableTenantFilter = true;
+
+                    // ✅ Add CompanyId claim (only if not already present)
+                    var claims = new List<Claim>
+                    {
+                        new Claim("CompanyId", user.CompanyId?.ToString() ?? "")
+                    };
+
+                    await _userManager.AddClaimsAsync(user, claims);
+
+                    // ✅ Set tenant immediately
+                    _context.SetTenant(user.CompanyId);
+
                     _logger.LogInformation("User logged in.");
                     return LocalRedirect("~/Dashboard");
                 }

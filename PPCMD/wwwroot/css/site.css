@@ -3,13 +3,15 @@
 
 /* Base font size (accessibility-friendly) */
 html {
-  font-size: 16px; /* bigger base font for better readability */
+    font-size: 16px; /* bigger base font for better readability */
+    scrollbar-gutter: stable;
 }
+
 
 /* Responsive font scaling if you want it slightly bigger on large screens */
 @media (min-width: 1024px) {
   html {
-    font-size: 17px;
+    font-size: 15px;
   }
 }
 
@@ -53,14 +55,26 @@ body {
 
 /* Improve grid spacing for forms */
 form .grid {
-  @apply gap-y-6 gap-x-8; /* more breathing room between inputs */
+  @apply gap-y-4 gap-x-8; /* more breathing room between inputs */
 }
 
 /* Section box styling */
 .section-box {
-  @apply bg-gray-50 p-6 rounded-xl border border-gray-200 shadow-sm;
+  @apply bg-gray-50 p-4 rounded-xl border border-gray-200 shadow-sm;
 }
 
 .section-title {
   @apply text-lg font-semibold text-gray-900 mb-4 flex items-center;
+}
+
+.input {
+    @apply block w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500;
+}
+
+.label {
+    @apply block text-sm font-medium text-gray-700 mb-1;
+}
+
+.validation {
+    @apply text-red-500 text-xs;
 }
