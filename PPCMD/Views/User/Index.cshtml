@@ -1,67 +1,94 @@
-﻿@model IEnumerable<ApplicationUser>
+﻿@model IEnumerable<Employee>
+
 @{
-    ViewBag.Title = "User Management";  
+    ViewBag.Title = "Employee Management";
+    var currentUserId = ViewBag.CurrentUserId as string;
 }
 
 <div class="max-w-7xl mx-auto p-6 bg-white rounded-2xl shadow">
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
-        <h2 class="text-3xl font-bold text-gray-900">Users</h2>
+        <h2 class="text-3xl font-bold text-gray-900">Employees</h2>
 
         @if (User.IsInRole("Admin"))
         {
-            <a asp-action="Create"
+            <a asp-controller="User" asp-action="Create"
                class="inline-flex items-center px-5 py-2.5 rounded-xl bg-indigo-600 text-white shadow hover:bg-indigo-700 transition">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" stroke-width="2"
                      viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round"
                           d="M12 4v16m8-8H4"></path>
                 </svg>
-                Add New User
+                Add Employee
             </a>
         }
     </div>
 
-    <!-- Users Table -->
     <div class="overflow-x-auto">
-        <table id="usersTable" class="min-w-full divide-y divide-gray-300">
+        <table id="employeesTable" class="min-w-full divide-y divide-gray-300">
             <thead class="bg-gray-50">
                 <tr>
                     <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Name</th>
+                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Designation</th>
                     <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Email</th>
                     <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Mobile</th>
-                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Role</th>
-                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
+                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">System Access</th>
                     <th class="px-4 py-3 text-right text-sm font-semibold text-gray-700">Actions</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-200">
-                @foreach (var user in Model)
+                @foreach (var employee in Model)
                 {
-                    @* <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-3 text-gray-900 font-medium">@user.FullName</td>
-                        <td class="px-4 py-3 text-gray-700">@user.Email</td>
-                        <td class="px-4 py-3 text-gray-700">@user.Mobile</td>
-                        <td class="px-4 py-3 text-gray-700">
-                            <!-- Show first role only (if multiple) -->
-                            @(user?.Company?.CompanyName ?? "—")
-                        </td>
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-4 py-3 text-gray-900 font-medium">@employee.FullName</td>
+                        <td class="px-4 py-3 text-gray-700">@employee.Designation</td>
+                        <td class="px-4 py-3 text-gray-700">@employee.Email</td>
+                        <td class="px-4 py-3 text-gray-700">@employee.Mobile</td>
                         <td class="px-4 py-3">
-                            <span class="px-3 py-1 text-xs font-medium rounded-full @(user.IsActive ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700")">
-                                @(user.IsActive ? "Active" : "Inactive")
+                            <span class="px-3 py-1 text-xs font-medium rounded-full @(employee.ApplicationUser != null ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700")">
+                                @(employee.ApplicationUser != null ? "Yes" : "No")
                             </span>
                         </td>
-                        <td class="px-4 py-3 text-right space-x-2">
-                            <a asp-action="Edit" asp-route-id="@user.Id"
-                               class="text-indigo-600 hover:text-indigo-800 font-medium">
-                                Edit
-                            </a>
-                            <a asp-action="Delete" asp-route-id="@user.Id"
-                               class="text-red-600 hover:text-red-800 font-medium">
-                                Delete
-                            </a>
+                        <td class="px-4 py-3 text-center space-x-2">
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <!-- Admin full access -->
+                                <a asp-controller="Employees" asp-action="Edit" asp-route-id="@employee.Id"
+                                   class="inline-flex items-center px-3 py-1.5 rounded-lg bg-indigo-100 text-indigo-700 hover:bg-indigo-200 text-sm font-medium transition">
+                                    ✏️ Edit
+                                </a>
+
+                                <a asp-controller="Employees" asp-action="Delete" asp-route-id="@employee.Id"
+                                   class="inline-flex items-center px-3 py-1.5 rounded-lg bg-red-100 text-red-700 hover:bg-red-200 text-sm font-medium transition">
+                                    🗑 Delete
+                                </a>
+
+                                @if (employee.ApplicationUser != null)
+                                {
+                                    <a asp-controller="Users" asp-action="Edit" asp-route-id="@employee.ApplicationUser.Id"
+                                       class="inline-flex items-center px-3 py-1.5 rounded-lg bg-green-100 text-green-700 hover:bg-green-200 text-sm font-medium transition">
+                                        👤 Edit User
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a asp-controller="Users" asp-action="Create" asp-route-employeeId="@employee.Id"
+                                       class="inline-flex items-center px-3 py-1.5 rounded-lg bg-emerald-100 text-emerald-700 hover:bg-emerald-200 text-sm font-medium transition">
+                                        ➕ Grant Access
+                                    </a>
+                                }
+                            }
+                            else if (employee.ApplicationUser?.Id == currentUserId)
+                            {
+                                <!-- Non-admin user editing ONLY their own account -->
+                                <a asp-controller="Users" asp-action="Edit" asp-route-id="@employee.ApplicationUser.Id"
+                                   class="inline-flex items-center px-3 py-1.5 rounded-lg bg-green-100 text-green-700 hover:bg-green-200 text-sm font-medium transition">
+                                    👤 Edit My Account
+                                </a>
+                            }
                         </td>
-                    </tr> *@
+
+                    </tr>
                 }
             </tbody>
         </table>
@@ -69,20 +96,15 @@
 </div>
 
 @section Scripts {
-    <!-- jQuery + DataTables -->
-    @* <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script> *@
-    
-
     <script>
         $(document).ready(function () {
-            $('#usersTable').DataTable({
+            $('#employeesTable').DataTable({
                 responsive: true,
                 pageLength: 10,
                 order: [[0, 'asc']],
                 language: {
                     search: "_INPUT_",
-                    searchPlaceholder: "Search users..."
+                    searchPlaceholder: "Search employees..."
                 }
             });
         });

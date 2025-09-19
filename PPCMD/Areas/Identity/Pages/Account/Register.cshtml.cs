@@ -183,6 +183,7 @@ namespace PPCMD.Areas.Identity.Pages.Account
                 ApplicationUser user = new ApplicationUser
                 {
                     UserName = $"admin-{company.License}",
+                    Email = Input.Email,
                     CompanyId = company.Id,
                     EmployeeId = adminEmployee.Id
                 };

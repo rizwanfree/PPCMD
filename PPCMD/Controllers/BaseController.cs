@@ -42,7 +42,17 @@ namespace PPCMD.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user != null)
             {
-                ViewBag.userFullName = $"{user.Employee!.FirstName} {user.Employee.LastName}";
+                if (user.Employee != null && 
+                    !string.IsNullOrWhiteSpace(user.Employee.FirstName) &&
+                    !string.IsNullOrWhiteSpace(user.Employee.LastName))
+                {
+                    ViewBag.userFullName = $"{user.Employee!.FirstName} {user.Employee.LastName}";
+                }
+                else
+                {
+                    ViewBag.userFullName = "User";
+                }
+
             }
             if (user?.CompanyId != null)
             {

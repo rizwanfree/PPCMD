@@ -8,16 +8,21 @@ namespace PPCMD.Controllers
 {
     public class UserController : BaseController
     {
-        //private readonly ApplicationDbContext _context;
-        //private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
         public UserController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
-            :base(context, userManager)
+            : base(context, userManager)
         {
+            _context = context;
+            _userManager = userManager;
         }
         public async Task<IActionResult> Index()
         {
-            await LoadCompanyInfoAsync();
-            var users = await _context.Users.Include(u => u.Company).ToListAsync();
+            //await LoadCompanyInfoAsync();
+            //_context.EnableTenantFilter = false;
+            var users = await _context.Employees.Include(u => u.ApplicationUser).ToListAsync();
+            //_context.EnableTenantFilter = true;
+            Console.WriteLine($"Found {users.Count} employees");
             return View(users);
         }
 

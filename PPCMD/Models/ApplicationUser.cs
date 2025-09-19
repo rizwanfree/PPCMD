@@ -6,7 +6,8 @@ namespace PPCMD.Models
 {
     public class ApplicationUser : IdentityUser
     {
-    public int? CompanyId { get; set; }
+        
+        public int? CompanyId { get; set; }
     public Company? Company { get; set; }
 
     // Link back to Employee record
