@@ -1,0 +1,98 @@
+﻿@model PPCMD.Models.Employee
+
+@{
+    var isNew = Model?.Id == 0;
+    ViewData["Title"] = isNew ? "Add Employee" : "Edit Employee";
+}
+
+<div class="max-w-3xl mx-auto p-8 bg-white rounded-2xl shadow-lg">
+    <h2 class="text-2xl font-bold text-gray-900 mb-6">@ViewData["Title"]</h2>
+
+    <form asp-action="@(isNew ? "CreateEmployee" : "EditEmployee")" asp-controller="User" method="post" enctype="multipart/form-data" class="space-y-6">
+        <input type="hidden" asp-for="Id" />
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label asp-for="FirstName" class="block text-sm font-medium text-gray-700">First name</label>
+                <input asp-for="FirstName" class="mt-1 block w-full rounded-xl border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                <span asp-validation-for="FirstName" class="text-xs text-red-500"></span>
+            </div>
+
+            <div>
+                <label asp-for="LastName" class="block text-sm font-medium text-gray-700">Last name</label>
+                <input asp-for="LastName" class="mt-1 block w-full rounded-xl border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                <span asp-validation-for="LastName" class="text-xs text-red-500"></span>
+            </div>
+
+            <div>
+                <label asp-for="Designation" class="block text-sm font-medium text-gray-700">Designation</label>
+                <input asp-for="Designation" class="mt-1 block w-full rounded-xl border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            </div>
+
+            <div>
+                <label asp-for="Mobile" class="block text-sm font-medium text-gray-700">Mobile</label>
+                <input asp-for="Mobile" class="mt-1 block w-full rounded-xl border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            </div>
+
+            <div>
+                <label asp-for="Email" class="block text-sm font-medium text-gray-700">Email</label>
+                <input asp-for="Email" type="email" class="mt-1 block w-full rounded-xl border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                <span asp-validation-for="Email" class="text-xs text-red-500"></span>
+            </div>
+
+            <div>
+                <label asp-for="CNIC" class="block text-sm font-medium text-gray-700">CNIC</label>
+                <input asp-for="CNIC" class="mt-1 block w-full rounded-xl border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                <span asp-validation-for="CNIC" class="text-xs text-red-500"></span>
+            </div>
+
+            <div class="md:col-span-2">
+                <label asp-for="Address" class="block text-sm font-medium text-gray-700">Address</label>
+                <textarea asp-for="Address" rows="3" class="mt-1 block w-full rounded-xl border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+            </div>
+        </div>
+
+        <!-- Profile picture upload -->
+        <div class="flex items-center gap-6">
+            <div class="flex-shrink-0">
+                <img id="profilePreview"
+                     src="@(string.IsNullOrEmpty(Model?.ProfilePictureUrl) ? "/images/user.jpg" : Model.ProfilePictureUrl)"
+                     alt="Profile"
+                     class="h-28 w-28 rounded-full object-cover border border-gray-200 shadow-sm" />
+            </div>
+
+            <div class="flex-1">
+                <label class="block text-sm font-medium text-gray-700">Profile picture</label>
+                <input asp-for="ImageFile" type="file" accept="image/*" class="mt-2 block text-sm" />
+                <span class="text-xs text-gray-500">JPG, PNG, WEBP — max 2MB.</span>
+                <span asp-validation-for="ImageFile" class="text-xs text-red-500 block"></span>
+            </div>
+        </div>
+
+        <div class="flex justify-end gap-3">
+            <a asp-action="Index" class="px-5 py-2 rounded-xl bg-gray-100 text-gray-700 hover:bg-gray-200">Cancel</a>
+            <button type="submit" class="px-6 py-2 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700">Save</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // preview selected image
+        (function () {
+            const input = document.querySelector('input[type="file"][asp-for="ImageFile"], input[type="file"][name="ImageFile"]');
+            const preview = document.getElementById('profilePreview');
+            if (!input) return;
+            input.addEventListener('change', function (e) {
+                const file = this.files && this.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = function (ev) {
+                    preview.src = ev.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        })();
+    </script>
+}

@@ -39,32 +39,40 @@ namespace PPCMD.Controllers
 
         protected async Task LoadCompanyInfoAsync()
         {
-            var user = await _userManager.GetUserAsync(User);
+            var userId = _userManager.GetUserId(User); // safer & direct way to get current userId
+            if (userId == null)
+                return;
+
+            var user = await _context.Users
+                .Include(u => u.Employee) // 👈 THIS loads Employee
+                .AsNoTracking()
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
             if (user != null)
             {
-                if (user.Employee != null && 
+                if (user.Employee != null &&
                     !string.IsNullOrWhiteSpace(user.Employee.FirstName) &&
                     !string.IsNullOrWhiteSpace(user.Employee.LastName))
                 {
-                    ViewBag.userFullName = $"{user.Employee!.FirstName} {user.Employee.LastName}";
+                    ViewBag.userFullName = $"{user.Employee.FirstName} {user.Employee.LastName}";                    
                 }
                 else
                 {
-                    ViewBag.userFullName = "User";
+                    ViewBag.userFullName = "User";                    
                 }
 
-            }
-            if (user?.CompanyId != null)
-            {
-                var company = await _context.Companies
-                    .AsNoTracking()
-                    .FirstOrDefaultAsync(c => c.Id == user.CompanyId);
-
-                if (company != null)
+                if (user.CompanyId != null)
                 {
-                    ViewBag.CompanyName = company.CompanyName;
-                    ViewBag.CompanyLogo = company.Website ?? "/images/logo-placeholder.png";
-                    ViewBag.userProfilePicture = user.Employee?.ProfilePictureUrl ?? "/images/user.jpg";
+                    var company = await _context.Companies
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync(c => c.Id == user.CompanyId);
+
+                    if (company != null)
+                    {
+                        ViewBag.CompanyName = company.CompanyName;
+                        ViewBag.CompanyLogo = company.Website ?? "/images/logo-placeholder.png";
+                        ViewBag.userProfilePicture = user.Employee?.ProfilePictureUrl ?? "/images/user.jpg";
+                    }
                 }
             }
         }
