@@ -164,6 +164,125 @@ namespace PPCMD.Controllers
             // Redirect back to the edit page for the same item
             return RedirectToAction(nameof(Edit), new { id = duty.ItemID });
         }
+
+
+        // ----------------------------
+        // DUTY TYPES MANAGEMENT
+        // ----------------------------
+
+        // GET: DutyTypes
+        public async Task<IActionResult> DutyTypes()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user?.CompanyId == null) return Forbid();
+
+            var dutyTypes = await _context.DutyTypes
+                .Where(d => d.CompanyId == user.CompanyId.Value)
+                .AsNoTracking()
+                .ToListAsync();
+
+            return View(dutyTypes);
+        }
+
+
+        // POST: DutyTypes/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateDutyType(DutyType dutyType)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user?.CompanyId == null) return Forbid();
+
+            if (!ModelState.IsValid)
+            {
+                foreach (var kvp in ModelState)
+                {
+                    foreach (var error in kvp.Value.Errors)
+                    {
+                        Console.WriteLine($"❌ Model binding failed for {kvp.Key}: {error.ErrorMessage}");
+                    }
+                }
+                TempData["ErrorMessage"] = "Invalid duty type data.";
+                return RedirectToAction(nameof(DutyTypes));
+            }
+
+            // ✅ should run now if binding works
+            dutyType.CompanyId = user.CompanyId.Value;
+
+            try
+            {
+                _context.DutyTypes.Add(dutyType);
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Duty type created successfully.";
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Duty Not Added!!!");
+                Console.WriteLine(ex.Message);
+                TempData["ErrorMessage"] = "Error saving duty type.";
+            }
+
+            return RedirectToAction(nameof(DutyTypes));
+        }
+
+        // GET: DutyTypes/Edit/5
+        public async Task<IActionResult> EditDutyType(int id)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user?.CompanyId == null) return Forbid();
+
+            var dutyType = await _context.DutyTypes
+                .FirstOrDefaultAsync(d => d.Id == id && d.CompanyId == user.CompanyId.Value);
+
+            if (dutyType == null) return NotFound();
+
+            return View(dutyType);
+        }
+
+        // POST: DutyTypes/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditDutyType(int id, DutyType dutyType)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user?.CompanyId == null) return Forbid();
+
+            if (id != dutyType.Id) return NotFound();
+
+            if (ModelState.IsValid)
+            {
+                var existing = await _context.DutyTypes
+                    .FirstOrDefaultAsync(d => d.Id == id && d.CompanyId == user.CompanyId.Value);
+
+                if (existing == null) return NotFound();
+
+                existing.Name = dutyType.Name;
+                existing.Description = dutyType.Description;
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction(nameof(DutyTypes));
+            }
+            return View(dutyType);
+        }
+
+        // POST: DutyTypes/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteDutyType(int id)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user?.CompanyId == null) return Forbid();
+
+            var dutyType = await _context.DutyTypes
+                .FirstOrDefaultAsync(d => d.Id == id && d.CompanyId == user.CompanyId.Value);
+
+            if (dutyType == null) return NotFound();
+
+            _context.DutyTypes.Remove(dutyType);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(DutyTypes));
+        }
     }
 }
 

@@ -209,13 +209,15 @@ namespace PPCMD.Areas.Identity.Pages.Account
                     _logger.LogInformation("Admin user created for company {CompanyName}", company.CompanyName);
 
                     await _signInManager.SignInAsync(user, isPersistent: false);
+
+                    // 🔑 Automatically seed default duty types
+
+                    var seeder = new CompanySeeder(_context);
+                    await seeder.SeedDutyTypesForCompanyAsync(company.Id);
                     return LocalRedirect(returnUrl);
                 }
 
-                // 🔑 Automatically seed default duty types
 
-                var seeder = new CompanySeeder(_context);
-                await seeder.SeedDutyTypesForCompanyAsync(company.Id);
 
 
 
