@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PPCMD.Data;
 using PPCMD.Models;
+using PPCMD.utils;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,6 +47,19 @@ using (var scope = app.Services.CreateScope())
         {
             await roleManager.CreateAsync(new IdentityRole(role));
         }
+    }
+}
+
+// Program.cs or inside a hosted service
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    var seeder = new CompanySeeder(db);
+    var companies = db.Companies.ToList();
+
+    foreach (var company in companies)
+    {
+        await seeder.SeedDutyTypesForCompanyAsync(company.Id);
     }
 }
 

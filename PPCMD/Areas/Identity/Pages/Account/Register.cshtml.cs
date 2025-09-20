@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using PPCMD.Data;
 using PPCMD.Models;
+using PPCMD.utils;
 using System.ComponentModel.DataAnnotations;
 
 namespace PPCMD.Areas.Identity.Pages.Account
@@ -210,6 +211,13 @@ namespace PPCMD.Areas.Identity.Pages.Account
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     return LocalRedirect(returnUrl);
                 }
+
+                // 🔑 Automatically seed default duty types
+
+                var seeder = new CompanySeeder(_context);
+                await seeder.SeedDutyTypesForCompanyAsync(company.Id);
+
+
 
                 foreach (var error in result.Errors)
                 {

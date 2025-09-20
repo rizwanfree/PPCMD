@@ -25,6 +25,10 @@ namespace PPCMD.Data
         public DbSet<Client> Clients { get; set; }
         public DbSet<City> Cities { get; set; }
 
+        public DbSet<Item> Items { get; set; }
+        public DbSet<ItemDuty> ItemDuties { get; set; }
+        public DbSet<DutyType> DutyTypes { get; set; }
+
 
         private void SetCurrentTenant()
         {
@@ -67,6 +71,42 @@ namespace PPCMD.Data
                 .HasForeignKey<ApplicationUser>(u => u.EmployeeId) // FK lives in User table
                 .OnDelete(DeleteBehavior.Restrict);
 
+
+            // Item -> Company
+            builder.Entity<Item>()
+                .HasOne(i => i.Company)
+                .WithMany(c => c.Items)
+                .HasForeignKey(i => i.CompanyId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // ItemDuty -> Item
+            builder.Entity<ItemDuty>()
+                .HasOne(d => d.Item)
+                .WithMany(i => i.Duties)
+                .HasForeignKey(d => d.ItemID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // ItemDuty -> DutyType
+            builder.Entity<ItemDuty>()
+                .HasOne(d => d.DutyType)
+                .WithMany()
+                .HasForeignKey(d => d.DutyTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // ItemDuty -> Company
+            builder.Entity<ItemDuty>()
+                .HasOne(d => d.Company)
+                .WithMany()
+                .HasForeignKey(d => d.CompanyId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // DutyType -> Company
+            builder.Entity<DutyType>()
+                .HasOne(dt => dt.Company)
+                .WithMany()
+                .HasForeignKey(dt => dt.CompanyId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             // 🔧 Global Tenant Filters
             builder.Entity<ApplicationUser>()
                 .HasQueryFilter(u => !EnableTenantFilter || !_currentCompanyId.HasValue || u.CompanyId == _currentCompanyId);
@@ -79,6 +119,14 @@ namespace PPCMD.Data
 
             builder.Entity<Company>()
                 .HasQueryFilter(c => !EnableTenantFilter || !_currentCompanyId.HasValue || c.Id == _currentCompanyId);
+
+
+            builder.Entity<Item>()
+                .HasQueryFilter(i => !EnableTenantFilter || !_currentCompanyId.HasValue || i.CompanyId == _currentCompanyId);
+            builder.Entity<ItemDuty>()
+                .HasQueryFilter(d => !EnableTenantFilter || !_currentCompanyId.HasValue || d.CompanyId == _currentCompanyId);
+            builder.Entity<DutyType>()
+                .HasQueryFilter(dt => !EnableTenantFilter || !_currentCompanyId.HasValue || dt.CompanyId == _currentCompanyId);
         }
 
         // Optional: expose a method to set current tenant at runtime

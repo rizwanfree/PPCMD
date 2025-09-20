@@ -1,0 +1,27 @@
+﻿@model PPCMD.Models.Item
+
+@{
+    ViewData["Title"] = "Create Item";
+}
+
+<h1 class="text-2xl font-bold mb-4">Create Item</h1>
+
+<form asp-action="Create" method="post" class="space-y-4 max-w-lg">
+    <div>
+        <label asp-for="ItemName" class="block text-sm font-medium">Item Name</label>
+        <input asp-for="ItemName" class="mt-1 w-full border rounded px-3 py-2" />
+        <span asp-validation-for="ItemName" class="text-red-500 text-sm"></span>
+    </div>
+
+    <div>
+        <label asp-for="HSCode" class="block text-sm font-medium">HS Code</label>
+        <input asp-for="HSCode" class="mt-1 w-full border rounded px-3 py-2" />
+    </div>
+
+    <button type="submit"
+            class="px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700">
+        💾 Save
+    </button>
+    <a asp-action="Index" class="ml-2 text-gray-600 hover:underline">Cancel</a>
+</form>
+

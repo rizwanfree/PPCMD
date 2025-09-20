@@ -47,5 +47,6 @@ namespace PPCMD.Models
         // Navigation property
         public ICollection<Employee> Employees { get; set; } = new List<Employee>();
         public ICollection<ApplicationUser> Users { get; set; } = new List<ApplicationUser>();
+        public ICollection<Item> Items { get; set; } = new List<Item>();
     }
 }
