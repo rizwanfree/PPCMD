@@ -1,62 +1,72 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.Collections.Generic;
 
 namespace PPCMD.Models
 {
     public class Client
     {
-        [Key]
-        public int Id { get; set; }
+        public int Id { get; set; }   // 👈 PK
 
-        [Required, MaxLength(200)]
+        // Basic Info
         public string ClientName { get; set; } = string.Empty;
-
-        [Required, MaxLength(150)]
         public string ContactPerson { get; set; } = string.Empty;
-
-        [Required, MaxLength(20)]
-        public string ContactPersonMobile { get; set; } = string.Empty;
-
-        [Required, MaxLength(20)]
         public string Phone { get; set; } = string.Empty;
-
-        [MaxLength(20)]
-        public string? Fax { get; set; }
-
-        [Required, EmailAddress, MaxLength(200)]
-        public string Email { get; set; } = string.Empty;
-
-        [Required, MaxLength(500)]
+        public string Mobile { get; set; } = string.Empty;
         public string Address { get; set; } = string.Empty;
 
-        [Required]
-        [ForeignKey(nameof(City))]
-        public int CityId { get; set; }
-
-        [Required, MaxLength(50)]
+        // Company Identifiers
         public string GST { get; set; } = string.Empty;
-
-        [Required, MaxLength(50)]
         public string NTN { get; set; } = string.Empty;
 
-        [Required, MaxLength(100)]
-        public string ClientType { get; set; } = string.Empty;
-
-        [MaxLength(150)]
+        // Director Info
         public string? DirectorName { get; set; }
-
-        [MaxLength(20)]
         public string? NIC { get; set; }
-
-        [MaxLength(500)]
         public string? DirectorAddress { get; set; }
 
-        // Navigation property
-        public City? City { get; set; }
+        // Location
+        //public int CityId { get; set; }
 
-        // Tenant binding
-        [Required]
+        // 🔗 Relationship with ClientType
+        public int ClientTypeId { get; set; }
+        public ClientType? ClientType { get; set; }
+
+        // Multi-Tenant Support
         public int CompanyId { get; set; }
-        public Company Company { get; set; } = null!;
+        public Company? Company { get; set; }
+
+        // 🔗 Related Data
+        public ICollection<ClientEmail> Emails { get; set; } = new List<ClientEmail>();
+
+        // 📌 Audit fields
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? UpdatedAt { get; set; }
+    }
+
+    public class ClientEmail
+    {
+        public int Id { get; set; }   // 👈 PK        
+        public string Email { get; set; } = string.Empty;
+        public int ClientId { get; set; }
+        public Client? Client { get; set; }
+
+        // 📌 Audit fields
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? UpdatedAt { get; set; }
+    }
+
+    public class ClientType
+    {
+        public int Id { get; set; }   // 👈 PK
+        public string Name { get; set; } = string.Empty;    // e.g., "Commercial", "Industrial"
+
+        // Multi-Tenant Support
+        public int CompanyId { get; set; }
+        public Company? Company { get; set; }
+
+        public ICollection<Client> Clients { get; set; } = new List<Client>();
+
+        // 📌 Audit fields
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? UpdatedAt { get; set; }
     }
 }

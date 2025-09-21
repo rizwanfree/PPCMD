@@ -22,12 +22,13 @@ namespace PPCMD.Data
         }
         public DbSet<Company> Companies { get; set; }
         public DbSet<Employee> Employees { get; set; }
-        public DbSet<Client> Clients { get; set; }
         public DbSet<City> Cities { get; set; }
-
         public DbSet<Item> Items { get; set; }
         public DbSet<ItemDuty> ItemDuties { get; set; }
         public DbSet<DutyType> DutyTypes { get; set; }
+        public DbSet<Client> Clients { get; set; }
+        public DbSet<ClientEmail> ClientEmails { get; set; }
+        public DbSet<ClientType> ClientTypes { get; set; }
 
 
         private void SetCurrentTenant()
@@ -107,6 +108,28 @@ namespace PPCMD.Data
                 .HasForeignKey(dt => dt.CompanyId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+
+            // Client -> Company
+            builder.Entity<Client>()
+                .HasOne(c => c.Company)
+                .WithMany()
+                .HasForeignKey(c => c.CompanyId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // ClientType -> Company
+            builder.Entity<ClientType>()
+                .HasOne(ct => ct.Company)
+                .WithMany()
+                .HasForeignKey(ct => ct.CompanyId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // ClientEmail -> Company
+            //builder.Entity<ClientEmail>()
+            //    .HasOne(ce => ce.Company)
+            //    .WithMany()
+            //    .HasForeignKey(ce => ce.CompanyId)
+            //    .OnDelete(DeleteBehavior.Restrict);
+
             // 🔧 Global Tenant Filters
             builder.Entity<ApplicationUser>()
                 .HasQueryFilter(u => !EnableTenantFilter || !_currentCompanyId.HasValue || u.CompanyId == _currentCompanyId);
@@ -116,6 +139,12 @@ namespace PPCMD.Data
 
             builder.Entity<Client>()
                 .HasQueryFilter(c => !EnableTenantFilter || !_currentCompanyId.HasValue || c.CompanyId == _currentCompanyId);
+            
+            builder.Entity<ClientType>()
+                .HasQueryFilter(ct => !EnableTenantFilter || !_currentCompanyId.HasValue || ct.CompanyId == _currentCompanyId);
+
+            //builder.Entity<ClientEmail>()
+            //    .HasQueryFilter(ce => !EnableTenantFilter || !_currentCompanyId.HasValue || ce.CompanyId == _currentCompanyId);
 
             builder.Entity<Company>()
                 .HasQueryFilter(c => !EnableTenantFilter || !_currentCompanyId.HasValue || c.Id == _currentCompanyId);

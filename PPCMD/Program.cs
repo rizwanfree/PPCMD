@@ -60,6 +60,8 @@ using (var scope = app.Services.CreateScope())
     foreach (var company in companies)
     {
         await seeder.SeedDutyTypesForCompanyAsync(company.Id);
+        await seeder.SeedClientTypesForCompanyAsync(company.Id);
+        await seeder.SeedClientsForCompanyAsync(company.Id);
     }
 }
 

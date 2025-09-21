@@ -1,0 +1,104 @@
+﻿@model PPCMD.Models.Client
+
+@{
+    ViewData["Title"] = "Create Client";
+}
+
+<div class="max-w-4xl mx-auto bg-white shadow-lg rounded-xl p-6">
+    <h1 class="text-2xl font-bold mb-6 text-emerald-700">➕ Create New Client</h1>
+
+    <form asp-action="Create" method="post" class="space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Client Name -->
+            <div>
+                <label asp-for="ClientName" class="block text-sm font-medium text-gray-700">Client Name</label>
+                <input asp-for="ClientName" class="mt-1 w-full px-3 py-2 border rounded-lg focus:ring focus:ring-emerald-300 focus:border-emerald-500" />
+                <span asp-validation-for="ClientName" class="text-red-500 text-sm"></span>
+            </div>
+
+            <!-- Contact Person -->
+            <div>
+                <label asp-for="ContactPerson" class="block text-sm font-medium text-gray-700">Contact Person</label>
+                <input asp-for="ContactPerson" class="mt-1 w-full px-3 py-2 border rounded-lg focus:ring focus:ring-emerald-300 focus:border-emerald-500" />
+                <span asp-validation-for="ContactPerson" class="text-red-500 text-sm"></span>
+            </div>
+
+            <!-- Mobile -->
+            <div>
+                <label asp-for="Mobile" class="block text-sm font-medium text-gray-700">Mobile</label>
+                <input asp-for="Mobile" class="mt-1 w-full px-3 py-2 border rounded-lg focus:ring focus:ring-emerald-300 focus:border-emerald-500" />
+                <span asp-validation-for="Mobile" class="text-red-500 text-sm"></span>
+            </div>
+
+            <!-- Emails (dynamic) -->
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700">Emails</label>
+                <div id="emailContainer" class="space-y-2 mt-1">
+                    <div class="flex space-x-2">
+                        <input name="Emails" type="email" placeholder="Enter email"
+                               class="w-full px-3 py-2 border rounded-lg focus:ring focus:ring-emerald-300 focus:border-emerald-500" />
+                        <button type="button" onclick="addEmailField()"
+                                class="px-3 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition">
+                            ➕
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Address -->
+            <div class="md:col-span-2">
+                <label asp-for="Address" class="block text-sm font-medium text-gray-700">Address</label>
+                <textarea asp-for="Address" rows="3" class="mt-1 w-full px-3 py-2 border rounded-lg focus:ring focus:ring-emerald-300 focus:border-emerald-500"></textarea>
+                <span asp-validation-for="Address" class="text-red-500 text-sm"></span>
+            </div>
+
+            <!-- Client Type -->
+            <div>
+                <label asp-for="ClientTypeId" class="block text-sm font-medium text-gray-700">Client Type</label>
+                <select asp-for="ClientTypeId" asp-items="ViewBag.ClientTypes"
+                        class="mt-1 w-full px-3 py-2 border rounded-lg focus:ring focus:ring-emerald-300 focus:border-emerald-500">
+                    <option value="">-- Select Type --</option>
+                </select>
+                <span asp-validation-for="ClientTypeId" class="text-red-500 text-sm"></span>
+            </div>
+
+        </div>
+
+        <!-- Buttons -->
+        <div class="flex justify-end space-x-3 pt-4">
+            <a asp-action="Index"
+               class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">
+                ⬅ Cancel
+            </a>
+            <button type="submit"
+                    class="px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition">
+                💾 Save Client
+            </button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        function addEmailField() {
+            const container = document.getElementById("emailContainer");
+
+            const div = document.createElement("div");
+            div.classList.add("flex", "space-x-2");
+
+            div.innerHTML = `
+                <input name="Emails" type="email" placeholder="Enter email"
+                       class="w-full px-3 py-2 border rounded-lg focus:ring focus:ring-emerald-300 focus:border-emerald-500" />
+                <button type="button" onclick="this.parentElement.remove()"
+                        class="px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">
+                    ❌
+                </button>
+            `;
+
+            container.appendChild(div);
+        }
+    </script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

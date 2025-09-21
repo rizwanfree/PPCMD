@@ -214,6 +214,7 @@ namespace PPCMD.Areas.Identity.Pages.Account
 
                     var seeder = new CompanySeeder(_context);
                     await seeder.SeedDutyTypesForCompanyAsync(company.Id);
+                    await seeder.SeedClientTypesForCompanyAsync(company.Id);
                     return LocalRedirect(returnUrl);
                 }
 
