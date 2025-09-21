@@ -33,30 +33,25 @@
 
 @if (Model.Duties.Any())
 {
-    <table class="min-w-full border border-gray-200 text-sm mb-4">
+    <table id="dutiesTable" class="min-w-full border border-gray-200 text-sm mb-4">
         <thead class="bg-gray-100">
             <tr>
+                <th class="px-4 py-2">⇅</th>
                 <th class="px-4 py-2 text-left">Duty</th>
                 <th class="px-4 py-2 text-left">Rate</th>
                 <th class="px-4 py-2 text-left">Type</th>
                 <th class="px-4 py-2"></th>
             </tr>
         </thead>
-        <tbody>
-            @foreach (var duty in Model.Duties)
+        <tbody id="dutyList">
+            @foreach (var duty in Model.Duties.OrderBy(d => d.Order))
             {
-                <tr class="border-b">
+                <tr data-id="@duty.Id" class="border-b cursor-move">
+                    <td class="px-4 py-2">⇅</td>
                     <td class="px-4 py-2">@duty.DutyType.Name</td>
                     <td class="px-4 py-2">@duty.Rate</td>
-                    <td class="px-4 py-2">
-                        @(duty.IsPercentage ? "%" : "Fixed")
-                    </td>
-                    <td class="px-4 py-2 text-right">
-                        <form asp-action="DeleteDuty" method="post" onsubmit="return confirm('Are you sure?');">
-                            <input type="hidden" name="id" value="@duty.Id" />
-                            <button type="submit" class="text-red-600 hover:underline">🗑️ Remove</button>
-                        </form>
-                    </td>
+                    <td class="px-4 py-2">@(duty.IsPercentage ? "%" : "Fixed")</td>
+                    <td class="px-4 py-2 text-right"> ... </td>
                 </tr>
             }
         </tbody>
@@ -104,3 +99,30 @@ else
         </button>
     </div>
 </form>
+
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <script>
+        const el = document.getElementById('dutyList');
+        new Sortable(el, {
+            animation: 150,
+            handle: 'td:first-child',
+            onEnd: function () {
+                let order = [];
+                document.querySelectorAll('#dutyList tr').forEach((row, index) => {
+                    order.push({ id: row.dataset.id, order: index });
+                });
+
+                fetch('@Url.Action("ReorderDuties", "Item")', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    body: JSON.stringify(order)
+                });
+            }
+        });
+    </script>
+}

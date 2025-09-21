@@ -7,98 +7,125 @@ using PPCMD.Models;
 
 namespace PPCMD.Controllers
 {
-    [Authorize]
+    [Authorize] // ✅ Ensure only authenticated users can access this controller
     public class ItemController : BaseController
     {
-
+        // 🔧 Constructor: Injects DbContext and UserManager into BaseController
         public ItemController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
-    : base(context, userManager)
+            : base(context, userManager)
         {
         }
 
-
+        // ================================================
         // GET: Items
+        // Returns a list of all items with their duties.
+        // ================================================
         public async Task<IActionResult> Index()
         {
             var items = await _context.Items
-                .Include(i => i.Duties)
-                .ThenInclude(d => d.DutyType)
-                .AsNoTracking()
+                .Include(i => i.Duties)          // Load duties for each item
+                .ThenInclude(d => d.DutyType)    // Also load the duty type details
+                .AsNoTracking()                  // No tracking needed for read-only view
                 .ToListAsync();
 
-            return View(items);
+            return View(items); // Pass list to view
         }
 
+        // ================================================
         // GET: Items/Create
+        // Shows empty form for creating a new item.
+        // ================================================
         public async Task<IActionResult> Create()
         {
+            // Populate dropdown list with all duty types for selection
             ViewBag.DutyTypes = await _context.DutyTypes.AsNoTracking().ToListAsync();
-            return View(new Item());
+            return View(new Item()); // Return empty item model
         }
 
+        // ================================================
         // POST: Items/Create
+        // Saves new item into DB, attaches companyId.
+        // ================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Item item)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid) // ✅ Only proceed if model is valid
             {
-                // Attach companyId
+                // Attach current company ID from logged-in user
                 var user = await _userManager.GetUserAsync(User);
                 if (user?.CompanyId != null)
                 {
                     item.CompanyId = user.CompanyId.Value;
                 }
 
-                _context.Add(item);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Edit), new {id = item.ItemID});
+                _context.Add(item);             // Add to DbSet
+                await _context.SaveChangesAsync(); // Save changes
+                return RedirectToAction(nameof(Edit), new { id = item.ItemID }); // Redirect to Edit page
             }
+
+            // If invalid, re-populate duty types and return view with errors
             ViewBag.DutyTypes = await _context.DutyTypes.AsNoTracking().ToListAsync();
             return View(item);
         }
 
-        // GET: Items/Edit/5
+        // ================================================
+        // GET: Items/Edit/{id}
+        // Loads an existing item with its duties for editing.
+        // ================================================
         public async Task<IActionResult> Edit(int id)
         {
             var item = await _context.Items
-                .Include(i => i.Duties)
-                .ThenInclude(d => d.DutyType)
+                .Include(i => i.Duties)          // Include duties
+                    .ThenInclude(d => d.DutyType) // Include duty type details
                 .FirstOrDefaultAsync(i => i.ItemID == id);
 
+            if (item != null)
+            {
+                // ✅ Sort duties by order before displaying
+                item.Duties = item.Duties.OrderBy(d => d.Order).ToList();
+            }
+
             if (item == null)
-                return NotFound();
+                return NotFound(); // Return 404 if item not found
 
             ViewBag.DutyTypes = await _context.DutyTypes.AsNoTracking().ToListAsync();
             return View(item);
         }
 
-        // POST: Items/Edit/5
+        // ================================================
+        // POST: Items/Edit/{id}
+        // Updates item details (name, HSCode, etc.)
+        // ================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Item updatedItem)
         {
             if (id != updatedItem.ItemID)
-                return NotFound();
+                return NotFound(); // Ensure route id matches model id
 
             if (!ModelState.IsValid)
-                return View(updatedItem);
+                return View(updatedItem); // Return with validation errors
 
             var existingItem = await _context.Items.FirstOrDefaultAsync(i => i.ItemID == id);
 
             if (existingItem == null)
-                return NotFound();
+                return NotFound(); // Item not found
 
-            // ✅ Only update allowed fields
+            // ✅ Update only allowed fields
             existingItem.ItemName = updatedItem.ItemName;
             existingItem.HSCode = updatedItem.HSCode;
-            existingItem.UpdatedAt = DateTime.UtcNow;
+            existingItem.UpdatedAt = DateTime.UtcNow; // Track last update time
 
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(); // Commit changes
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Index)); // Redirect to item list
         }
 
+        // ================================================
+        // POST: Items/Delete/{id}
+        // Deletes an item (and cascades duties if configured).
+        // ================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
@@ -110,16 +137,17 @@ namespace PPCMD.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            _context.Items.Remove(item);
-            await _context.SaveChangesAsync();
+            _context.Items.Remove(item);        // Remove item
+            await _context.SaveChangesAsync();  // Save changes
 
             TempData["SuccessMessage"] = "Item deleted successfully.";
             return RedirectToAction(nameof(Index));
         }
 
-
-
+        // ================================================
         // POST: Items/AddDuty
+        // Adds a new duty to an item, appending at the end.
+        // ================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddDuty(int itemId, int dutyTypeId, decimal rate, bool isPercentage)
@@ -127,13 +155,21 @@ namespace PPCMD.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user?.CompanyId == null) return Forbid();
 
+            // Find current maximum order for this item's duties
+            var maxOrder = await _context.ItemDuties
+                .Where(d => d.ItemID == itemId && d.CompanyId == user.CompanyId)
+                .Select(d => (int?)d.Order)
+                .MaxAsync() ?? -1;
+
+            // Create new duty with next order value
             var duty = new ItemDuty
             {
                 ItemID = itemId,
                 DutyTypeId = dutyTypeId,
                 Rate = rate,
                 IsPercentage = isPercentage,
-                CompanyId = user.CompanyId.Value
+                CompanyId = user.CompanyId.Value,
+                Order = maxOrder + 1 // 👈 Always append at end
             };
 
             _context.ItemDuties.Add(duty);
@@ -142,7 +178,10 @@ namespace PPCMD.Controllers
             return RedirectToAction(nameof(Edit), new { id = itemId });
         }
 
-
+        // ================================================
+        // POST: Items/DeleteDuty/{id}
+        // Deletes a duty from an item and normalizes order.
+        // ================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteDuty(int id)
@@ -158,19 +197,33 @@ namespace PPCMD.Controllers
                 return NotFound();
             }
 
+            var itemId = duty.ItemID;
+
+            // 1️⃣ Remove selected duty
             _context.ItemDuties.Remove(duty);
             await _context.SaveChangesAsync();
 
-            // Redirect back to the edit page for the same item
-            return RedirectToAction(nameof(Edit), new { id = duty.ItemID });
+            // 2️⃣ Normalize remaining duty orders
+            var duties = await _context.ItemDuties
+                .Where(d => d.ItemID == itemId && d.CompanyId == user.CompanyId)
+                .OrderBy(d => d.Order)
+                .ToListAsync();
+
+            for (int i = 0; i < duties.Count; i++)
+            {
+                duties[i].Order = i; // Reset order sequentially
+            }
+
+            await _context.SaveChangesAsync();
+
+            // 3️⃣ Redirect back to item edit
+            return RedirectToAction(nameof(Edit), new { id = itemId });
         }
 
-
-        // ----------------------------
-        // DUTY TYPES MANAGEMENT
-        // ----------------------------
-
-        // GET: DutyTypes
+        // ================================================
+        // GET: Items/DutyTypes
+        // Displays all duty types for current company.
+        // ================================================
         public async Task<IActionResult> DutyTypes()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -184,8 +237,10 @@ namespace PPCMD.Controllers
             return View(dutyTypes);
         }
 
-
+        // ================================================
         // POST: DutyTypes/Create
+        // Creates a new duty type.
+        // ================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateDutyType(DutyType dutyType)
@@ -195,6 +250,7 @@ namespace PPCMD.Controllers
 
             if (!ModelState.IsValid)
             {
+                // Log errors for debugging
                 foreach (var kvp in ModelState)
                 {
                     foreach (var error in kvp.Value.Errors)
@@ -206,8 +262,7 @@ namespace PPCMD.Controllers
                 return RedirectToAction(nameof(DutyTypes));
             }
 
-            // ✅ should run now if binding works
-            dutyType.CompanyId = user.CompanyId.Value;
+            dutyType.CompanyId = user.CompanyId.Value; // Attach company ID
 
             try
             {
@@ -225,7 +280,10 @@ namespace PPCMD.Controllers
             return RedirectToAction(nameof(DutyTypes));
         }
 
-        // GET: DutyTypes/Edit/5
+        // ================================================
+        // GET: DutyTypes/Edit/{id}
+        // Loads a duty type for editing.
+        // ================================================
         public async Task<IActionResult> EditDutyType(int id)
         {
             var user = await _userManager.GetUserAsync(User);
@@ -239,7 +297,10 @@ namespace PPCMD.Controllers
             return View(dutyType);
         }
 
-        // POST: DutyTypes/Edit/5
+        // ================================================
+        // POST: DutyTypes/Edit/{id}
+        // Updates an existing duty type.
+        // ================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditDutyType(int id, DutyType dutyType)
@@ -256,6 +317,7 @@ namespace PPCMD.Controllers
 
                 if (existing == null) return NotFound();
 
+                // Update name and description only
                 existing.Name = dutyType.Name;
                 existing.Description = dutyType.Description;
                 await _context.SaveChangesAsync();
@@ -265,7 +327,10 @@ namespace PPCMD.Controllers
             return View(dutyType);
         }
 
-        // POST: DutyTypes/Delete/5
+        // ================================================
+        // POST: DutyTypes/Delete/{id}
+        // Deletes a duty type.
+        // ================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteDutyType(int id)
@@ -283,6 +348,44 @@ namespace PPCMD.Controllers
 
             return RedirectToAction(nameof(DutyTypes));
         }
+
+        // ================================================
+        // POST: Items/ReorderDuties
+        // Accepts JSON of reordered duties and updates DB.
+        // ================================================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ReorderDuties([FromBody] List<DutyOrderDto> orderList)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user?.CompanyId == null) return Forbid();
+
+            // Extract duty IDs from request
+            var dutyIds = orderList.Select(o => o.Id).ToList();
+
+            // Load duties that belong to this company and match IDs
+            var duties = await _context.ItemDuties
+                .Where(d => dutyIds.Contains(d.Id) && d.CompanyId == user.CompanyId)
+                .ToListAsync();
+
+            // Update order values
+            foreach (var o in orderList)
+            {
+                var duty = duties.FirstOrDefault(d => d.Id == o.Id);
+                if (duty != null) duty.Order = o.Order;
+            }
+
+            await _context.SaveChangesAsync();
+
+            // Return duties back sorted by order
+            return Json(duties.OrderBy(d => d.Order));
+        }
+
+        // Helper DTO for reordering
+        public class DutyOrderDto
+        {
+            public int Id { get; set; }     // Duty ID
+            public int Order { get; set; }  // New order value
+        }
     }
 }
-

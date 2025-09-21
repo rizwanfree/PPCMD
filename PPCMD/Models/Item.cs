@@ -43,6 +43,8 @@ namespace PPCMD.Models
 
         public bool IsPercentage { get; set; } = true; // 👈 Moved here
 
+        public int Order { get; set; }   // 👈 Ordering column
+
         public Item? Item { get; set; }
         public int CompanyId { get; set; }  // 🔑 Multi-tenant support
         public Company? Company { get; set; }
