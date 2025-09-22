@@ -117,6 +117,77 @@ namespace PPCMD.utils
             _context.Clients.AddRange(clients);
             await _context.SaveChangesAsync();
         }
+
+
+        public async Task SeedLolosAsync(int companyId)
+        {
+            if (await _context.Lolos.AnyAsync(l => l.CompanyId == companyId))
+                return;
+
+            var lolos = new List<Lolo>
+            {
+                new Lolo { Name = "UOSL SHIPPING & LOGISTICS PVT LTD", ShortName = "UOSL", Phone = "123", Email = "", NTN = "", CompanyId = companyId },
+                new Lolo { Name = "MEGATECH PVT LTD", ShortName = "MEGA", Phone = "323", Email = "", NTN = "", CompanyId = companyId },
+                new Lolo { Name = "RAP TRADING", ShortName = "RAP", Phone = "0", Email = "", NTN = "", CompanyId = companyId },
+                new Lolo { Name = "CARGO SUPPORT SERVICES PVT LTD", ShortName = "CARGO", Phone = "0", Email = "", NTN = "", CompanyId = companyId },
+                new Lolo { Name = "A&A CARGO TRANSPORT", ShortName = "A&A", Phone = "0320-2717117", Email = "---", NTN = "", CompanyId = companyId }
+            };
+
+            _context.Lolos.AddRange(lolos);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task SeedShippingLinesAsync(int companyId)
+        {
+            if (await _context.ShippingLines.AnyAsync(s => s.CompanyId == companyId))
+                return;
+
+            var shippingLines = new List<ShippingLine>
+            {
+                new ShippingLine { Name = "OCEAN NETWORK EXPRESS PAKISTAN PVT LTD", ShortName = "ONE", Phone = "021-111-111-663", Email = "pakistan.customercare@one-line.com", NTN = "", CompanyId = companyId },
+                new ShippingLine { Name = "MSC AGENCY PAKISTAN PVT LTD", ShortName = "MSC", Phone = "021-35632001", Email = "pk532-impcounterkhi@msc.com", NTN = "", CompanyId = companyId },
+                new ShippingLine { Name = "UNITED MARINE AGENCIES PVT LTD", ShortName = "UMA", Phone = "021-111-111-862", Email = "coms.pakistan@umapk.com", NTN = "", CompanyId = companyId },
+                new ShippingLine { Name = "MAERSK PAKISTAN PVT LTD", ShortName = "MAERSK", Phone = "021-111-623-775", Email = "pkrefund@maersk.com", NTN = "", CompanyId = companyId },
+                new ShippingLine { Name = "COSCO SHIPPING LINES PAKISTAN PVT LTD", ShortName = "COSCO", Phone = "021-35180630-34", Email = "cs.pakistan@coscon.com", NTN = "", CompanyId = companyId },
+                new ShippingLine { Name = "OOCL PAKISTAN PVT LTD", ShortName = "OOCL", Phone = "021-35147989-99", Email = "karibdoc@oocl.com", NTN = "", CompanyId = companyId },
+                new ShippingLine { Name = "GREENPAK SHIPPING PVT LTD", ShortName = "GREENPAK", Phone = "021-111-123-477", Email = "arsalan.ahmed@greenpakshipping.com", NTN = "", CompanyId = companyId },
+                new ShippingLine { Name = "EAST WIND SHIPPING COMPANY PVT LTD", ShortName = "EAST WIND", Phone = "021-35670251-4", Email = "imp.csl@ews.com.pk,docs.csl@ews.com.pk", NTN = "", CompanyId = companyId },
+                new ShippingLine { Name = "INTERNATIONAL LOGISTICS MASTER", ShortName = "ILM", Phone = "021-32423047", Email = "", NTN = "", CompanyId = companyId },
+                new ShippingLine { Name = "SOUTHERN AGENCIES PVT LTD", ShortName = "SOUTHERN", Phone = "021-32857790", Email = "docimp1@sal-psg.com", NTN = "", CompanyId = companyId },
+                new ShippingLine { Name = "RIAZEDA PVT LTD", ShortName = "RIAZEDA", Phone = "021-32401181-5", Email = "info@riazeda.com.pk", NTN = "", CompanyId = companyId },
+                new ShippingLine { Name = "CMA CGM PAKISTAN PVT LTD", ShortName = "CMA", Phone = "021-35147810-20", Email = "kar.impcs@cma-cgm.com", NTN = "", CompanyId = companyId },
+                new ShippingLine { Name = "ACTIVE FREIGHT SERVICES PVT LTD", ShortName = "ACTIVE FREIGHT", Phone = "021-34150621-24", Email = "import2@activefreightpak.com", NTN = "", CompanyId = companyId },
+                new ShippingLine { Name = "INTERNATIONAL LOGISTICS MASTER", ShortName = "INTERNATIONAL", Phone = "021-2424247-8", Email = "abbas@ilm-pak.com", NTN = "", CompanyId = companyId },
+                new ShippingLine { Name = "HAPAG LLOYD PAKISTAN PVT LTD", ShortName = "H L", Phone = "021-37133000", Email = "pakistan@service.hlag.com", NTN = "", CompanyId = companyId },
+                new ShippingLine { Name = "SHIP NAUTICA PVT LTD", ShortName = "SHIP NAUTICA", Phone = "021-32601355-58-59", Email = "doc@shipnautica.com", NTN = "", CompanyId = companyId },
+                new ShippingLine { Name = "DHL GLOBAL FORWARDING PAKISTAN PVT LTD", ShortName = "DHL", Phone = "021-111-345-111", Email = "", NTN = "", CompanyId = companyId },
+                // ...continue adding all shipping lines from your SQL similarly
+            };
+
+            _context.ShippingLines.AddRange(shippingLines);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task SeedTerminalsAsync(int companyId)
+        {
+            if (await _context.Terminals.AnyAsync(t => t.CompanyId == companyId))
+                return;
+
+            var terminals = new List<Terminal>
+            {
+                new Terminal { Name = "PAKISTAN INTERNATIONAL CONTAINER TERMINAL LTD", ShortName = "PICTL", Phone = "111 117 428", Email = "helpdesk@pict.com.pk", NTN = "", CompanyId = companyId },
+                new Terminal { Name = "KARACHI INTERNATIONAL CONTAINER TERMINAL LTD", ShortName = "KICTL", Phone = "021-111-542-850", Email = "support@kictl.com,helpdesk@kictl.com", NTN = "", CompanyId = companyId },
+                new Terminal { Name = "SOUTH ASIA PAKISTAN TERMINALS LTD", ShortName = "SAPTL", Phone = "32862771–76", Email = "info@sapt.com.pk", NTN = "", CompanyId = companyId },
+                new Terminal { Name = "QASIM INTERNATIONAL CONTAINER TERMINAL LTD", ShortName = "QICTL", Phone = "111786888", Email = "qictcustomer.service@dpworld.com", NTN = "", CompanyId = companyId },
+                new Terminal { Name = "AL HAMD INTERNATIONAL CONTAINER TERMINAL PVT LTD", ShortName = "AICTL", Phone = "111000176", Email = "alerts@aictpk.com", NTN = "", CompanyId = companyId },
+                new Terminal { Name = "BURMA OIL MILLS LTD", ShortName = "BOML", Phone = "111111175", Email = "info@bifs.com.pk", NTN = "", CompanyId = companyId },
+                new Terminal { Name = "BAY WEST PVT LTD", ShortName = "BAY WEST", Phone = "32330028, 32330031", Email = "", NTN = "", CompanyId = companyId },
+                // ...continue adding all terminals from your SQL similarly
+            };
+
+            _context.Terminals.AddRange(terminals);
+            await _context.SaveChangesAsync();
+        }
     }
 
 }

@@ -21,14 +21,23 @@ namespace PPCMD.Data
             SetCurrentTenant();
         }
         public DbSet<Company> Companies { get; set; }
-        public DbSet<Employee> Employees { get; set; }
-        public DbSet<City> Cities { get; set; }
+        public DbSet<Employee> Employees { get; set; }        
+
+        // Item and Duty entities
         public DbSet<Item> Items { get; set; }
         public DbSet<ItemDuty> ItemDuties { get; set; }
         public DbSet<DutyType> DutyTypes { get; set; }
+
+        // Client Management entities
         public DbSet<Client> Clients { get; set; }
         public DbSet<ClientEmail> ClientEmails { get; set; }
         public DbSet<ClientType> ClientTypes { get; set; }
+
+        // Maritime entities
+        public DbSet<Terminal> Terminals { get; set; }
+        public DbSet<ShippingLine> ShippingLines { get; set; }
+        public DbSet<Lolo> Lolos { get; set; }
+        public DbSet<City> Cities { get; set; }
 
 
         private void SetCurrentTenant()
@@ -123,12 +132,25 @@ namespace PPCMD.Data
                 .HasForeignKey(ct => ct.CompanyId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // ClientEmail -> Company
-            //builder.Entity<ClientEmail>()
-            //    .HasOne(ce => ce.Company)
-            //    .WithMany()
-            //    .HasForeignKey(ce => ce.CompanyId)
-            //    .OnDelete(DeleteBehavior.Restrict);
+            // Maritime -> Company & Tenant Filter
+            builder.Entity<Terminal>()
+                .HasOne(t => t.Company)
+                .WithMany()
+                .HasForeignKey(t => t.CompanyId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<ShippingLine>()
+                .HasOne(s => s.Company)
+                .WithMany()
+                .HasForeignKey(s => s.CompanyId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Lolo>()
+                .HasOne(l => l.Company)
+                .WithMany()
+                .HasForeignKey(l => l.CompanyId)
+                .OnDelete(DeleteBehavior.Restrict);
+
 
             // 🔧 Global Tenant Filters
             builder.Entity<ApplicationUser>()
@@ -156,6 +178,16 @@ namespace PPCMD.Data
                 .HasQueryFilter(d => !EnableTenantFilter || !_currentCompanyId.HasValue || d.CompanyId == _currentCompanyId);
             builder.Entity<DutyType>()
                 .HasQueryFilter(dt => !EnableTenantFilter || !_currentCompanyId.HasValue || dt.CompanyId == _currentCompanyId);
+
+
+            builder.Entity<Terminal>()
+                .HasQueryFilter(t => !EnableTenantFilter || !_currentCompanyId.HasValue || t.CompanyId == _currentCompanyId);
+
+            builder.Entity<ShippingLine>()
+                .HasQueryFilter(s => !EnableTenantFilter || !_currentCompanyId.HasValue || s.CompanyId == _currentCompanyId);
+
+            builder.Entity<Lolo>()
+                .HasQueryFilter(l => !EnableTenantFilter || !_currentCompanyId.HasValue || l.CompanyId == _currentCompanyId);
         }
 
         // Optional: expose a method to set current tenant at runtime

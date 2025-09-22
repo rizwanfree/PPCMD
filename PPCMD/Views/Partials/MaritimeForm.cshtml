@@ -1,0 +1,39 @@
+﻿@model PPCMD.Models.Maritime
+@{
+    Layout = null; // important for modal partials
+}
+<form asp-action="Create" method="post">
+    <input type="hidden" name="type" value="@ViewBag.Type" />
+    <div class="mb-2">
+        <label>Name</label>
+        <input asp-for="Name" class="border rounded w-full px-2 py-1" />
+    </div>
+    <div class="mb-2">
+        <label>Short Name</label>
+        <input asp-for="ShortName" class="border rounded w-full px-2 py-1" />
+    </div>
+    <div class="mb-2">
+        <label>Phone</label>
+        <input asp-for="Phone" class="border rounded w-full px-2 py-1" />
+    </div>
+    <div class="mb-2">
+        <label>Email</label>
+        <input asp-for="Email" class="border rounded w-full px-2 py-1" />
+    </div>
+    <div class="mb-2">
+        <label>NTN</label>
+        <input asp-for="NTN" class="border rounded w-full px-2 py-1" />
+    </div>
+    <div class="flex justify-end space-x-2 mt-4">
+        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Save</button>
+        <button type="button" id="closeModalBtn" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Cancel</button>
+    </div>
+</form>
+
+<script>
+    $('#closeModalBtn').click(function () {
+        $('#maritimeModal').addClass('hidden');
+        $('#modalContent').html('');
+    });
+</script>
+

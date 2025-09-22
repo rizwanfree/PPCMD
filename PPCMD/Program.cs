@@ -62,6 +62,9 @@ using (var scope = app.Services.CreateScope())
         await seeder.SeedDutyTypesForCompanyAsync(company.Id);
         await seeder.SeedClientTypesForCompanyAsync(company.Id);
         await seeder.SeedClientsForCompanyAsync(company.Id);
+        await seeder.SeedLolosAsync(company.Id);
+        await seeder.SeedShippingLinesAsync(company.Id);
+        await seeder.SeedTerminalsAsync(company.Id);
     }
 }
 

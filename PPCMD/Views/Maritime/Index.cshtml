@@ -1,0 +1,207 @@
+﻿@{
+    ViewData["Title"] = "Maritime";
+    var activeTab = ViewContext.HttpContext.Request.Query["tab"].ToString() ?? "Terminal";
+}
+
+<div class="p-6 bg-white rounded shadow">
+    <h1 class="text-2xl font-bold mb-4">Maritime</h1>
+
+    <!-- Tabs -->
+    <div class="mb-4 border-b border-gray-200">
+        <nav class="-mb-px flex space-x-4">
+            <a href="?tab=Terminal"
+               class="px-4 py-2 font-medium rounded-t-lg @(activeTab == "Terminal" ? "bg-white border-t border-l border-r border-gray-300 text-blue-600" : "text-gray-500 hover:text-gray-700")">
+                Terminals
+            </a>
+            <a href="?tab=Lolo"
+               class="px-4 py-2 font-medium rounded-t-lg @(activeTab == "Lolo" ? "bg-white border-t border-l border-r border-gray-300 text-blue-600" : "text-gray-500 hover:text-gray-700")">
+                Lolos
+            </a>
+            <a href="?tab=ShippingLine"
+               class="px-4 py-2 font-medium rounded-t-lg @(activeTab == "ShippingLine" ? "bg-white border-t border-l border-r border-gray-300 text-blue-600" : "text-gray-500 hover:text-gray-700")">
+                Shipping Lines
+            </a>
+        </nav>
+    </div>
+
+    <!-- Terminals -->
+    <div id="terminals" class="tab-content block">
+        <div class="mb-4">
+            <a href="#" class="btn bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded newBtn" data-type="Terminal">New Terminal</a>
+        </div>
+        <table id="terminalTable" class="min-w-full table-auto border border-gray-200 text-sm">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="px-4 py-2 border text-center">Name</th>
+                    <th class="px-4 py-2 border">Short Name</th>
+                    <th class="px-4 py-2 border">Phone</th>
+                    <th class="px-4 py-2 border">Email</th>
+                    <th class="px-4 py-2 border">NTN</th>
+                    <th class="px-4 py-2 border w-50">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in (IEnumerable<PPCMD.Models.Terminal>)ViewBag.Terminals)
+                {
+                    <tr>
+                        <td class="px-4 py-2 border">@item.Name</td>
+                        <td class="px-4 py-2 border">@item.ShortName</td>
+                        <td class="px-4 py-2 border">@item.Phone</td>
+                        <td class="px-4 py-2 border">@item.Email</td>
+                        <td class="px-4 py-2 border">@item.NTN</td>
+                        <td class="px-4 py-2 border flex space-x-2">
+                            <a href="#" class="btn flex-1 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-center editBtn"
+                               data-id="@item.Id" data-type="@item.GetType().Name">Edit</a>
+                            <a href="@Url.Action("Delete", new { id = item.Id, type = item.GetType().Name })"
+                               class="flex-1 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 text-center">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Lolos -->
+    <div id="lolos" class="tab-content hidden">
+        <div class="mb-4">
+            <a href="#" class="btn bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded newBtn" data-type="Lolo">New Lolo</a>
+        </div>
+        <table id="loloTable" class="min-w-full table-auto border border-gray-200 text-sm">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="px-4 py-2 border">Name</th>
+                    <th class="px-4 py-2 border">Short Name</th>
+                    <th class="px-4 py-2 border">Phone</th>
+                    <th class="px-4 py-2 border">Email</th>
+                    <th class="px-4 py-2 border">NTN</th>                    
+                    <th class="px-4 py-2 border w-50">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in (IEnumerable<PPCMD.Models.Lolo>)ViewBag.Lolos)
+                {
+                    <tr>
+                        <td class="px-4 py-2 border">@item.Name</td>
+                        <td class="px-4 py-2 border">@item.ShortName</td>
+                        <td class="px-4 py-2 border">@item.Phone</td>
+                        <td class="px-4 py-2 border">@item.Email</td>
+                        <td class="px-4 py-2 border">@item.NTN</td>
+                        <td class="px-4 py-2 border flex space-x-2">
+                            <a href="#" class="btn flex-1 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-center editBtn"
+                               data-id="@item.Id" data-type="@item.GetType().Name">Edit</a>
+                            <a href="@Url.Action("Delete", new { id = item.Id, type = item.GetType().Name })"
+                               class="flex-1 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 text-center">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Shipping Lines -->
+    <div id="shippinglines" class="tab-content hidden">
+        <div class="mb-4">
+            <a href="#" class="btn bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded newBtn" data-type="ShippingLine">New Shipping Line</a>
+        </div>
+        <table id="shippingLineTable" class="min-w-full table-auto border border-gray-200 text-sm">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="px-4 py-2 border">Name</th>
+                    <th class="px-4 py-2 border">Short Name</th>
+                    <th class="px-4 py-2 border">Phone</th>
+                    <th class="px-4 py-2 border">Email</th>
+                    <th class="px-4 py-2 border">NTN</th>
+                    <th class="px-4 py-2 border w-50">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in (IEnumerable<PPCMD.Models.ShippingLine>)ViewBag.ShippingLines)
+                {
+                    <tr>
+                        <td class="px-4 py-2 border">@item.Name</td>
+                        <td class="px-4 py-2 border">@item.ShortName</td>
+                        <td class="px-4 py-2 border">@item.Phone</td>
+                        <td class="px-4 py-2 border">@item.Email</td>
+                        <td class="px-4 py-2 border">@item.NTN</td>
+                        <td class="px-4 py-2 border flex space-x-2">
+                            <a href="#" class="btn flex-1 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-center editBtn"
+                               data-id="@item.Id" data-type="@item.GetType().Name">Edit</a>
+                            <a href="@Url.Action("Delete", new { id = item.Id, type = item.GetType().Name })"
+                               class="flex-1 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 text-center">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div id="maritimeModal" class="hidden fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+    <div class="bg-white rounded shadow-lg w-1/2 max-w-2xl">
+        <div class="flex justify-between items-center px-4 py-2 border-b">
+            <h2 id="modalTitle" class="text-xl font-bold">Title</h2>
+            <button id="closeModal" class="text-gray-500 hover:text-gray-700 px-2 py-1">&times;</button>
+        </div>
+        <div id="modalContent" class="p-4">
+            <!-- Form content will be loaded here -->
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Close modal
+            $('#closeModal').click(function () {
+                $('#maritimeModal').addClass('hidden');
+                $('#modalContent').html('');
+            });
+
+            // New record
+            $('.newBtn').click(function (e) {
+                e.preventDefault();
+                var type = $(this).data('type');
+                $('#modalTitle').text('New ' + type);
+                $.get('@Url.Action("Create", "Maritime")', { type: type }, function (html) {
+                    $('#modalContent').html(html);
+                    $('#maritimeModal').removeClass('hidden');
+                });
+            });
+
+            // Edit record
+            $('.editBtn').click(function (e) {
+                e.preventDefault();
+                var type = $(this).data('type');
+                var id = $(this).data('id');
+                $('#modalTitle').text('Edit ' + type);
+                $.get('@Url.Action("Edit", "Maritime")', { type: type, id: id }, function (html) {
+                    $('#modalContent').html(html);
+                    $('#maritimeModal').removeClass('hidden');
+                });
+            });
+        });
+    </script>
+    <script>
+        // Tabs switching
+        document.querySelectorAll('.tab-link').forEach(button => {
+            button.addEventListener('click', () => {
+                const tab = button.getAttribute('data-tab');
+
+                document.querySelectorAll('.tab-content').forEach(tc => tc.classList.add('hidden'));
+                document.querySelectorAll('.tab-link').forEach(t => t.classList.remove('text-blue-600', 'border-blue-600', 'active'));
+
+                document.getElementById(tab).classList.remove('hidden');
+                button.classList.add('text-blue-600', 'border-blue-600', 'active');
+            });
+        });
+
+        // Initialize DataTables
+        $(document).ready(function () {
+            $('#terminalTable').DataTable({ responsive: true, pageLength: 10 });
+            $('#loloTable').DataTable({ responsive: true, pageLength: 10 });
+            $('#shippingLineTable').DataTable({ responsive: true, pageLength: 10 });
+        });
+    </script>
+}
