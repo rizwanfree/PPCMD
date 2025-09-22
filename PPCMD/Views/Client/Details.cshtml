@@ -1,0 +1,187 @@
+﻿@model PPCMD.Models.Client
+
+@{
+    ViewData["Title"] = "Client Details";
+}
+
+<div class="max-w-7xl mx-auto p-6">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6">
+        <a asp-action="Index" class="text-emerald-600 hover:text-emerald-800 font-medium">
+            ← Back to Clients
+        </a>
+
+        <div class="flex space-x-2">
+            <!-- Edit Button -->
+            <a asp-action="Edit" asp-route-id="@Model.Id"
+               class="px-4 py-2 bg-emerald-600 text-white rounded-lg shadow hover:bg-emerald-700 transition">
+                ✏️ Edit Client
+            </a>
+
+            <!-- Deactivate Button -->
+            <button id="deactivateBtn"
+                    class="px-4 py-2 bg-red-600 text-white rounded-lg shadow hover:bg-red-700 transition">
+                🛑 Deactivate
+            </button>
+        </div>
+    </div>
+
+    <!-- Metrics Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <div class="bg-white shadow rounded-xl p-4 text-center">
+            <h3 class="text-sm font-medium text-gray-600">Total Consignments</h3>
+            <p class="text-2xl font-bold text-emerald-600">42</p>
+        </div>
+        <div class="bg-white shadow rounded-xl p-4 text-center">
+            <h3 class="text-sm font-medium text-gray-600">Pending Bills</h3>
+            <p class="text-2xl font-bold text-red-500">7</p>
+        </div>
+        <div class="bg-white shadow rounded-xl p-4 text-center">
+            <h3 class="text-sm font-medium text-gray-600">Receivables</h3>
+            <p class="text-2xl font-bold text-indigo-600">PKR 152,000</p>
+        </div>
+        <div class="bg-white shadow rounded-xl p-4 text-center">
+            <h3 class="text-sm font-medium text-gray-600">Credit Limit</h3>
+            <p class="text-2xl font-bold text-yellow-600">PKR 300,000</p>
+        </div>
+    </div>
+
+    <!-- Layout: Left column + Right column -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <!-- Left Column (Client Info) -->
+        <div class="md:col-span-1">
+            <div class="bg-white shadow rounded-xl p-6">
+                <h2 class="text-lg font-semibold text-emerald-700 mb-4">Client Information</h2>
+                <dl class="space-y-3 text-sm text-gray-700">
+                    <div>
+                        <dt class="font-medium">Client Name</dt>
+                        <dd>@Model.ClientName</dd>
+                    </div>
+                    <div>
+                        <dt class="font-medium">Contact Person</dt>
+                        <dd>@Model.ContactPerson</dd>
+                    </div>
+                    <div>
+                        <dt class="font-medium">Phone</dt>
+                        <dd>@Model.Phone</dd>
+                    </div>
+                    <div>
+                        <dt class="font-medium">Mobile</dt>
+                        <dd>@Model.Mobile</dd>
+                    </div>
+                    <div>
+                        <dt class="font-medium">Emails</dt>
+                        <dd>
+                            @foreach (var email in Model.Emails)
+                            {
+                                <p>@email.Email</p>
+                            }
+                        </dd>
+                    </div>
+                    <div>
+                        <dt class="font-medium">Address</dt>
+                        <dd>@Model.Address</dd>
+                    </div>
+                    <div>
+                        <dt class="font-medium">Client Type</dt>
+                        <dd>@Model.ClientType?.Name</dd>
+                    </div>
+                </dl>
+            </div>
+        </div>
+
+        <!-- Right Column (Tabs) -->
+        <div class="md:col-span-3">
+            <div class="bg-white shadow rounded-xl p-6">
+                <div class="border-b border-gray-200 mb-4">
+                    <nav class="flex space-x-6" aria-label="Tabs">
+                        <button class="tab-link text-emerald-600 border-b-2 border-emerald-600 py-2 px-1 text-sm font-medium"
+                                onclick="openTab(event, 'Jobs')">
+                            Jobs
+                        </button>
+                        <button class="tab-link text-gray-600 hover:text-emerald-600 py-2 px-1 text-sm font-medium"
+                                onclick="openTab(event, 'Self')">
+                            Self
+                        </button>
+                        <button class="tab-link text-gray-600 hover:text-emerald-600 py-2 px-1 text-sm font-medium"
+                                onclick="openTab(event, 'Bills')">
+                            Bills
+                        </button>
+                        <button class="tab-link text-gray-600 hover:text-emerald-600 py-2 px-1 text-sm font-medium"
+                                onclick="openTab(event, 'Payments')">
+                            Payments
+                        </button>
+                    </nav>
+                </div>
+
+                <!-- Tab Contents -->
+                <div id="Jobs" class="tab-content">
+                    <div class="bg-gray-50 p-4 rounded-lg shadow-inner text-gray-600">
+                        Jobs data will appear here.
+                    </div>
+                </div>
+                <div id="Self" class="tab-content hidden">
+                    <div class="bg-gray-50 p-4 rounded-lg shadow-inner text-gray-600">
+                        Self data will appear here.
+                    </div>
+                </div>
+                <div id="Bills" class="tab-content hidden">
+                    <div class="bg-gray-50 p-4 rounded-lg shadow-inner text-gray-600">
+                        Bills data will appear here.
+                    </div>
+                </div>
+                <div id="Payments" class="tab-content hidden">
+                    <div class="bg-gray-50 p-4 rounded-lg shadow-inner text-gray-600">
+                        Payments data will appear here.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div id="deactivateModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-lg max-w-sm w-full p-6 relative">
+        <h2 class="text-lg font-bold mb-4 text-red-600">Confirm Deactivation</h2>
+        <p class="mb-6 text-gray-700">
+            Are you sure you want to deactivate this client? This action can be reverted later.
+        </p>
+        <div class="flex justify-end space-x-3">
+            <button id="cancelBtn"
+                    class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">
+                Cancel
+            </button>
+            <form asp-action="Delete" asp-route-id="@Model.Id" method="post">
+                <button type="submit"
+                        class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition">
+                    Deactivate
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const deactivateBtn = document.getElementById('deactivateBtn');
+        const deactivateModal = document.getElementById('deactivateModal');
+        const cancelBtn = document.getElementById('cancelBtn');
+
+        deactivateBtn.addEventListener('click', () => {
+            deactivateModal.classList.remove('hidden');
+        });
+
+        cancelBtn.addEventListener('click', () => {
+            deactivateModal.classList.add('hidden');
+        });
+
+        // Close modal if clicking outside
+        deactivateModal.addEventListener('click', (e) => {
+            if (e.target === deactivateModal) {
+                deactivateModal.classList.add('hidden');
+            }
+        });
+    </script>
+}

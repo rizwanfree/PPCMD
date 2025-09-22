@@ -21,7 +21,7 @@
 </div>
 
 <!-- Card Grid -->
-<div id="clientsGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+<div id="clientsGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
     @foreach (var client in Model)
     {
         <div class="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition p-4 h-52 flex flex-col justify-between client-card"
@@ -45,6 +45,7 @@
     }
 </div>
 
+
 <!-- Pagination -->
 <div class="flex justify-center mt-6 space-x-2">
     <button onclick="changePage(-1)"
@@ -59,42 +60,60 @@
 </div>
 
 <script>
-    const cardsPerPage = 10; // Show 10 clients per page
+    const cardsPerPage = 12; // Show 10 clients per page
     let currentPage = 1;
+
+    function getVisibleCards() {
+        return Array.from(document.querySelectorAll(".client-card"))
+            .filter(card => card.style.display !== "none" || card.dataset.visible === "true");
+    }
 
     function filterCards() {
         const searchTerm = document.getElementById("searchInput").value.toLowerCase();
         const cards = document.querySelectorAll(".client-card");
+
         cards.forEach(card => {
             const name = card.dataset.name.toLowerCase();
-            card.style.display = name.includes(searchTerm) ? "" : "none";
+            if (name.includes(searchTerm)) {
+                card.dataset.visible = "true"; // mark visible for pagination
+            } else {
+                card.dataset.visible = "false"; // hide later in paginate
+            }
         });
+
         currentPage = 1;
         paginateCards();
     }
 
     function paginateCards() {
-        const cards = Array.from(document.querySelectorAll(".client-card"))
-            .filter(card => card.style.display !== "none");
+        const cards = Array.from(document.querySelectorAll(".client-card"));
+        const visibleCards = cards.filter(card => card.dataset.visible === "true");
 
-        const totalPages = Math.ceil(cards.length / cardsPerPage);
-        document.getElementById("pageIndicator").innerText = `Page ${currentPage} of ${totalPages || 1}`;
+        const totalPages = Math.ceil(visibleCards.length / cardsPerPage) || 1;
+        document.getElementById("pageIndicator").innerText = `Page ${currentPage} of ${totalPages}`;
 
-        cards.forEach((card, index) => {
+        visibleCards.forEach((card, index) => {
             const start = (currentPage - 1) * cardsPerPage;
             const end = start + cardsPerPage;
             card.style.display = (index >= start && index < end) ? "" : "none";
         });
+
+        // Always hide invisible cards
+        cards.filter(card => card.dataset.visible === "false")
+             .forEach(card => card.style.display = "none");
     }
 
     function changePage(step) {
-        const cards = Array.from(document.querySelectorAll(".client-card"))
-            .filter(card => card.style.display !== "none");
-        const totalPages = Math.ceil(cards.length / cardsPerPage);
+        const visibleCards = getVisibleCards();
+        const totalPages = Math.ceil(visibleCards.length / cardsPerPage) || 1;
         currentPage = Math.max(1, Math.min(currentPage + step, totalPages));
         paginateCards();
     }
 
     document.getElementById("searchInput").addEventListener("input", filterCards);
-    document.addEventListener("DOMContentLoaded", paginateCards);
+    document.addEventListener("DOMContentLoaded", () => {
+        // initialize visible state
+        document.querySelectorAll(".client-card").forEach(card => card.dataset.visible = "true");
+        paginateCards();
+    });
 </script>
