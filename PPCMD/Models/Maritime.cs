@@ -8,7 +8,7 @@
         public string ShortName { get; set; } = string.Empty;
         public string Phone { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
-        public string NTN { get; set; } = string.Empty;
+        public string? NTN { get; set; }
 
         // Multi-Tenant Support
         public int CompanyId { get; set; }           // Tenant ID

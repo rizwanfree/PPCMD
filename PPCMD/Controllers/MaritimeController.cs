@@ -27,142 +27,238 @@ namespace PPCMD.Controllers
             return View();
         }
 
-        // GET: Create form
-        public IActionResult Create(string type)
+
+
+        // GET: /Maritime/CreateTerminal
+        public IActionResult CreateTerminal()
         {
-            if (string.IsNullOrEmpty(type))
-                return BadRequest("Type is required.");
-
-            ViewBag.Type = type;
-
-            Maritime model = type.ToLower() switch
-            {
-                "terminal" => new Terminal(),
-                "lolo" => new Lolo(),
-                "shippingline" => new ShippingLine(),
-                _ => throw new ArgumentException("Invalid type")
-            };
-
-            return View("Create", model);
-            
+            return View();
         }
 
-        // POST: Create new record
+        // POST: /Maritime/CreateTerminal
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(string type, Maritime model)
+        public async Task<IActionResult> CreateTerminal(Terminal terminal)
         {
-            if (!ModelState.IsValid)
+            var user = await _userManager.GetUserAsync(User);
+
+
+            if (ModelState.IsValid)
             {
-                ViewBag.Type = type;
-                return View("Create", model);
+                terminal.CompanyId = user.CompanyId!.Value;
+                terminal.CreatedAt = DateTime.UtcNow;
+                await _context.Terminals.AddAsync(terminal);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
-
-            model.CreatedAt = DateTime.UtcNow;
-
-            switch (type.ToLower())
-            {
-                case "terminal":
-                    _context.Terminals.Add((Terminal)model);
-                    break;
-                case "lolo":
-                    _context.Lolos.Add((Lolo)model);
-                    break;
-                case "shippingline":
-                    _context.ShippingLines.Add((ShippingLine)model);
-                    break;
-                default:
-                    return BadRequest("Invalid type.");
-            }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index), new { type });
+            return View(terminal);
         }
 
-        // GET: Edit form
-        public async Task<IActionResult> Edit(string type, int id)
+        // GET: /Maritime/EditTerminal/5
+        public async Task<IActionResult> EditTerminal(int id)
         {
-            if (string.IsNullOrEmpty(type))
-                return BadRequest("Type is required.");
-
-            ViewBag.Type = type;
-
-            Maritime? entity = type.ToLower() switch
-            {
-                "terminal" => await _context.Terminals.FindAsync(id),
-                "lolo" => await _context.Lolos.FindAsync(id),
-                "shippingline" => await _context.ShippingLines.FindAsync(id),
-                _ => null
-            };
-
-            if (entity == null) return NotFound();
-
-            return View("Edit", entity);
+            var terminal = await _context.Terminals.FindAsync(id);
+            if (terminal == null) return NotFound();
+            return View(terminal);
         }
 
-        // POST: Edit
+        // POST: /Maritime/EditTerminal/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string type, int id, Maritime model)
+        public async Task<IActionResult> EditTerminal(int id, Terminal terminal)
         {
-            if (id != model.Id)
-                return BadRequest();
+            if (id != terminal.Id) return NotFound();
 
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid) return View(terminal);
+
+            try
             {
-                ViewBag.Type = type;
-                return View("Edit", model);
+                var user = await _userManager.GetUserAsync(User);
+
+                terminal.CompanyId = user.CompanyId.Value;
+                terminal.UpdatedAt = DateTime.UtcNow;
+
+                _context.Update(terminal);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction(nameof(Index));
             }
-
-            model.UpdatedAt = DateTime.UtcNow;
-
-            switch (type.ToLower())
+            catch (Exception ex)
             {
-                case "terminal":
-                    _context.Terminals.Update((Terminal)model);
-                    break;
-                case "lolo":
-                    _context.Lolos.Update((Lolo)model);
-                    break;
-                case "shippingline":
-                    _context.ShippingLines.Update((ShippingLine)model);
-                    break;
-                default:
-                    return BadRequest("Invalid type.");
+                Console.WriteLine(ex.Message);
+                return View(terminal);
             }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index), new { type });
         }
 
-        // Delete
-        public async Task<IActionResult> Delete(string type, int id)
+        // POST: /Maritime/DeleteTerminal/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteTerminal(int id)
         {
-            if (string.IsNullOrEmpty(type))
-                return BadRequest("Type is required.");
-
-            Maritime? entity = type.ToLower() switch
-            {
-                "terminal" => await _context.Terminals.FindAsync(id),
-                "lolo" => await _context.Lolos.FindAsync(id),
-                "shippingline" => await _context.ShippingLines.FindAsync(id),
-                _ => null
-            };
-
+            var entity = await _context.Terminals.FindAsync(id);
             if (entity == null) return NotFound();
 
-            switch (type.ToLower())
-            {
-                case "terminal": _context.Terminals.Remove((Terminal)entity); break;
-                case "lolo": _context.Lolos.Remove((Lolo)entity); break;
-                case "shippingline": _context.ShippingLines.Remove((ShippingLine)entity); break;
-            }
-
+            _context.Terminals.Remove(entity);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index), new { type });
+            return RedirectToAction(nameof(Index), new { tab = "Terminal" });
         }
 
 
+
+
+        // GET: /Maritime/CreateLolo
+        public IActionResult CreateLolo()
+        {
+            return View();
+        }
+
+        // POST: /Maritime/CreateLolo
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateLolo(Lolo lolo)
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+
+            if (ModelState.IsValid)
+            {
+                lolo.CompanyId = user.CompanyId!.Value;
+                lolo.CreatedAt = DateTime.UtcNow;
+                await _context.Lolos.AddAsync(lolo);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(lolo);
+        }
+
+        // GET: /Maritime/EditLolo/5
+        public async Task<IActionResult> EditLolo(int id)
+        {
+            var lolo = await _context.Lolos.FindAsync(id);
+            if (lolo == null) return NotFound();
+            return View(lolo);
+        }
+
+        // POST: /Maritime/EditLolo/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditLolo(int id, Lolo lolo)
+        {
+            if (id != lolo.Id) return NotFound();
+
+            if (!ModelState.IsValid) return View(lolo);
+
+            try
+            {
+                var user = await _userManager.GetUserAsync(User);
+
+                lolo.CompanyId = user.CompanyId.Value;
+                lolo.UpdatedAt = DateTime.UtcNow;
+
+                _context.Update(lolo);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return View(lolo);
+            }
+        }
+
+
+        // POST: /Maritime/DeleteLolo/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteLolo(int id)
+        {
+            var entity = await _context.Lolos.FindAsync(id);
+            if (entity == null) return NotFound();
+
+            _context.Lolos.Remove(entity);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index), new { tab = "Lolo" });
+        }
+
+
+
+
+
+        // GET: /Maritime/CreateShippingLine
+        public IActionResult CreateShippingLine()
+        {
+            return View();
+        }
+
+        // POST: /Maritime/CreateShippingLine
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateShippingLine(ShippingLine line)
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+
+            if (ModelState.IsValid)
+            {
+                line.CompanyId = user.CompanyId!.Value;
+                line.CreatedAt = DateTime.UtcNow;
+                await _context.ShippingLines.AddAsync(line);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(line);
+        }
+
+        // GET: /Maritime/EditShippingLine/5
+        public async Task<IActionResult> EditShippingLine(int id)
+        {
+            var line = await _context.ShippingLines.FindAsync(id);
+            if (line == null) return NotFound();
+            return View(line);
+        }
+
+        // POST: /Maritime/EditShippingLine/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditShippingLine(int id, ShippingLine line)
+        {
+            if (id != line.Id) return NotFound();
+
+            if (!ModelState.IsValid) return View(line);
+
+            try
+            {
+                var user = await _userManager.GetUserAsync(User);
+
+                line.CompanyId = user.CompanyId.Value;
+                line.UpdatedAt = DateTime.UtcNow;
+
+                _context.Update(line);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return View(line);
+            }
+        }
+
+
+        // POST: /Maritime/DeleteShippingLine/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteShippingLine(int id)
+        {
+            var entity = await _context.ShippingLines.FindAsync(id);
+            if (entity == null) return NotFound();
+
+            _context.ShippingLines.Remove(entity);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index), new { tab = "ShippingLine" });
+        }
 
     }
 }

@@ -1,6 +1,10 @@
 ﻿@{
     ViewData["Title"] = "Maritime";
-    var activeTab = ViewContext.HttpContext.Request.Query["tab"].ToString() ?? "Terminal";
+    var activeTab = string.IsNullOrEmpty(ViewContext.HttpContext.Request.Query["tab"])
+    ? "Terminal"
+    : ViewContext.HttpContext.Request.Query["tab"].ToString();
+
+
 }
 
 <div class="p-6 bg-white rounded shadow">
@@ -10,50 +14,56 @@
     <div class="mb-4 border-b border-gray-200">
         <nav class="-mb-px flex space-x-4">
             <a href="?tab=Terminal"
-               class="px-4 py-2 font-medium rounded-t-lg @(activeTab == "Terminal" ? "bg-white border-t border-l border-r border-gray-300 text-blue-600" : "text-gray-500 hover:text-gray-700")">
+               class="tab-link px-4 py-2 font-medium rounded-t-lg @(activeTab == "Terminal" ? "bg-white border-t border-l border-r border-gray-300 text-blue-600" : "text-gray-500 hover:text-gray-700")"
+               data-tab="terminals">
                 Terminals
             </a>
             <a href="?tab=Lolo"
-               class="px-4 py-2 font-medium rounded-t-lg @(activeTab == "Lolo" ? "bg-white border-t border-l border-r border-gray-300 text-blue-600" : "text-gray-500 hover:text-gray-700")">
+               class="tab-link px-4 py-2 font-medium rounded-t-lg @(activeTab == "Lolo" ? "bg-white border-t border-l border-r border-gray-300 text-blue-600" : "text-gray-500 hover:text-gray-700")"
+               data-tab="lolos">
                 Lolos
             </a>
             <a href="?tab=ShippingLine"
-               class="px-4 py-2 font-medium rounded-t-lg @(activeTab == "ShippingLine" ? "bg-white border-t border-l border-r border-gray-300 text-blue-600" : "text-gray-500 hover:text-gray-700")">
+               class="tab-link px-4 py-2 font-medium rounded-t-lg @(activeTab == "ShippingLine" ? "bg-white border-t border-l border-r border-gray-300 text-blue-600" : "text-gray-500 hover:text-gray-700")"
+               data-tab="shippinglines">
                 Shipping Lines
             </a>
         </nav>
     </div>
 
     <!-- Terminals -->
-    <div id="terminals" class="tab-content block">
+    <div id="terminals" class="tab-content @(activeTab == "Terminal" ? "block" : "hidden")">
         <div class="mb-4">
-            <a href="#" class="btn bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded newBtn" data-type="Terminal">New Terminal</a>
+            <a asp-action="CreateTerminal" asp-controller="Maritime" class="btn btn-primary">New Terminal</a>
         </div>
-        <table id="terminalTable" class="min-w-full table-auto border border-gray-200 text-sm">
-            <thead class="bg-gray-100">
+        <table id="terminalTable" class="display w-full">
+            <thead>
                 <tr>
-                    <th class="px-4 py-2 border text-center">Name</th>
-                    <th class="px-4 py-2 border">Short Name</th>
-                    <th class="px-4 py-2 border">Phone</th>
-                    <th class="px-4 py-2 border">Email</th>
-                    <th class="px-4 py-2 border">NTN</th>
-                    <th class="px-4 py-2 border w-50">Actions</th>
+                    <th>Name</th>
+                    <th>Short Name</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>NTN</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var item in (IEnumerable<PPCMD.Models.Terminal>)ViewBag.Terminals)
                 {
                     <tr>
-                        <td class="px-4 py-2 border">@item.Name</td>
-                        <td class="px-4 py-2 border">@item.ShortName</td>
-                        <td class="px-4 py-2 border">@item.Phone</td>
-                        <td class="px-4 py-2 border">@item.Email</td>
-                        <td class="px-4 py-2 border">@item.NTN</td>
-                        <td class="px-4 py-2 border flex space-x-2">
-                            <a href="#" class="btn flex-1 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-center editBtn"
-                               data-id="@item.Id" data-type="@item.GetType().Name">Edit</a>
-                            <a href="@Url.Action("Delete", new { id = item.Id, type = item.GetType().Name })"
-                               class="flex-1 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 text-center">Delete</a>
+                        <td>@item.Name</td>
+                        <td>@item.ShortName</td>
+                        <td>@item.Phone</td>
+                        <td>@item.Email</td>
+                        <td>@item.NTN</td>
+                        <td class="flex space-x-2">
+                            <a asp-action="EditTerminal" asp-controller="Maritime" asp-route-id="@item.Id" class="editBtn bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition-colors">Edit</a>
+                            <button type="button"
+                                    class="deleteBtn bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition-colors"
+                                    data-id="@item.Id"
+                                    data-type="Terminal">
+                                Delete
+                            </button>
                         </td>
                     </tr>
                 }
@@ -62,35 +72,38 @@
     </div>
 
     <!-- Lolos -->
-    <div id="lolos" class="tab-content hidden">
+    <div id="lolos" class="tab-content @(activeTab == "Lolo" ? "block" : "hidden")">
         <div class="mb-4">
-            <a href="#" class="btn bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded newBtn" data-type="Lolo">New Lolo</a>
+            <a asp-action="CreateLolo" asp-controller="Maritime" class="btn btn-primary">New Lolo</a>
         </div>
-        <table id="loloTable" class="min-w-full table-auto border border-gray-200 text-sm">
-            <thead class="bg-gray-100">
+        <table id="loloTable" class="display w-full">
+            <thead>
                 <tr>
-                    <th class="px-4 py-2 border">Name</th>
-                    <th class="px-4 py-2 border">Short Name</th>
-                    <th class="px-4 py-2 border">Phone</th>
-                    <th class="px-4 py-2 border">Email</th>
-                    <th class="px-4 py-2 border">NTN</th>                    
-                    <th class="px-4 py-2 border w-50">Actions</th>
+                    <th>Name</th>
+                    <th>Short Name</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>NTN</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var item in (IEnumerable<PPCMD.Models.Lolo>)ViewBag.Lolos)
                 {
                     <tr>
-                        <td class="px-4 py-2 border">@item.Name</td>
-                        <td class="px-4 py-2 border">@item.ShortName</td>
-                        <td class="px-4 py-2 border">@item.Phone</td>
-                        <td class="px-4 py-2 border">@item.Email</td>
-                        <td class="px-4 py-2 border">@item.NTN</td>
-                        <td class="px-4 py-2 border flex space-x-2">
-                            <a href="#" class="btn flex-1 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-center editBtn"
-                               data-id="@item.Id" data-type="@item.GetType().Name">Edit</a>
-                            <a href="@Url.Action("Delete", new { id = item.Id, type = item.GetType().Name })"
-                               class="flex-1 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 text-center">Delete</a>
+                        <td>@item.Name</td>
+                        <td>@item.ShortName</td>
+                        <td>@item.Phone</td>
+                        <td>@item.Email</td>
+                        <td>@item.NTN</td>
+                        <td class="flex space-x-2">
+                            <a asp-action="EditLolo" asp-controller="Maritime" asp-route-id="@item.Id" class="editBtn bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition-colors">Edit</a>
+                            <button type="button"
+                                    class="deleteBtn bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition-colors"
+                                    data-id="@item.Id"
+                                    data-type="Lolo">
+                                Delete
+                            </button>
                         </td>
                     </tr>
                 }
@@ -99,35 +112,38 @@
     </div>
 
     <!-- Shipping Lines -->
-    <div id="shippinglines" class="tab-content hidden">
+    <div id="shippinglines" class="tab-content @(activeTab == "ShippingLine" ? "block" : "hidden")">
         <div class="mb-4">
-            <a href="#" class="btn bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded newBtn" data-type="ShippingLine">New Shipping Line</a>
+            <a asp-action="CreateShippingLine" asp-controller="Maritime" class="btn btn-primary">New Shipping Line</a>
         </div>
-        <table id="shippingLineTable" class="min-w-full table-auto border border-gray-200 text-sm">
-            <thead class="bg-gray-100">
+        <table id="shippingLineTable" class="display w-full">
+            <thead>
                 <tr>
-                    <th class="px-4 py-2 border">Name</th>
-                    <th class="px-4 py-2 border">Short Name</th>
-                    <th class="px-4 py-2 border">Phone</th>
-                    <th class="px-4 py-2 border">Email</th>
-                    <th class="px-4 py-2 border">NTN</th>
-                    <th class="px-4 py-2 border w-50">Actions</th>
+                    <th>Name</th>
+                    <th>Short Name</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>NTN</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var item in (IEnumerable<PPCMD.Models.ShippingLine>)ViewBag.ShippingLines)
                 {
                     <tr>
-                        <td class="px-4 py-2 border">@item.Name</td>
-                        <td class="px-4 py-2 border">@item.ShortName</td>
-                        <td class="px-4 py-2 border">@item.Phone</td>
-                        <td class="px-4 py-2 border">@item.Email</td>
-                        <td class="px-4 py-2 border">@item.NTN</td>
-                        <td class="px-4 py-2 border flex space-x-2">
-                            <a href="#" class="btn flex-1 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-center editBtn"
-                               data-id="@item.Id" data-type="@item.GetType().Name">Edit</a>
-                            <a href="@Url.Action("Delete", new { id = item.Id, type = item.GetType().Name })"
-                               class="flex-1 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 text-center">Delete</a>
+                        <td>@item.Name</td>
+                        <td>@item.ShortName</td>
+                        <td>@item.Phone</td>
+                        <td>@item.Email</td>
+                        <td>@item.NTN</td>
+                        <td class="flex space-x-2">
+                            <a asp-action="EditShippingLine" asp-controller="Maritime" asp-route-id="@item.Id" class="editBtn bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition-colors">Edit</a>
+                            <button type="button"
+                                    class="deleteBtn bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition-colors"
+                                    data-id="@item.Id"
+                                    data-type="ShippingLine">
+                                Delete
+                            </button>
                         </td>
                     </tr>
                 }
@@ -137,71 +153,87 @@
 </div>
 
 
-<!-- Modal -->
-<div id="maritimeModal" class="hidden fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-    <div class="bg-white rounded shadow-lg w-1/2 max-w-2xl">
-        <div class="flex justify-between items-center px-4 py-2 border-b">
-            <h2 id="modalTitle" class="text-xl font-bold">Title</h2>
-            <button id="closeModal" class="text-gray-500 hover:text-gray-700 px-2 py-1">&times;</button>
+
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
+        <div class="flex items-center justify-between px-6 py-3 border-b">
+            <h3 class="text-lg font-semibold text-gray-800">Confirm delete</h3>
+            <button id="deleteClose" class="text-gray-500 text-2xl leading-none">&times;</button>
         </div>
-        <div id="modalContent" class="p-4">
-            <!-- Form content will be loaded here -->
+
+        <div class="p-6">
+            <p class="text-gray-700">Are you sure you want to delete this record? This action cannot be undone.</p>
+        </div>
+
+        <div class="px-6 py-4 border-t flex justify-end gap-3">
+            <button id="deleteCancel" class="px-4 py-2 bg-gray-200 rounded text-gray-700 hover:bg-gray-300">Cancel</button>
+
+            <!-- The form action is set dynamically by JS -->
+            <form id="deleteForm" method="post" class="inline">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Delete</button>
+            </form>
         </div>
     </div>
 </div>
 
+
 @section Scripts {
     <script>
         $(document).ready(function () {
-            // Close modal
-            $('#closeModal').click(function () {
-                $('#maritimeModal').addClass('hidden');
-                $('#modalContent').html('');
-            });
+            // Initialize DataTables (if you already have it)
+            if ($.fn.DataTable) {
+                $('#terminalTable').DataTable({ responsive: true, pageLength: 10 });
+                $('#loloTable').DataTable({ responsive: true, pageLength: 10 });
+                $('#shippingLineTable').DataTable({ responsive: true, pageLength: 10 });
+            }
 
-            // New record
-            $('.newBtn').click(function (e) {
+            // route base urls for delete actions (server-generated)
+            const deleteBase = {
+                Terminal: '@Url.Action("DeleteTerminal", "Maritime")',
+                Lolo: '@Url.Action("DeleteLolo", "Maritime")',
+                ShippingLine: '@Url.Action("DeleteShippingLine", "Maritime")'
+            };
+
+            // Open modal (delegated) — works for rows rendered by DataTables
+            $(document).on('click', '.deleteBtn', function (e) {
                 e.preventDefault();
-                var type = $(this).data('type');
-                $('#modalTitle').text('New ' + type);
-                $.get('@Url.Action("Create", "Maritime")', { type: type }, function (html) {
-                    $('#modalContent').html(html);
-                    $('#maritimeModal').removeClass('hidden');
-                });
+                const id = $(this).data('id');
+                const type = $(this).data('type'); // must be "Terminal" | "Lolo" | "ShippingLine"
+
+                if (!id || !type || !deleteBase[type]) {
+                    console.error('Invalid delete button attributes', { id, type, deleteBase });
+                    return;
+                }
+
+                // set the delete form action to e.g. /Maritime/DeleteTerminal/5
+                $('#deleteForm').attr('action', deleteBase[type] + '/' + id);
+
+                // show modal
+                $('#deleteModal').removeClass('hidden').addClass('flex');
             });
 
-            // Edit record
-            $('.editBtn').click(function (e) {
-                e.preventDefault();
-                var type = $(this).data('type');
-                var id = $(this).data('id');
-                $('#modalTitle').text('Edit ' + type);
-                $.get('@Url.Action("Edit", "Maritime")', { type: type, id: id }, function (html) {
-                    $('#modalContent').html(html);
-                    $('#maritimeModal').removeClass('hidden');
-                });
+            // Close/hide modal handlers
+            function hideDeleteModal() {
+                $('#deleteModal').addClass('hidden').removeClass('flex');
+                $('#deleteForm').attr('action', ''); // clear action
+            }
+
+            $('#deleteCancel, #deleteClose').on('click', function () {
+                hideDeleteModal();
             });
-        });
-    </script>
-    <script>
-        // Tabs switching
-        document.querySelectorAll('.tab-link').forEach(button => {
-            button.addEventListener('click', () => {
-                const tab = button.getAttribute('data-tab');
 
-                document.querySelectorAll('.tab-content').forEach(tc => tc.classList.add('hidden'));
-                document.querySelectorAll('.tab-link').forEach(t => t.classList.remove('text-blue-600', 'border-blue-600', 'active'));
-
-                document.getElementById(tab).classList.remove('hidden');
-                button.classList.add('text-blue-600', 'border-blue-600', 'active');
+            // clicking outside modal content closes it
+            $('#deleteModal').on('click', function (e) {
+                if (e.target === this) hideDeleteModal();
             });
-        });
 
-        // Initialize DataTables
-        $(document).ready(function () {
-            $('#terminalTable').DataTable({ responsive: true, pageLength: 10 });
-            $('#loloTable').DataTable({ responsive: true, pageLength: 10 });
-            $('#shippingLineTable').DataTable({ responsive: true, pageLength: 10 });
+            // Optional: if you navigate by tabs via links and want Terminals active by default,
+            // your server logic already sets `activeTab` — but if you need client-side fallback:
+            const activeTab = '@(ViewContext.HttpContext.Request.Query["tab"].ToString() ?? "Terminal")';
+            // You can ensure each tab-content uses activeTab to show/hide on server-side rendering.
         });
     </script>
 }
