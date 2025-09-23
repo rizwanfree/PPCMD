@@ -10,6 +10,10 @@ namespace PPCMD.Models
         [Required, MaxLength(150)]
         public string Name { get; set; } = string.Empty;
 
+        // Multi-Tenant Support
+        public int CompanyId { get; set; }           // Tenant ID
+        public Company? Company { get; set; }        // Navigation property
+
         // Navigation property
         public ICollection<Client> Clients { get; set; } = new List<Client>();
     }

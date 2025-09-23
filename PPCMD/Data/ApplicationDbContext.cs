@@ -38,6 +38,7 @@ namespace PPCMD.Data
         public DbSet<ShippingLine> ShippingLines { get; set; }
         public DbSet<Lolo> Lolos { get; set; }
         public DbSet<City> Cities { get; set; }
+        public DbSet<Port> Ports { get; set; }
 
 
         private void SetCurrentTenant()
@@ -151,6 +152,20 @@ namespace PPCMD.Data
                 .HasForeignKey(l => l.CompanyId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            // City -> Company
+            builder.Entity<City>()
+                .HasOne(c => c.Company)
+                .WithMany()
+                .HasForeignKey(c => c.CompanyId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Port -> Company
+            builder.Entity<Port>()
+                .HasOne(p => p.Company)
+                .WithMany()
+                .HasForeignKey(p => p.CompanyId)
+                .OnDelete(DeleteBehavior.Restrict);
+
 
             // 🔧 Global Tenant Filters
             builder.Entity<ApplicationUser>()
@@ -188,6 +203,12 @@ namespace PPCMD.Data
 
             builder.Entity<Lolo>()
                 .HasQueryFilter(l => !EnableTenantFilter || !_currentCompanyId.HasValue || l.CompanyId == _currentCompanyId);
+
+            builder.Entity<City>()
+                .HasQueryFilter(c => !EnableTenantFilter || !_currentCompanyId.HasValue || c.CompanyId == _currentCompanyId);
+
+            builder.Entity<Port>()
+                .HasQueryFilter(p => !EnableTenantFilter || !_currentCompanyId.HasValue || p.CompanyId == _currentCompanyId);
         }
 
         // Optional: expose a method to set current tenant at runtime

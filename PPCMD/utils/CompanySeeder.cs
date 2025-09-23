@@ -188,6 +188,154 @@ namespace PPCMD.utils
             _context.Terminals.AddRange(terminals);
             await _context.SaveChangesAsync();
         }
+
+
+        public async Task SeedCitiesAsync(int companyId)
+        {
+            if (await _context.Cities.AnyAsync(t => t.CompanyId == companyId))
+                return;
+
+            var cities = new List<City>
+            {
+                // Punjab (10 most popular)
+                new City { Name = "Lahore", CompanyId = companyId },
+                new City { Name = "Faisalabad", CompanyId = companyId },
+                new City { Name = "Rawalpindi", CompanyId = companyId },
+                new City { Name = "Multan", CompanyId = companyId },
+                new City { Name = "Gujranwala", CompanyId = companyId },
+                new City { Name = "Sargodha", CompanyId = companyId },
+                new City { Name = "Sialkot", CompanyId = companyId },
+                new City { Name = "Bahawalpur", CompanyId = companyId },
+                new City { Name = "Sahiwal", CompanyId = companyId },
+                new City { Name = "Jhang", CompanyId = companyId },
+        
+                // Sindh (10 most popular)
+                new City { Name = "Karachi", CompanyId = companyId },
+                new City { Name = "Hyderabad", CompanyId = companyId },
+                new City { Name = "Sukkur", CompanyId = companyId },
+                new City { Name = "Larkana", CompanyId = companyId },
+                new City { Name = "Nawabshah", CompanyId = companyId },
+                new City { Name = "Mirpur Khas", CompanyId = companyId },
+                new City { Name = "Thatta", CompanyId = companyId },
+                new City { Name = "Jacobabad", CompanyId = companyId },
+                new City { Name = "Shikarpur", CompanyId = companyId },
+                new City { Name = "Khairpur", CompanyId = companyId },
+        
+                // Khyber Pakhtunkhwa (10 most popular)
+                new City { Name = "Peshawar", CompanyId = companyId },
+                new City { Name = "Mardan", CompanyId = companyId },
+                new City { Name = "Abbottabad", CompanyId = companyId },
+                new City { Name = "Kohat", CompanyId = companyId },
+                new City { Name = "Bannu", CompanyId = companyId },
+                new City { Name = "Swabi", CompanyId = companyId },
+                new City { Name = "Dera Ismail Khan", CompanyId = companyId },
+                new City { Name = "Charsadda", CompanyId = companyId },
+                new City { Name = "Nowshera", CompanyId = companyId },
+                new City { Name = "Mansehra", CompanyId = companyId },
+        
+                // Balochistan (10 most popular)
+                new City { Name = "Quetta", CompanyId = companyId },
+                new City { Name = "Turbat", CompanyId = companyId },
+                new City { Name = "Khuzdar", CompanyId = companyId },
+                new City { Name = "Chaman", CompanyId = companyId },
+                new City { Name = "Gwadar", CompanyId = companyId },
+                new City { Name = "Zhob", CompanyId = companyId },
+                new City { Name = "Dera Allah Yar", CompanyId = companyId },
+                new City { Name = "Usta Muhammad", CompanyId = companyId },
+                new City { Name = "Sibi", CompanyId = companyId },
+                new City { Name = "Loralai", CompanyId = companyId },
+        
+                // Islamabad Capital Territory
+                new City { Name = "Islamabad", CompanyId = companyId },
+        
+                // Azad Jammu & Kashmir (5 most popular)
+                new City { Name = "Muzaffarabad", CompanyId = companyId },
+                new City { Name = "Mirpur", CompanyId = companyId },
+                new City { Name = "Rawalakot", CompanyId = companyId },
+                new City { Name = "Kotli", CompanyId = companyId },
+                new City { Name = "Bhimber", CompanyId = companyId },
+        
+                // Gilgit-Baltistan (5 most popular)
+                new City { Name = "Gilgit", CompanyId = companyId },
+                new City { Name = "Skardu", CompanyId = companyId },
+                new City { Name = "Chilas", CompanyId = companyId },
+                new City { Name = "Ghizer", CompanyId = companyId },
+                new City { Name = "Hunza", CompanyId = companyId }
+            };
+
+            _context.Cities.AddRange(cities);
+            await _context.SaveChangesAsync();
+        }
+
+
+        public async Task SeedPortsAsync(int companyId)
+        {
+            if (await _context.Ports.AnyAsync(p => p.CompanyId == companyId))
+                return;
+
+            var ports = new List<Port>
+            {
+                new Port {
+                    Name = "Karachi Port Trust",
+                    ShortName = "KPT",
+                    Phone = "021-99212600-10",
+                    Email = "info@kpt.gov.pk",
+                    CompanyId = companyId
+                },
+                new Port {
+                    Name = "Port Qasim Authority",
+                    ShortName = "PQA",
+                    Phone = "021-34730011-15",
+                    Email = "info@portqasim.gov.pk",
+                    CompanyId = companyId
+                },
+                new Port {
+                    Name = "Gwadar Port Authority",
+                    ShortName = "GPA",
+                    Phone = "086-4210265",
+                    Email = "info@gwadarport.gov.pk",
+                    CompanyId = companyId
+                },
+                new Port {
+                    Name = "Pakistan National Shipping Corporation",
+                    ShortName = "PNSC",
+                    Phone = "021-99206400-09",
+                    Email = "info@pnsc.com.pk",
+                    CompanyId = companyId
+                },
+                new Port {
+                    Name = "Keti Bandar Port",
+                    ShortName = "KBP",
+                    Phone = "022-2630010",
+                    Email = "admin@ketibandarport.gov.pk",
+                    CompanyId = companyId
+                },
+                new Port {
+                    Name = "Ormara Port",
+                    ShortName = "OP",
+                    Phone = "085-3310267",
+                    Email = "ormaraport@navy.gov.pk",
+                    CompanyId = companyId
+                },
+                new Port {
+                    Name = "Pasni Port",
+                    ShortName = "PP",
+                    Phone = "086-4310265",
+                    Email = "pasni.port@balochistan.gov.pk",
+                    CompanyId = companyId
+                },
+                new Port {
+                    Name = "Jiwani Port",
+                    ShortName = "JP",
+                    Phone = "086-4410234",
+                    Email = "jiwani.port@gov.pk",
+                    CompanyId = companyId
+                }
+            };
+
+            _context.Ports.AddRange(ports);
+            await _context.SaveChangesAsync();
+        }
     }
 
 }

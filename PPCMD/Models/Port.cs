@@ -1,14 +1,17 @@
-﻿namespace PPCMD.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace PPCMD.Models
 {
-    // Base class for all maritime-related business contacts
-    public abstract class Maritime
+    public class Port
     {
-        public int Id { get; set; }                  // PK
+        [Key]
+        public int Id { get; set; }
+
+        [Required, MaxLength(150)]
         public string Name { get; set; } = string.Empty;
         public string? ShortName { get; set; }
         public string? Phone { get; set; }
         public string? Email { get; set; }
-        public string? NTN { get; set; }
 
         // Multi-Tenant Support
         public int CompanyId { get; set; }           // Tenant ID
@@ -17,21 +20,5 @@
         // Audit & Soft Delete
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; set; }
-        
-    }
-
-    // Terminal model
-    public class Terminal : Maritime
-    {        
-    }
-
-    // Shipping Line model
-    public class ShippingLine : Maritime
-    {        
-    }
-
-    // Lolo model
-    public class Lolo : Maritime
-    {
     }
 }

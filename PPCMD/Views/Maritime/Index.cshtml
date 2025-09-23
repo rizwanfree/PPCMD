@@ -28,6 +28,18 @@
                data-tab="shippinglines">
                 Shipping Lines
             </a>
+
+            <a href="?tab=Port"
+               class="tab-link px-4 py-2 font-medium rounded-t-lg @(activeTab == "Port" ? "bg-white border-t border-l border-r border-gray-300 text-blue-600" : "text-gray-500 hover:text-gray-700")"
+               data-tab="ports">
+                Ports
+            </a>
+
+            <a href="?tab=City"
+               class="tab-link px-4 py-2 font-medium rounded-t-lg @(activeTab == "City" ? "bg-white border-t border-l border-r border-gray-300 text-blue-600" : "text-gray-500 hover:text-gray-700")"
+               data-tab="cities">
+                Cities
+            </a>
         </nav>
     </div>
 
@@ -150,6 +162,81 @@
             </tbody>
         </table>
     </div>
+
+
+    <!-- Ports -->
+    <div id="ports" class="tab-content @(activeTab == "Port" ? "block" : "hidden")">
+        <div class="mb-4">
+            <a asp-action="CreatePort" asp-controller="Maritime" class="btn btn-primary">New Port</a>
+        </div>
+        <table id="portTable" class="display w-full">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Short Name</th>
+                    <th>Phone</th>
+                    <th>Email</th>                    
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in (IEnumerable<PPCMD.Models.Port>)ViewBag.Ports)
+                {
+                    <tr>
+                        <td>@item.Name</td>
+                        <td>@item.ShortName</td>
+                        <td>@item.Phone</td>
+                        <td>@item.Email</td>                        
+                        <td class="flex space-x-2">
+                            <a asp-action="EditPort" asp-controller="Maritime" asp-route-id="@item.Id" class="editBtn bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition-colors">Edit</a>
+                            <button type="button"
+                                    class="deleteBtn bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition-colors"
+                                    data-id="@item.Id"
+                                    data-type="Port">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+
+    <!-- Cities -->
+    <div id="cities" class="tab-content @(activeTab == "City" ? "block" : "hidden")">
+        <div class="mb-4">
+            <a asp-action="CreateCity" asp-controller="Maritime" class="btn btn-primary">New City</a>
+        </div>
+        <table id="cityTable" class="display w-full">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in (IEnumerable<PPCMD.Models.City>)ViewBag.Cities)
+                {
+                    <tr>
+                        <td>@item.Name</td>
+                        <td class="flex space-x-2">
+                            <a asp-action="EditCity" asp-controller="Maritime" asp-route-id="@item.Id" class="editBtn bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition-colors">Edit</a>
+                            <button type="button"
+                                    class="deleteBtn bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition-colors"
+                                    data-id="@item.Id"
+                                    data-type="City">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+
+
 </div>
 
 
@@ -188,13 +275,17 @@
                 $('#terminalTable').DataTable({ responsive: true, pageLength: 10 });
                 $('#loloTable').DataTable({ responsive: true, pageLength: 10 });
                 $('#shippingLineTable').DataTable({ responsive: true, pageLength: 10 });
+                $('#portTable').DataTable({ responsive: true, pageLength: 10 });
+                $('#cityTable').DataTable({ responsive: true, pageLength: 10 });
             }
 
             // route base urls for delete actions (server-generated)
             const deleteBase = {
                 Terminal: '@Url.Action("DeleteTerminal", "Maritime")',
                 Lolo: '@Url.Action("DeleteLolo", "Maritime")',
-                ShippingLine: '@Url.Action("DeleteShippingLine", "Maritime")'
+                ShippingLine: '@Url.Action("DeleteShippingLine", "Maritime")',
+                Port: '@Url.Action("DeletePort", "Maritime")',
+                City: '@Url.Action("DeleteCity", "Maritime")'
             };
 
             // Open modal (delegated) — works for rows rendered by DataTables
@@ -232,7 +323,7 @@
 
             // Optional: if you navigate by tabs via links and want Terminals active by default,
             // your server logic already sets `activeTab` — but if you need client-side fallback:
-            const activeTab = '@(ViewContext.HttpContext.Request.Query["tab"].ToString() ?? "Terminal")';
+            // const activeTab = '@(ViewContext.HttpContext.Request.Query["tab"].ToString() ?? "Terminal")';
             // You can ensure each tab-content uses activeTab to show/hide on server-side rendering.
         });
     </script>
