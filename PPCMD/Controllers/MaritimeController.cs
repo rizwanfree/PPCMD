@@ -19,10 +19,10 @@ namespace PPCMD.Controllers
         {
             // Fetch each type separately
             ViewBag.Terminals = _context.Terminals.ToList();
-
             ViewBag.Lolos = _context.Lolos.ToList();
-
             ViewBag.ShippingLines = _context.ShippingLines.ToList();
+            ViewBag.Cities = _context.Cities.ToList();
+            ViewBag.Ports = _context.Ports.ToList();
 
             return View();
         }
@@ -260,5 +260,153 @@ namespace PPCMD.Controllers
             return RedirectToAction(nameof(Index), new { tab = "ShippingLine" });
         }
 
+
+        // ===== CITY CRUD =====
+
+        // GET: /Maritime/CreateCity
+        public IActionResult CreateCity()
+        {
+            return View();
+        }
+
+        // POST: /Maritime/CreateCity
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateCity(City city)
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+            if (ModelState.IsValid)
+            {
+                city.CompanyId = user.CompanyId!.Value;
+                await _context.Cities.AddAsync(city);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(city);
+        }
+
+        // GET: /Maritime/EditCity/5
+        public async Task<IActionResult> EditCity(int id)
+        {
+            var city = await _context.Cities.FindAsync(id);
+            if (city == null) return NotFound();
+            return View(city);
+        }
+
+        // POST: /Maritime/EditCity/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditCity(int id, City city)
+        {
+            if (id != city.Id) return NotFound();
+
+            if (!ModelState.IsValid) return View(city);
+
+            try
+            {
+                var user = await _userManager.GetUserAsync(User);
+                city.CompanyId = user.CompanyId.Value;
+
+                _context.Update(city);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return View(city);
+            }
+        }
+
+        // POST: /Maritime/DeleteCity/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteCity(int id)
+        {
+            var entity = await _context.Cities.FindAsync(id);
+            if (entity == null) return NotFound();
+
+            _context.Cities.Remove(entity);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index), new { tab = "City" });
+        }
+
+
+
+        // ===== PORT CRUD =====
+
+        // GET: /Maritime/CreatePort
+        public IActionResult CreatePort()
+        {
+            return View();
+        }
+
+        // POST: /Maritime/CreatePort
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreatePort(Port port)
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+            if (ModelState.IsValid)
+            {
+                port.CompanyId = user.CompanyId!.Value;
+                port.CreatedAt = DateTime.UtcNow;
+                await _context.Ports.AddAsync(port);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(port);
+        }
+
+        // GET: /Maritime/EditPort/5
+        public async Task<IActionResult> EditPort(int id)
+        {
+            var port = await _context.Ports.FindAsync(id);
+            if (port == null) return NotFound();
+            return View(port);
+        }
+
+        // POST: /Maritime/EditPort/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditPort(int id, Port port)
+        {
+            if (id != port.Id) return NotFound();
+
+            if (!ModelState.IsValid) return View(port);
+
+            try
+            {
+                var user = await _userManager.GetUserAsync(User);
+                port.CompanyId = user.CompanyId.Value;
+                port.UpdatedAt = DateTime.UtcNow;
+
+                _context.Update(port);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return View(port);
+            }
+        }
+
+        // POST: /Maritime/DeletePort/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeletePort(int id)
+        {
+            var entity = await _context.Ports.FindAsync(id);
+            if (entity == null) return NotFound();
+
+            _context.Ports.Remove(entity);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index), new { tab = "Port" });
+        }
     }
 }
