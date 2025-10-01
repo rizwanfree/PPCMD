@@ -4,135 +4,147 @@
     ViewData["Title"] = "Client Details";
 }
 
-<div class="max-w-7xl mx-auto p-6">
+<div class="container my-4">
     <!-- Header -->
-    <div class="flex justify-between items-center mb-6">
-        <a asp-action="Index" class="text-emerald-600 hover:text-emerald-800 font-medium">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <a asp-action="Index" class="text-success fw-medium text-decoration-none">
             ← Back to Clients
         </a>
 
-        <div class="flex space-x-2">
+        <div class="d-flex gap-2">
             <!-- Edit Button -->
             <a asp-action="Edit" asp-route-id="@Model.Id"
-               class="px-4 py-2 bg-emerald-600 text-white rounded-lg shadow hover:bg-emerald-700 transition">
+               class="btn btn-success shadow-sm">
                 ✏️ Edit Client
             </a>
 
             <!-- Deactivate Button -->
-            <button id="deactivateBtn"
-                    class="px-4 py-2 bg-red-600 text-white rounded-lg shadow hover:bg-red-700 transition">
+            <button id="deactivateBtn" class="btn btn-danger shadow-sm">
                 🛑 Deactivate
             </button>
         </div>
     </div>
 
     <!-- Metrics Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        <div class="bg-white shadow rounded-xl p-4 text-center">
-            <h3 class="text-sm font-medium text-gray-600">Total Consignments</h3>
-            <p class="text-2xl font-bold text-emerald-600">42</p>
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm">
+                <div class="card-body">
+                    <h6 class="text-muted small">Total Consignments</h6>
+                    <p class="h4 text-success fw-bold">42</p>
+                </div>
+            </div>
         </div>
-        <div class="bg-white shadow rounded-xl p-4 text-center">
-            <h3 class="text-sm font-medium text-gray-600">Pending Bills</h3>
-            <p class="text-2xl font-bold text-red-500">7</p>
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm">
+                <div class="card-body">
+                    <h6 class="text-muted small">Pending Bills</h6>
+                    <p class="h4 text-danger fw-bold">7</p>
+                </div>
+            </div>
         </div>
-        <div class="bg-white shadow rounded-xl p-4 text-center">
-            <h3 class="text-sm font-medium text-gray-600">Receivables</h3>
-            <p class="text-2xl font-bold text-indigo-600">PKR 152,000</p>
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm">
+                <div class="card-body">
+                    <h6 class="text-muted small">Receivables</h6>
+                    <p class="h5 text-primary fw-bold">PKR 152,000</p>
+                </div>
+            </div>
         </div>
-        <div class="bg-white shadow rounded-xl p-4 text-center">
-            <h3 class="text-sm font-medium text-gray-600">Credit Limit</h3>
-            <p class="text-2xl font-bold text-yellow-600">PKR 300,000</p>
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm">
+                <div class="card-body">
+                    <h6 class="text-muted small">Credit Limit</h6>
+                    <p class="h5 text-warning fw-bold">PKR 300,000</p>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Layout: Left column + Right column -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+    <div class="row g-4">
         <!-- Left Column (Client Info) -->
-        <div class="md:col-span-1">
-            <div class="bg-white shadow rounded-xl p-6">
-                <h2 class="text-lg font-semibold text-emerald-700 mb-4">Client Information</h2>
-                <dl class="space-y-3 text-sm text-gray-700">
-                    <div>
-                        <dt class="font-medium">Client Name</dt>
-                        <dd>@Model.ClientName</dd>
-                    </div>
-                    <div>
-                        <dt class="font-medium">Contact Person</dt>
-                        <dd>@Model.ContactPerson</dd>
-                    </div>
-                    <div>
-                        <dt class="font-medium">Phone</dt>
-                        <dd>@Model.Phone</dd>
-                    </div>
-                    <div>
-                        <dt class="font-medium">Mobile</dt>
-                        <dd>@Model.Mobile</dd>
-                    </div>
-                    <div>
-                        <dt class="font-medium">Emails</dt>
-                        <dd>
+        <div class="col-md-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="text-success mb-3">Client Information</h5>
+                    <dl class="row small">
+                        <dt class="col-5 fw-medium">Client Name</dt>
+                        <dd class="col-7">@Model.ClientName</dd>
+
+                        <dt class="col-5 fw-medium">Contact Person</dt>
+                        <dd class="col-7">@Model.ContactPerson</dd>
+
+                        <dt class="col-5 fw-medium">Phone</dt>
+                        <dd class="col-7">@Model.Phone</dd>
+
+                        <dt class="col-5 fw-medium">Mobile</dt>
+                        <dd class="col-7">@Model.Mobile</dd>
+
+                        <dt class="col-5 fw-medium">Emails</dt>
+                        <dd class="col-7">
                             @foreach (var email in Model.Emails)
                             {
-                                <p>@email.Email</p>
+                                <div>@email.Email</div>
                             }
                         </dd>
-                    </div>
-                    <div>
-                        <dt class="font-medium">Address</dt>
-                        <dd>@Model.Address</dd>
-                    </div>
-                    <div>
-                        <dt class="font-medium">Client Type</dt>
-                        <dd>@Model.ClientType?.Name</dd>
-                    </div>
-                </dl>
+
+                        <dt class="col-5 fw-medium">Address</dt>
+                        <dd class="col-7">@Model.Address</dd>
+
+                        <dt class="col-5 fw-medium">Client Type</dt>
+                        <dd class="col-7">@Model.ClientType?.Name</dd>
+                    </dl>
+                </div>
             </div>
         </div>
 
         <!-- Right Column (Tabs) -->
-        <div class="md:col-span-3">
-            <div class="bg-white shadow rounded-xl p-6">
-                <div class="border-b border-gray-200 mb-4">
-                    <nav class="flex space-x-6" aria-label="Tabs">
-                        <button class="tab-link text-emerald-600 border-b-2 border-emerald-600 py-2 px-1 text-sm font-medium"
-                                onclick="openTab(event, 'Jobs')">
-                            Jobs
-                        </button>
-                        <button class="tab-link text-gray-600 hover:text-emerald-600 py-2 px-1 text-sm font-medium"
-                                onclick="openTab(event, 'Self')">
-                            Self
-                        </button>
-                        <button class="tab-link text-gray-600 hover:text-emerald-600 py-2 px-1 text-sm font-medium"
-                                onclick="openTab(event, 'Bills')">
-                            Bills
-                        </button>
-                        <button class="tab-link text-gray-600 hover:text-emerald-600 py-2 px-1 text-sm font-medium"
-                                onclick="openTab(event, 'Payments')">
-                            Payments
-                        </button>
-                    </nav>
-                </div>
+        <div class="col-md-9">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <!-- Bootstrap Nav Tabs -->
+                    <ul class="nav nav-tabs mb-3" id="clientTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="jobs-tab" data-bs-toggle="tab" data-bs-target="#jobs"
+                                    type="button" role="tab">
+                                Jobs
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="self-tab" data-bs-toggle="tab" data-bs-target="#self"
+                                    type="button" role="tab">
+                                Self
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="bills-tab" data-bs-toggle="tab" data-bs-target="#bills"
+                                    type="button" role="tab">
+                                Bills
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="payments-tab" data-bs-toggle="tab" data-bs-target="#payments"
+                                    type="button" role="tab">
+                                Payments
+                            </button>
+                        </li>
+                    </ul>
 
-                <!-- Tab Contents -->
-                <div id="Jobs" class="tab-content">
-                    <div class="bg-gray-50 p-4 rounded-lg shadow-inner text-gray-600">
-                        Jobs data will appear here.
-                    </div>
-                </div>
-                <div id="Self" class="tab-content hidden">
-                    <div class="bg-gray-50 p-4 rounded-lg shadow-inner text-gray-600">
-                        Self data will appear here.
-                    </div>
-                </div>
-                <div id="Bills" class="tab-content hidden">
-                    <div class="bg-gray-50 p-4 rounded-lg shadow-inner text-gray-600">
-                        Bills data will appear here.
-                    </div>
-                </div>
-                <div id="Payments" class="tab-content hidden">
-                    <div class="bg-gray-50 p-4 rounded-lg shadow-inner text-gray-600">
-                        Payments data will appear here.
+                    <!-- Tab Contents -->
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active bg-light p-3 rounded" id="jobs" role="tabpanel">
+                            Jobs data will appear here.
+                        </div>
+                        <div class="tab-pane fade bg-light p-3 rounded" id="self" role="tabpanel">
+                            Self data will appear here.
+                        </div>
+                        <div class="tab-pane fade bg-light p-3 rounded" id="bills" role="tabpanel">
+                            Bills data will appear here.
+                        </div>
+                        <div class="tab-pane fade bg-light p-3 rounded" id="payments" role="tabpanel">
+                            Payments data will appear here.
+                        </div>
                     </div>
                 </div>
             </div>
@@ -140,25 +152,23 @@
     </div>
 </div>
 
-
-<!-- Modal -->
-<div id="deactivateModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-lg shadow-lg max-w-sm w-full p-6 relative">
-        <h2 class="text-lg font-bold mb-4 text-red-600">Confirm Deactivation</h2>
-        <p class="mb-6 text-gray-700">
-            Are you sure you want to deactivate this client? This action can be reverted later.
-        </p>
-        <div class="flex justify-end space-x-3">
-            <button id="cancelBtn"
-                    class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">
-                Cancel
-            </button>
-            <form asp-action="Delete" asp-route-id="@Model.Id" method="post">
-                <button type="submit"
-                        class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition">
-                    Deactivate
-                </button>
-            </form>
+<!-- Bootstrap Modal -->
+<div class="modal fade" id="deactivateModal" tabindex="-1" aria-labelledby="deactivateLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title text-danger">Confirm Deactivation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to deactivate this client? This action can be reverted later.
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form asp-action="Delete" asp-route-id="@Model.Id" method="post">
+                    <button type="submit" class="btn btn-danger">Deactivate</button>
+                </form>
+            </div>
         </div>
     </div>
 </div>
@@ -166,22 +176,9 @@
 @section Scripts {
     <script>
         const deactivateBtn = document.getElementById('deactivateBtn');
-        const deactivateModal = document.getElementById('deactivateModal');
-        const cancelBtn = document.getElementById('cancelBtn');
-
         deactivateBtn.addEventListener('click', () => {
-            deactivateModal.classList.remove('hidden');
-        });
-
-        cancelBtn.addEventListener('click', () => {
-            deactivateModal.classList.add('hidden');
-        });
-
-        // Close modal if clicking outside
-        deactivateModal.addEventListener('click', (e) => {
-            if (e.target === deactivateModal) {
-                deactivateModal.classList.add('hidden');
-            }
+            const modal = new bootstrap.Modal(document.getElementById('deactivateModal'));
+            modal.show();
         });
     </script>
 }

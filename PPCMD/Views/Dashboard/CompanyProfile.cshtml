@@ -4,105 +4,107 @@
     ViewData["Title"] = "Edit Company";
 }
 
-<div class="max-w-4xl mx-auto p-4 bg-white rounded-2xl shadow-lg">
-    <h2 class="text-2xl font-semibold text-gray-900 mb-6 text-center leading-tight">
-        Company Information
-    </h2>
+<div class="container my-4">
+    <div class="card shadow-lg rounded-3">
+        <div class="card-body">
+            <h2 class="h4 fw-semibold text-dark mb-4 text-center">
+                Company Information
+            </h2>
 
-    <form asp-action="CompanyProfile" asp-controller="Dashboard" method="post" class="space-y-2">
-        <input type="hidden" asp-for="Id" />
+            <form asp-action="CompanyProfile" asp-controller="Dashboard" method="post">
+                <input type="hidden" asp-for="Id" />
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Company Name -->
-            <div>
-                <label asp-for="CompanyName" class="label"></label>
-                <input asp-for="CompanyName" class="input" readonly />
-            </div>
+                <div class="row g-3">
+                    <!-- Company Name -->
+                    <div class="col-md-6">
+                        <label asp-for="CompanyName" class="form-label"></label>
+                        <input asp-for="CompanyName" class="form-control" readonly />
+                    </div>
 
-            <!-- License -->
-            <div>
-                <label asp-for="License" class="label"></label>
-                <input asp-for="License" class="input" readonly />
-            </div>
+                    <!-- License -->
+                    <div class="col-md-6">
+                        <label asp-for="License" class="form-label"></label>
+                        <input asp-for="License" class="form-control" readonly />
+                    </div>
 
-            <!-- NTN -->
-            <div>
-                <label asp-for="NTN" class="label"></label>
-                <input asp-for="NTN" class="input" />
-                <span asp-validation-for="NTN" class="validation"></span>
-            </div>
+                    <!-- NTN -->
+                    <div class="col-md-6">
+                        <label asp-for="NTN" class="form-label"></label>
+                        <input asp-for="NTN" class="form-control" />
+                        <span asp-validation-for="NTN" class="text-danger small"></span>
+                    </div>
 
-            <!-- STN -->
-            <div>
-                <label asp-for="STN" class="label"></label>
-                <input asp-for="STN" class="input" />
-                <span asp-validation-for="STN" class="validation"></span>
-            </div>
+                    <!-- STN -->
+                    <div class="col-md-6">
+                        <label asp-for="STN" class="form-label"></label>
+                        <input asp-for="STN" class="form-control" />
+                        <span asp-validation-for="STN" class="text-danger small"></span>
+                    </div>
 
-            <!-- Proprietor Name -->
-            <div>
-                <label asp-for="ProprietorName" class="label"></label>
-                <input asp-for="ProprietorName" class="input" />
-                <span asp-validation-for="ProprietorName" class="validation"></span>
-            </div>
+                    <!-- Proprietor Name -->
+                    <div class="col-md-6">
+                        <label asp-for="ProprietorName" class="form-label"></label>
+                        <input asp-for="ProprietorName" class="form-control" />
+                        <span asp-validation-for="ProprietorName" class="text-danger small"></span>
+                    </div>
 
-            <!-- CNIC -->
-            <div>
-                <label asp-for="CNIC" class="label"></label>
-                <input asp-for="CNIC" class="input" />
-                <span asp-validation-for="CNIC" class="validation"></span>
-            </div>
+                    <!-- CNIC -->
+                    <div class="col-md-6">
+                        <label asp-for="CNIC" class="form-label"></label>
+                        <input asp-for="CNIC" class="form-control" />
+                        <span asp-validation-for="CNIC" class="text-danger small"></span>
+                    </div>
 
-            <!-- Email -->
-            <div>
-                <label asp-for="Email" class="label"></label>
-                <input asp-for="Email" type="email" class="input" />
-                <span asp-validation-for="Email" class="validation"></span>
-            </div>
+                    <!-- Email -->
+                    <div class="col-md-6">
+                        <label asp-for="Email" class="form-label"></label>
+                        <input asp-for="Email" type="email" class="form-control" />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
 
-            <!-- Website -->
-            <div>
-                <label asp-for="Website" class="label"></label>
-                <input asp-for="Website" class="input" />
-            </div>
+                    <!-- Website -->
+                    <div class="col-md-6">
+                        <label asp-for="Website" class="form-label"></label>
+                        <input asp-for="Website" class="form-control" />
+                    </div>
 
-            <!-- Landline 1 -->
-            <div>
-                <label asp-for="Landline1" class="label"></label>
-                <input asp-for="Landline1" class="input" />
-            </div>
+                    <!-- Landline 1 -->
+                    <div class="col-md-6">
+                        <label asp-for="Landline1" class="form-label"></label>
+                        <input asp-for="Landline1" class="form-control" />
+                    </div>
 
-            <!-- Landline 2 -->
-            <div>
-                <label asp-for="Landline2" class="label"></label>
-                <input asp-for="Landline2" class="input" />
-            </div>
+                    <!-- Landline 2 -->
+                    <div class="col-md-6">
+                        <label asp-for="Landline2" class="form-label"></label>
+                        <input asp-for="Landline2" class="form-control" />
+                    </div>
 
-            <!-- Mobile -->
-            <div>
-                <label asp-for="Mobile" class="label"></label>
-                <input asp-for="Mobile" class="input" />
-            </div>
+                    <!-- Mobile -->
+                    <div class="col-md-6">
+                        <label asp-for="Mobile" class="form-label"></label>
+                        <input asp-for="Mobile" class="form-control" />
+                    </div>
 
-            <!-- Address -->
-            <div class="md:col-span-2">
-                <label asp-for="Address" class="label"></label>
-                <textarea asp-for="Address" rows="3" class="input"></textarea>
-            </div>
+                    <!-- Address -->
+                    <div class="col-12">
+                        <label asp-for="Address" class="form-label"></label>
+                        <textarea asp-for="Address" rows="3" class="form-control"></textarea>
+                    </div>
+                </div>
+
+                <!-- Buttons -->
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                    <a asp-action="Index" class="btn btn-light border">
+                        Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary shadow-sm">
+                        Save Changes
+                    </button>
+                </div>
+            </form>
         </div>
-
-        <!-- Buttons -->
-        <div class="flex justify-end space-x-4 pt-0">
-            <a asp-action="Index"
-               class="px-6 py-2 rounded-xl bg-gray-100 text-gray-700 hover:bg-gray-200 transition">
-                Cancel
-            </a>
-            <button type="submit"
-                    class="px-6 py-2 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 shadow transition">
-                Save Changes
-            </button>
-        </div>
-    </form>
+    </div>
 </div>
 
 @section Scripts {

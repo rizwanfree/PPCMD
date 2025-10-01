@@ -1,7 +1,4 @@
-﻿@* @{
-    Layout = "_Layout";
-} *@
-
+﻿
 @{
     //Layout = Context.User.Identity!.IsAuthenticated ? "_AppLayout" : "_DBLayout";
     Layout = Context.User.Identity!.IsAuthenticated ? "_AppLayout" : "_Layout";

@@ -5,88 +5,77 @@
     var emailList = Model.Emails.ToList();
 }
 
-<div class="max-w-4xl mx-auto bg-white shadow-lg rounded-xl p-6">
-    <h1 class="text-2xl font-bold mb-6 text-emerald-700">✏️ Edit Client</h1>
+<div class="container my-5">
+    <div class="card shadow-lg">
+        <div class="card-body">
+            <h1 class="h4 mb-4 text-success">✏️ Edit Client</h1>
 
-    <form asp-action="Edit" method="post" class="space-y-6">
-        <input type="hidden" asp-for="Id" />
+            <form asp-action="Edit" method="post">
+                <input type="hidden" asp-for="Id" />
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Client Name -->
-            <div>
-                <label asp-for="ClientName" class="block text-sm font-medium text-gray-700">Client Name</label>
-                <input asp-for="ClientName" class="mt-1 w-full px-3 py-2 border rounded-lg focus:ring focus:ring-emerald-300 focus:border-emerald-500" />
-                <span asp-validation-for="ClientName" class="text-red-500 text-sm"></span>
-            </div>
+                <div class="row g-3">
+                    <!-- Client Name -->
+                    <div class="col-md-6">
+                        <label asp-for="ClientName" class="form-label">Client Name</label>
+                        <input asp-for="ClientName" class="form-control" />
+                        <span asp-validation-for="ClientName" class="text-danger small"></span>
+                    </div>
 
-            <!-- Contact Person -->
-            <div>
-                <label asp-for="ContactPerson" class="block text-sm font-medium text-gray-700">Contact Person</label>
-                <input asp-for="ContactPerson" class="mt-1 w-full px-3 py-2 border rounded-lg focus:ring focus:ring-emerald-300 focus:border-emerald-500" />
-                <span asp-validation-for="ContactPerson" class="text-red-500 text-sm"></span>
-            </div>
+                    <!-- Contact Person -->
+                    <div class="col-md-6">
+                        <label asp-for="ContactPerson" class="form-label">Contact Person</label>
+                        <input asp-for="ContactPerson" class="form-control" />
+                        <span asp-validation-for="ContactPerson" class="text-danger small"></span>
+                    </div>
 
-            <!-- Mobile -->
-            <div>
-                <label asp-for="Mobile" class="block text-sm font-medium text-gray-700">Mobile</label>
-                <input asp-for="Mobile" class="mt-1 w-full px-3 py-2 border rounded-lg focus:ring focus:ring-emerald-300 focus:border-emerald-500" />
-                <span asp-validation-for="Mobile" class="text-red-500 text-sm"></span>
-            </div>
+                    <!-- Mobile -->
+                    <div class="col-md-6">
+                        <label asp-for="Mobile" class="form-label">Mobile</label>
+                        <input asp-for="Mobile" class="form-control" />
+                        <span asp-validation-for="Mobile" class="text-danger small"></span>
+                    </div>
 
-            <!-- Emails -->
-            <div class="md:col-span-2">
-                <label class="block text-sm font-medium text-gray-700">Emails</label>
-                <div id="emailContainer" class="space-y-2 mt-1">
-                    @for (int i = 0; i < emailList.Count; i++)
-                    {
-                        <div class="flex space-x-2">
-                            <input type="hidden" name="Emails[@i].Id" value="@emailList[i].Id" />
-                            <input name="Emails[@i].Email" value="@emailList[i].Email" type="email"
-                                   class="w-full px-3 py-2 border rounded-lg focus:ring focus:ring-emerald-300 focus:border-emerald-500" />
-                            <button type="button" onclick="this.parentElement.remove()"
-                                    class="px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">
-                                ❌
-                            </button>
+                    <!-- Emails -->
+                    <div class="col-12">
+                        <label class="form-label">Emails</label>
+                        <div id="emailContainer" class="d-flex flex-column gap-2">
+                            @for (int i = 0; i < emailList.Count; i++)
+                            {
+                                <div class="input-group">
+                                    <input type="hidden" name="Emails[@i].Id" value="@emailList[i].Id" />
+                                    <input name="Emails[@i].Email" value="@emailList[i].Email" type="email" class="form-control" />
+                                    <button type="button" class="btn btn-danger" onclick="this.parentElement.remove()">❌</button>
+                                </div>
+                            }
                         </div>
-                    }
+                        <button type="button" class="btn btn-success btn-sm mt-2" onclick="addEmailField()">➕ Add Email</button>
+                    </div>
+
+                    <!-- Address -->
+                    <div class="col-12">
+                        <label asp-for="Address" class="form-label">Address</label>
+                        <textarea asp-for="Address" rows="3" class="form-control"></textarea>
+                        <span asp-validation-for="Address" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Client Type -->
+                    <div class="col-md-6">
+                        <label asp-for="ClientTypeId" class="form-label">Client Type</label>
+                        <select asp-for="ClientTypeId" asp-items="ViewBag.ClientTypes" class="form-select">
+                            <option value="">-- Select Type --</option>
+                        </select>
+                        <span asp-validation-for="ClientTypeId" class="text-danger small"></span>
+                    </div>
                 </div>
-                <button type="button" onclick="addEmailField()"
-                        class="mt-2 px-3 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition">
-                    ➕ Add Email
-                </button>
-            </div>
 
-            <!-- Address -->
-            <div class="md:col-span-2">
-                <label asp-for="Address" class="block text-sm font-medium text-gray-700">Address</label>
-                <textarea asp-for="Address" rows="3"
-                          class="mt-1 w-full px-3 py-2 border rounded-lg focus:ring focus:ring-emerald-300 focus:border-emerald-500"></textarea>
-                <span asp-validation-for="Address" class="text-red-500 text-sm"></span>
-            </div>
-
-            <!-- Client Type -->
-            <div>
-                <label asp-for="ClientTypeId" class="block text-sm font-medium text-gray-700">Client Type</label>
-                <select asp-for="ClientTypeId" asp-items="ViewBag.ClientTypes"
-                        class="mt-1 w-full px-3 py-2 border rounded-lg focus:ring focus:ring-emerald-300 focus:border-emerald-500">
-                    <option value="">-- Select Type --</option>
-                </select>
-                <span asp-validation-for="ClientTypeId" class="text-red-500 text-sm"></span>
-            </div>
+                <!-- Buttons -->
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                    <a asp-action="Index" class="btn btn-secondary">⬅ Cancel</a>
+                    <button type="submit" class="btn btn-success">💾 Update Client</button>
+                </div>
+            </form>
         </div>
-
-        <!-- Buttons -->
-        <div class="flex justify-end space-x-3 pt-4">
-            <a asp-action="Index"
-               class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">
-                ⬅ Cancel
-            </a>
-            <button type="submit"
-                    class="px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition">
-                💾 Update Client
-            </button>
-        </div>
-    </form>
+    </div>
 </div>
 
 @section Scripts {
@@ -97,16 +86,12 @@
             const container = document.getElementById("emailContainer");
 
             const div = document.createElement("div");
-            div.classList.add("flex", "space-x-2");
+            div.classList.add("input-group", "mb-2");
 
             div.innerHTML = `
                 <input type="hidden" name="Emails[${emailIndex}].Id" value="0" />
-                <input name="Emails[${emailIndex}].Email" type="email" placeholder="Enter email"
-                       class="w-full px-3 py-2 border rounded-lg focus:ring focus:ring-emerald-300 focus:border-emerald-500" />
-                <button type="button" onclick="this.parentElement.remove()"
-                        class="px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">
-                    ❌
-                </button>
+                <input name="Emails[${emailIndex}].Email" type="email" placeholder="Enter email" class="form-control" />
+                <button type="button" class="btn btn-danger" onclick="this.parentElement.remove()">❌</button>
             `;
 
             container.appendChild(div);

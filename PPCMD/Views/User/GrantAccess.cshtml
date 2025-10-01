@@ -4,47 +4,49 @@
     ViewData["Title"] = "Grant Access";
 }
 
-<div class="max-w-lg mx-auto bg-white rounded-2xl shadow-lg p-8">
-    <h2 class="text-2xl font-bold text-gray-900 mb-6">Grant Access</h2>
+<div class="container mt-4">
+    <div class="card shadow-lg mx-auto" style="max-width: 600px;">
+        <div class="card-body p-4">
+            <h2 class="h4 fw-bold mb-4">Grant Access</h2>
 
-    <form asp-action="GrantAccess" method="post" class="space-y-6">
-        <input asp-for="EmployeeId" type="hidden" />
-        <input asp-for="CompanyId" type="hidden" />
+            <form asp-action="GrantAccess" method="post">
+                <input asp-for="EmployeeId" type="hidden" />
+                <input asp-for="CompanyId" type="hidden" />
 
-        <div>
-            <label asp-for="UserName" class="block text-sm font-medium text-gray-700">Username</label>
-            <input asp-for="UserName" class="mt-1 block w-full rounded-xl border border-gray-300 px-4 py-2 focus:ring-indigo-500 focus:outline-none" />
-            <span asp-validation-for="UserName" class="text-sm text-red-500"></span>
+                <div class="mb-3">
+                    <label asp-for="UserName" class="form-label">Username</label>
+                    <input asp-for="UserName" class="form-control" />
+                    <span asp-validation-for="UserName" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label">Email (optional)</label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <input type="password" name="password" class="form-control" />
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">Role (Optional)</label>
+                    <select name="role" class="form-select">
+                        <option value="">-- Select Role --</option>
+                        <option value="Employee">Employee</option>
+                        <option value="Manager">Manager</option>
+                        <option value="Admin">Admin</option>
+                    </select>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2">
+                    <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Grant Access</button>
+                </div>
+            </form>
         </div>
-
-        <div>
-            <label asp-for="Email" class="block text-sm font-medium text-gray-700">Email (optional)</label>
-            <input asp-for="Email" class="mt-1 block w-full rounded-xl border border-gray-300 px-4 py-2 focus:ring-indigo-500 focus:outline-none" />
-            <span asp-validation-for="Email" class="text-sm text-red-500"></span>
-        </div>
-
-        <div>
-            <label class="block text-sm font-medium text-gray-700">Password</label>
-            <input type="password" name="password" class="mt-1 block w-full rounded-xl border border-gray-300 px-4 py-2 focus:ring-indigo-500 focus:outline-none" />
-        </div>
-
-        <div>
-            <label class="block text-sm font-medium text-gray-700">Role (Optional)</label>
-            <select name="role" class="mt-1 block w-full rounded-xl border border-gray-300 px-4 py-2 focus:ring-indigo-500 focus:outline-none">
-                <option value="">-- Select Role --</option>
-                <option value="Employee">Employee</option>
-                <option value="Manager">Manager</option>
-                <option value="Admin">Admin</option>
-            </select>
-        </div>
-
-        <div class="flex justify-end gap-3">
-            <a asp-action="Index" class="px-5 py-2 rounded-xl bg-gray-100 text-gray-700 hover:bg-gray-200">Cancel</a>
-            <button type="submit" class="px-5 py-2 rounded-xl bg-gray-100 text-gray-700 hover:bg-gray-200">
-                Grant Access
-            </button>
-        </div>
-    </form>
+    </div>
 </div>
 
 @section Scripts {

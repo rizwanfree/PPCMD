@@ -5,119 +5,101 @@
     ViewBag.Title = "Cities";
 }
 
-<div x-data="cityModal()" class="max-w-6xl mx-auto px-4 py-6">
+<div x-data="cityModal()" class="container my-4">
 
-    <div class="card table-card">
+    <div class="card shadow-sm">
         <!-- Header -->
-        <div class="card-header">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-2xl font-semibold text-gray-800">Cities</h2>
-                <button @@click="openForCreate()"
-                        class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg shadow hover:bg-indigo-700 focus:outline-none">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                         stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                              d="M12 4.5v15m7.5-7.5h-15" />
-                    </svg>
-                    Add City
-                </button>
-            </div>
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h2 class="h5 mb-0 text-dark">Cities</h2>
+            <button @@click="openForCreate()"
+                    class="btn btn-sm btn-primary d-flex align-items-center shadow-sm">
+                <i class="bi bi-plus-lg me-1"></i> Add City
+            </button>
         </div>
 
-        <div class="card-body pt-3">
+        <div class="card-body">
             <!-- Table -->
             <div class="table-responsive">
-                <div class="datatable-wrapper no-footer datatable-pagination datatable-sorter">
-                    <table id="citiesTable" class="min-w-full text-sm text-left text-gray-600">
-                        <thead class="bg-gray-100 text-xs uppercase text-gray-700">
-                            <tr>
-                                <th class="px-4 py-3 text-center">#</th>
-                                <th class="px-6 py-3 text-center">City Name</th>
-                                <th class="px-6 py-3 text-center">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if (Model != null && Model.Any())
+                <table id="citiesTable" class="table table-striped table-bordered align-middle">
+                    <thead class="table-light">
+                        <tr class="text-center">
+                            <th style="width:5%;">#</th>
+                            <th style="width:75%;">City Name</th>
+                            <th style="width:20%;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            int index = 1;
+                            foreach (var city in Model)
                             {
-                                int index = 1;
-                                foreach (var city in Model)
-                                {
-                                    <tr>
-                                        <td class="px-4 py-4 text-center">@index</td>
-                                        <td class="px-6 py-4 font-medium text-gray-900 text-center">@city.Name</td>
-                                        <td class="px-6 py-4">
-                                            <div class="flex justify-center space-x-2">
-                                                <button type="button"
-                                                        onclick="openForEdit(@city.Id, @Html.Raw(JsonConvert.SerializeObject(city.Name)))"
-                                                        class="px-3 py-1 text-xs font-medium text-white bg-yellow-500 rounded hover:bg-yellow-600">
-                                                    Edit
-                                                </button>
-                                                <a asp-action="Delete" asp-route-id="@city.Id"
-                                                   class="px-3 py-1 text-xs font-medium text-white bg-red-500 rounded hover:bg-red-600"
-                                                   onclick="return confirm('Are you sure you want to delete this city?');">
-                                                    Delete
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    index++;
-                                }
+                                <tr>
+                                    <td class="text-center">@index</td>
+                                    <td class="fw-semibold text-center">@city.Name</td>
+                                    <td class="text-center">
+                                        <div class="d-flex justify-content-center gap-2">
+                                            <button type="button"
+                                                    onclick="openForEdit(@city.Id, @Html.Raw(JsonConvert.SerializeObject(city.Name)))"
+                                                    class="btn btn-sm btn-warning text-white">
+                                                Edit
+                                            </button>
+                                            <a asp-action="Delete" asp-route-id="@city.Id"
+                                               class="btn btn-sm btn-danger"
+                                               onclick="return confirm('Are you sure you want to delete this city?');">
+                                                Delete
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                index++;
                             }
-                        </tbody>
-                    </table>
-                </div>
+                        }
+                    </tbody>
+                </table>
             </div>
-
         </div>
-
-
     </div>
-    
-
-
 
 
     <!-- Modal -->
     <div x-show="openModal"
-         class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+         class="modal fade show d-block bg-dark bg-opacity-50"
+         tabindex="-1" role="dialog"
+         style="display: none;"
          x-transition>
-        <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
-            <!-- Header -->
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-semibold text-gray-700" x-text="modalTitle"></h3>
-                <button @@click ="closeModal()" class="text-gray-500 hover:text-gray-700">✕</button>
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content shadow">
+                <div class="modal-header">
+                    <h5 class="modal-title" x-text="modalTitle"></h5>
+                    <button type="button" class="btn-close" @@click="closeModal()"></button>
+                </div>
+                <div class="modal-body">
+                    <form :action="formAction" method="post">
+                        <input type="hidden" name="Id" :value="cityId" />
+
+                        <div class="mb-3">
+                            <label for="Name" class="form-label">City Name</label>
+                            <input type="text" name="Name" id="Name"
+                                   x-model="cityName"
+                                   class="form-control"
+                                   required />
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <button type="button" class="btn btn-secondary" @@click="closeModal()">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </div>
+                    </form>
+                </div>
             </div>
-
-            <!-- Form -->
-            <form :action="formAction" method="post" class="space-y-4">
-                <input type="hidden" name="Id" :value="cityId" />
-
-                <div>
-                    <label for="Name" class="block text-sm font-medium text-gray-700">City Name</label>
-                    <input type="text" name="Name" id="Name"
-                           x-model="cityName"
-                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                           required />
-                </div>
-
-                <div class="flex justify-end space-x-2">
-                    <button type="button" @@click ="closeModal()"
-                            class="px-4 py-2 bg-gray-300 text-gray-700 text-sm rounded hover:bg-gray-400">
-                        Cancel
-                    </button>
-                    <button type="submit"
-                            class="px-4 py-2 bg-indigo-600 text-white text-sm rounded hover:bg-indigo-700">
-                        Save
-                    </button>
-                </div>
-            </form>
         </div>
     </div>
+
 </div>
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-
     <script>
         function cityModal() {
             return {

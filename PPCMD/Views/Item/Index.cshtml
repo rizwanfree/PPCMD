@@ -4,10 +4,9 @@
     ViewData["Title"] = "Items";
 }
 
-<div class="flex justify-between items-center mb-4">
-    <h1 class="text-2xl font-bold">Items</h1>
-    <a asp-action="Create"
-       class="inline-flex items-center px-4 py-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition">
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h4 fw-bold">Items</h1>
+    <a asp-action="Create" class="btn btn-success d-flex align-items-center">
         ➕ Add Item
     </a>
 </div>
@@ -17,75 +16,79 @@
     <input type="text"
            id="searchInput"
            placeholder="Search items..."
-           class="w-full md:w-1/3 px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-emerald-300">
+           class="form-control w-100 w-md-50" />
 </div>
 
 <!-- Card Grid -->
-<div id="itemsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+<div id="itemsGrid" class="row g-4">
     @foreach (var item in Model)
     {
-        <div class="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition p-4 h-80 flex flex-col justify-between item-card"
-             data-name="@item.ItemName @item.HSCode">
-            <div>
-                <div class="flex justify-between items-start mb-3">
-                    <h2 class="font-semibold text-lg truncate">@item.ItemName</h2>
-                    <span class="text-gray-500 text-sm">@item.HSCode</span>
-                </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card h-100 shadow-sm border-0 item-card"
+                 data-name="@item.ItemName @item.HSCode">
+                <div class="card-body d-flex flex-column justify-content-between">
 
-                @if (item.Duties.Any())
-                {
-                    <ul class="text-sm space-y-1 mb-1 max-h-50 overflow-y-auto">
-                        @foreach (var duty in item.Duties)
+                    <div>
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="card-title mb-0 text-truncate">@item.ItemName</h5>
+                            <span class="text-muted small">@item.HSCode</span>
+                        </div>
+
+                        @if (item.Duties.Any())
                         {
-                            <li class="flex justify-between">
-                                <span>@duty.DutyType.Name</span>
-                                <span class="font-semibold">
-                                    @(duty.IsPercentage
-                                                            ? $"{duty.Rate.ToString("F2")} %"
-                                                            : $"{duty.Rate.ToString("F2")} F")
-                    </span>
-                </li>
-                                }
-                    </ul>
-                }
-                else
-                {
-                    <p class="text-gray-400 italic mb-4">No duties</p>
-                }
-            </div>
+                            <ul class="list-unstyled small mb-2 overflow-auto" style="max-height: 120px;">
+                                @foreach (var duty in item.Duties)
+                                {
+                                    <li class="d-flex justify-content-between">
+                                        <span>@duty.DutyType.Name</span>
+                                        <span class="fw-semibold">
+                                            @(duty.IsPercentage
+                                                                            ? $"{duty.Rate.ToString("F2")} %"
+                                                                            : $"{duty.Rate.ToString("F2")} F")
+                            </span>
+                        </li>
+                                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <p class="text-muted fst-italic">No duties</p>
+                        }
+                    </div>
 
-            <div class="flex justify-between mt-1">
-                <a asp-action="Edit" asp-route-id="@item.ItemID"
-                   class="px-3 py-1 rounded bg-indigo-100 text-indigo-700 hover:bg-indigo-200 text-sm">
-                    ✏️ Edit
-                </a>
-                <button type="button"
-                        class="px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 text-sm"
-                        data-item-id="@item.ItemID"
-                        data-item-name="@item.ItemName"
-                        onclick="confirmDelete(this)">
-                    🗑 Delete
-                </button>
+                    <div class="d-flex justify-content-between mt-2">
+                        <a asp-action="Edit" asp-route-id="@item.ItemID"
+                           class="btn btn-outline-primary btn-sm">
+                            ✏️ Edit
+                        </a>
+                        <button type="button"
+                                class="btn btn-outline-danger btn-sm"
+                                data-item-id="@item.ItemID"
+                                data-item-name="@item.ItemName"
+                                onclick="confirmDelete(this)">
+                            🗑 Delete
+                        </button>
+                    </div>
+
+                </div>
             </div>
         </div>
     }
 </div>
 
 <!-- Pagination -->
-<div class="flex justify-center mt-6 space-x-2">
-    <button onclick="changePage(-1)"
-            class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 text-sm">
+<div class="d-flex justify-content-center mt-4 gap-2">
+    <button onclick="changePage(-1)" class="btn btn-secondary btn-sm">
         ⬅ Prev
     </button>
-    <span id="pageIndicator" class="text-gray-700 text-sm">Page 1</span>
-    <button onclick="changePage(1)"
-            class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 text-sm">
+    <span id="pageIndicator" class="align-self-center small text-muted">Page 1</span>
+    <button onclick="changePage(1)" class="btn btn-secondary btn-sm">
         Next ➡
     </button>
 </div>
 
 <script>
-    const cardsPerPage = 8; // now 8 per page
+    const cardsPerPage = 8;
     let currentPage = 1;
 
     function filterCards() {
@@ -104,12 +107,13 @@
             .filter(card => card.style.display !== "none");
 
         const totalPages = Math.ceil(cards.length / cardsPerPage);
-        document.getElementById("pageIndicator").innerText = `Page ${currentPage} of ${totalPages || 1}`;
+        document.getElementById("pageIndicator").innerText =
+            `Page ${currentPage} of ${totalPages || 1}`;
 
         cards.forEach((card, index) => {
             const start = (currentPage - 1) * cardsPerPage;
             const end = start + cardsPerPage;
-            card.style.display = (index >= start && index < end) ? "" : "none";
+            card.parentElement.style.display = (index >= start && index < end) ? "" : "none";
         });
     }
 
