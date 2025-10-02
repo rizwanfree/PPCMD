@@ -35,5 +35,6 @@ namespace PPCMD.Models
         public Company? Company { get; set; }        // Navigation property
 
         public ICollection<BL> BLs { get; set; } = new List<BL>();
+        public ICollection<Payorder> Payorders { get; set; } = new List<Payorder>();
     }
 }

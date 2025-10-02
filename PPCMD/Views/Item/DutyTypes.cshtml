@@ -1,140 +1,168 @@
-﻿@model IEnumerable<PPCMD.Models.DutyType>
+﻿@{
+    var dutyTypes = ViewBag.DutyTypes as List<PPCMD.Models.DutyType>;
+    var headers = ViewBag.PayorderHeaders as List<PPCMD.Models.PayorderHeader>;
+}
 
-<div class="d-flex align-items-center justify-content-between mb-4">
-    <h2 class="h4 fw-bold">Duty Types</h2>
-    <button type="button" onclick="openCreateModal()"
-            class="btn btn-primary shadow-sm">
-        ➕ Add Duty Type
-    </button>
-</div>
+<div class="card shadow-sm">
+    <div class="card-body">
+        <!-- Tabs -->
+        <ul class="nav nav-tabs" id="chargesTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="duty-tab" data-bs-toggle="tab" data-bs-target="#dutyTab" type="button" role="tab">
+                    Duty Charges
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="payorder-tab" data-bs-toggle="tab" data-bs-target="#payorderTab" type="button" role="tab">
+                    Payorder Headers
+                </button>
+            </li>
+        </ul>
 
-<div class="table-responsive">
-    <table id="dutyTypesTable" class="table table-bordered table-striped align-middle shadow-sm">
-        <thead class="table-light">
-            <tr>
-                <th scope="col">Name</th>
-                <th scope="col">Description</th>
-                <th scope="col" class="text-center" style="width: 200px;">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var duty in Model)
-            {
-                <tr>
-                    <td>@duty.Name</td>
-                    <td>@duty.Description</td>
-                    <td class="text-center">
-                        <button type="button" onclick="openEditModal(@duty.Id, '@duty.Name', '@duty.Description')"
-                                class="btn btn-sm btn-warning text-white">
-                            ✏ Edit
-                        </button>
-                        <button type="button" onclick="confirmDelete(@duty.Id)"
-                                class="btn btn-sm btn-danger">
-                            🗑 Delete
-                        </button>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-</div>
+        <div class="tab-content mt-3">
+            <!-- Duty Charges -->
+            <div class="tab-pane fade show active" id="dutyTab" role="tabpanel">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h2 class="h5 fw-bold">Duty Types</h2>
+                    <button type="button" onclick="openCreateModal()" class="btn btn-primary shadow-sm">
+                        ➕ Add Duty Type
+                    </button>
+                </div>
 
-<!-- Modal -->
-<div id="dutyTypeModal" class="modal fade" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 id="modalTitle" class="modal-title">Add Duty Type</h5>
-                <button type="button" class="btn-close" aria-label="Close" onclick="closeModal()"></button>
+                <table id="dutyTypesTable" class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th style="width:200px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var duty in dutyTypes)
+                        {
+                            <tr>
+                                <td>@duty.Name</td>
+                                <td>@duty.Description</td>
+                                <td>
+                                    <button class="btn btn-sm btn-warning" onclick="openEditModal(@duty.Id, '@duty.Name', '@duty.Description')">✏ Edit</button>
+                                    <button class="btn btn-sm btn-danger" onclick="confirmDelete(@duty.Id)">🗑 Delete</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             </div>
-            <div class="modal-body">
-                <form id="dutyTypeForm" method="post">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" id="dutyId" name="Id" />
 
-                    <div class="mb-3">
-                        <label for="dutyName" class="form-label">Name</label>
-                        <input type="text" id="dutyName" name="Name" class="form-control" required />
-                    </div>
+            <!-- Payorder Headers -->
+            <div class="tab-pane fade" id="payorderTab" role="tabpanel">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h2 class="h5 fw-bold">Payorder Headers</h2>
+                    <button type="button" onclick="openCreateHeaderModal()" class="btn btn-primary shadow-sm">
+                        ➕ Add Header
+                    </button>
+                </div>
 
-                    <div class="mb-3">
-                        <label for="dutyDescription" class="form-label">Description</label>
-                        <textarea id="dutyDescription" name="Description" class="form-control"></textarea>
-                    </div>
-
-                    <div class="d-flex justify-content-end gap-2">
-                        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
-                        <button type="submit" id="saveDutyBtn" class="btn btn-primary">Save</button>
-                    </div>
-                </form>
+                <table id="headersTable" class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th style="width:200px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var header in headers)
+                        {
+                            <tr>
+                                <td>@header.Name</td>
+                                <td>@header.Description</td>
+                                <td>
+                                    <button class="btn btn-sm btn-warning" onclick="openEditHeaderModal(@header.Id, '@header.Name', '@header.Description')">✏ Edit</button>
+                                    <button class="btn btn-sm btn-danger" onclick="confirmHeaderDelete(@header.Id)">🗑 Delete</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Delete Confirm Modal -->
-<div id="deleteModal" class="modal fade" tabindex="-1" aria-hidden="true">
+
+
+<!-- Payorder Header Modal -->
+<div id="headerModal" class="modal fade" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Confirm Delete</h5>
-                <button type="button" class="btn-close" aria-label="Close" onclick="closeDeleteModal()"></button>
+                <h5 id="headerModalTitle" class="modal-title">Add Header</h5>
+                <button type="button" class="btn-close" aria-label="Close" onclick="closeHeaderModal()"></button>
             </div>
             <div class="modal-body">
-                <p>Are you sure you want to delete this duty type? This action cannot be undone.</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()">Cancel</button>
-                <form id="deleteForm" method="post">
+                <form id="headerForm" method="post" action="@Url.Action("CreateHeader", "Payorder")">
                     @Html.AntiForgeryToken()
-                    <button type="submit" class="btn btn-danger">Delete</button>
+                    <input type="hidden" id="headerId" name="Id" value="" />
+
+                    <div class="mb-3">
+                        <label for="headerName" class="form-label">Header Name</label>
+                        <input type="text" id="headerName" name="Name" class="form-control" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="headerDescription" class="form-label">Description</label>
+                        <textarea id="headerDescription" name="Description" class="form-control"></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-secondary" onclick="closeHeaderModal()">Cancel</button>
+                        <button type="submit" id="saveHeaderBtn" class="btn btn-primary">Save</button>
+                    </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
 
 @section Scripts {
     <script>
         $(document).ready(function () {
             $('#dutyTypesTable').DataTable();
+            $('#headersTable').DataTable();
         });
 
-        let deleteId = null;
+        // Duty Modal logic is already implemented above...
 
-        function confirmDelete(id) {
-            deleteId = id;
-            const form = document.getElementById("deleteForm");
-            form.action = "/Item/DeleteDutyType/" + id;
-            new bootstrap.Modal(document.getElementById("deleteModal")).show();
+        function openCreateHeaderModal() {
+            document.getElementById("headerModalTitle").innerText = "Add Header";
+            document.getElementById("headerForm").action = '@Url.Action("CreateHeader", "Payorder")';
+            document.getElementById("headerId").value = "";   // leave empty for create
+            document.getElementById("headerName").value = "";
+            document.getElementById("headerDescription").value = "";
+            new bootstrap.Modal(document.getElementById("headerModal")).show();
         }
 
-        function closeDeleteModal() {
-            bootstrap.Modal.getInstance(document.getElementById("deleteModal")).hide();
-            deleteId = null;
+        // Open modal for edit
+        function openEditHeaderModal(id, name, description) {
+            document.getElementById("headerModalTitle").innerText = "Edit Header";
+            document.getElementById("headerForm").action = "/Payorder/EditHeader/" + id;
+            document.getElementById("headerId").value = id;
+            document.getElementById("headerName").value = name;
+            document.getElementById("headerDescription").value = description;
+            new bootstrap.Modal(document.getElementById("headerModal")).show();
         }
 
-        function openCreateModal() {
-            document.getElementById("modalTitle").innerText = "Add Duty Type";
-            document.getElementById("dutyTypeForm").action = '@Url.Action("CreateDutyType", "Item")';
-            document.getElementById("dutyId").disabled = true;
-            document.getElementById("dutyId").value = 0;
-            document.getElementById("dutyName").value = "";
-            document.getElementById("dutyDescription").value = "";
-            new bootstrap.Modal(document.getElementById("dutyTypeModal")).show();
+        // Close modal
+        function closeHeaderModal() {
+            bootstrap.Modal.getInstance(document.getElementById("headerModal")).hide();
         }
 
-        function openEditModal(id, name, description) {
-            document.getElementById("modalTitle").innerText = "Edit Duty Type";
-            document.getElementById("dutyTypeForm").action = "/Item/EditDutyType/" + id;
-            document.getElementById("dutyId").value = id;
-            document.getElementById("dutyName").value = name;
-            document.getElementById("dutyDescription").value = description;
-            new bootstrap.Modal(document.getElementById("dutyTypeModal")).show();
-        }
-
-        function closeModal() {
-            bootstrap.Modal.getInstance(document.getElementById("dutyTypeModal")).hide();
+        // Confirm delete
+        function confirmHeaderDelete(id) {
+            if (confirm("Are you sure you want to delete this header?")) {
+                window.location.href = "/Payorder/DeleteHeader/" + id;
+            }
         }
     </script>
 }

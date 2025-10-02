@@ -229,12 +229,24 @@ namespace PPCMD.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user?.CompanyId == null) return Forbid();
 
+            // Get DutyTypes
             var dutyTypes = await _context.DutyTypes
                 .Where(d => d.CompanyId == user.CompanyId.Value)
                 .AsNoTracking()
                 .ToListAsync();
 
-            return View(dutyTypes);
+            // Get PayorderHeaders
+            var headers = await _context.PayorderHeaders
+                .Where(h => h.CompanyId == user.CompanyId.Value)
+                .AsNoTracking()
+                .ToListAsync();
+
+            // Pass both into ViewBag
+            ViewBag.DutyTypes = dutyTypes;
+            ViewBag.PayorderHeaders = headers;
+
+            // Just return empty model, since we’re using ViewBag for both
+            return View();
         }
 
         // ================================================

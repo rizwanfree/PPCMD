@@ -5,7 +5,7 @@
 .card .form-label,
 .card input,
 .card select {
-    font-size: 0.90rem;
+    font-size: 0.85rem;
 }
 
 input[readonly],
@@ -26,7 +26,7 @@ select[readonly]:focus {
 <form asp-action="Create" method="post">
     <!-- Job Section -->
     <div class="card mb-2 shadow-sm">
-        <div class="card-header py1">Job Information</div>
+        <div class="card-header py1 bg-primary text-white">Job Information</div>
         <div class="card-body py-2 px-2">
             <div class="row">
                 <div class="col-md-1">
@@ -39,14 +39,16 @@ select[readonly]:focus {
                 </div>
                 <div class="col-md-3">
                     <label asp-for="PendingBL.ClientId" class="form-label">Client</label>
-                    <select asp-for="PendingBL.ClientId" asp-items="ViewBag.Clients" class="form-select form-select-sm">
+                    <select asp-for="PendingBL.ClientId" asp-items="ViewBag.Clients"
+                            class="form-select form-select-sm" id="clientSelect">
                         <option value="">-- Select Client --</option>
                     </select>
                     <span asp-validation-for="PendingBL.ClientId" class="text-danger"></span>
                 </div>
                 <div class="col-md-3">
                     <label asp-for="PendingBL.Client.ContactPerson" class="form-label">Contact Person</label>
-                    <input asp-for="PendingBL.Client.ContactPerson" class="form-control form-control-sm" disabled />
+                    <input asp-for="PendingBL.Client.ContactPerson"
+                           class="form-control form-control-sm" id="contactPerson" disabled />
                 </div>
 
                 <div class="col-md-2">
@@ -73,7 +75,7 @@ select[readonly]:focus {
 
     <!-- Shipment Section -->
     <div class="card mb-2 shadow-sm">
-        <div class="card-header py-1">Shipment Information</div>
+        <div class="card-header py-1 bg-primary text-white">Shipment Information</div>
         <div class="card-body py-2 px-2">
             <div class="row">
                 <div class="col-md-1">
@@ -124,7 +126,7 @@ select[readonly]:focus {
 
             <div class="row">
                 <div class="col-md-1">
-                    <label asp-for="PendingBL.BL.Containers" class="form-label">No of Containers</label>
+                    <label asp-for="PendingBL.BL.Containers" class="form-label">Containers</label>
                     <input asp-for="PendingBL.BL.Containers" class="form-control form-control-sm text-end" />
                 </div>
 
@@ -174,13 +176,39 @@ select[readonly]:focus {
 
     <!-- Items Section -->
     <div class="card mb-2 shadow-sm">
-        <div class="card-header d-flex justify-content-between align-items-center">
+        <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
             <span>Items</span>
             <button type="button" class="btn btn-sm btn-success" id="addItem">+ Add Item</button>
         </div>
         <div class="card-body">
             <div id="itemsContainer">
                 <!-- Dynamic items will be added here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Payorders Section -->
+    <div class="card mb-2 shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+            <span>Payorders</span>
+            <button type="button" class="btn btn-sm btn-success" id="addPayorder">+ Add Payorder</button>
+        </div>
+        <div class="card-body py-2 px-2">
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered align-middle" id="payordersTable">
+                    <thead class="table-light">
+                        <tr class="text-center">
+                            <th style="width: 5%">#</th>
+                            <th style="width: 30%">Particular</th>
+                            <th style="width: 40%">Detail</th>
+                            <th style="width: 20%">Amount</th>
+                            <th style="width: 5%"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Dynamic rows -->
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -194,6 +222,7 @@ select[readonly]:focus {
 
 @section Scripts {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <script>
         let itemIndex = 0;
         const itemsWithDuties = @Html.Raw(Json.Serialize(ViewBag.ItemsWithDuties));
@@ -245,20 +274,20 @@ select[readonly]:focus {
                             <input type="number" name="Items[${index}].Quantity" class="form-control form-control-sm text-end quantity-input" step="0.01" oninput="calculateItemValues(this, ${index})" />
                         </div>
                         <div class="col-1">
-                            <label class="form-label">Unit Value USD</label>
+                            <label class="form-label">Unit Value $</label>
                             <input type="number" name="Items[${index}].UnitValue" class="form-control form-control-sm text-end unit-value-input" step="0.01" oninput="calculateItemValues(this, ${index})" />
                         </div>
-                        <div class="col-1">
-                            <label class="form-label">Invoice Value USD</label>
+                        <div class="col-2">
+                            <label class="form-label">Invoice Value $</label>
                             <input type="number" name="Items[${index}].ImportValue" class="form-control form-control-sm text-end import-value-usd" step="0.01" readonly/>
                         </div>
-                        <div class="col-1">
-                            <label class="form-label">Invoice Value PKR</label>
+                        <div class="col-2">
+                            <label class="form-label">Invoice Value PK</label>
                             <input type="number" name="Items[${index}].InvoiceValuePKR" class="form-control form-control-sm text-end import-value-pkr" step="0.01" readonly/>
                         </div>
 
                         <div class="col-1">
-                            <label class="form-label">Insurance USD</label>
+                            <label class="form-label">Insurance $</label>
                             <input type="number" name="Items[${index}].InsuranceValue" class="form-control form-control-sm text-end insurance-usd" step="0.01" oninput="calculateItemValues(this, ${index})" />
                         </div>
                         <div class="col-1">
@@ -267,14 +296,10 @@ select[readonly]:focus {
                         </div>
 
                         <div class="col-1">
-                            <label class="form-label">Landing Charges</label>
-                            <input type="number" name="Items[${index}].FreightCharges" class="form-control form-control-sm text-end freight-input" step="0.01" oninput="calculateItemValues(this, ${index})" />
-                        </div>
-                        <div class="col-1">
-                            <label class="form-label">1% Landing Ch</label>
+                            <label class="form-label">Landing Ch</label>
                             <input type="number" name="Items[${index}].LandingCharges" class="form-control form-control-sm text-end landing-charges" step="0.01" readonly/>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-1">
                             <label class="form-label">Import Value</label>
                             <input type="number" name="Items[${index}].AssessableValue" class="form-control form-control-sm text-end assessable-value" step="0.01" readonly/>
                         </div>
@@ -343,10 +368,10 @@ select[readonly]:focus {
             const insurancePKR = Math.round(insuranceUSD * exchangeRate);
 
             // Calculate 1% Landing Charges
-            const landingCharges = (importValuePKR + insurancePKR + freightCharges) * 0.01;
+            const landingCharges = (importValuePKR + insurancePKR) * 0.01;
 
             // Calculate Assessable Value (Import Value PKR + Insurance PKR + Freight Charges + Landing Charges)
-            const assessableValue = importValuePKR + insurancePKR + freightCharges + landingCharges;
+            const assessableValue = importValuePKR + insurancePKR + landingCharges;
 
             // Update the readonly fields
             itemRow.find('.import-value-usd').val(importValueUSD.toFixed(2));
@@ -427,5 +452,79 @@ select[readonly]:focus {
             }
         }
 
+
+        let payorderIndex = 0;
+
+        $(document).on("click", "#addPayorder", function () {
+            const row = `
+                <tr>
+                    <td class="handle text-center">
+                        <i class="bi bi-list"></i> <!-- drag handle icon -->
+                        <input type="hidden" name="Payorders[${payorderIndex}].Order" value="${payorderIndex}" class="order-field" />
+                    </td>
+                    <td>
+                        <input type="text" name="Payorders[${payorderIndex}].Particular" class="form-control form-control-sm" placeholder="Collector of Customs" />
+                    </td>
+                    <td>
+                        <input type="text" name="Payorders[${payorderIndex}].Detail" class="form-control form-control-sm" placeholder="Details" />
+                    </td>
+                    <td>
+                        <input type="number" name="Payorders[${payorderIndex}].Amount" class="form-control form-control-sm text-end" />
+                    </td>
+                    <td class="text-center">
+                        <button type="button" class="btn btn-sm btn-danger remove-payorder">×</button>
+                    </td>
+                </tr>`;
+            $("#payordersTable tbody").append(row);
+            payorderIndex++;
+        });
+
+        // Remove row
+        $(document).on("click", ".remove-payorder", function () {
+            $(this).closest("tr").remove();
+            updatePayorderOrder();
+        });
+
+
+        const tbody = document.querySelector("#payordersTable tbody");
+
+        new Sortable(tbody, {
+            handle: ".handle",  // only drag by the handle cell
+            animation: 150,
+            onEnd: function () {
+                updatePayorderOrder();
+            }
+        });
+
+        // Update visible order numbers + hidden fields when sorted
+        function updatePayorderOrder() {
+            $("#payordersTable tbody tr").each(function (i) {
+                // update hidden field
+                $(this).find(".order-field").val(i);
+
+                // update visible order number (first column)
+                $(this).find("td:first").contents().filter(function () {
+                    return this.nodeType === 3; // text node
+                }).remove(); // remove old number if exists
+
+                $(this).find("td:first").prepend((i + 1) + ". ");
+            });
+        }
+
+        $(document).on("change", "#clientSelect", function () {
+            const clientId = $(this).val();
+            if (!clientId) {
+                $("#contactPerson").val("");
+                return;
+            }
+
+            $.get(`/GeneralConsignment/GetClientContact?clientId=${clientId}`, function (data) {
+                if (data.success) {
+                    $("#contactPerson").val(data.contactPerson);
+                } else {
+                    $("#contactPerson").val("");
+                }
+            });
+        });
     </script>
 }

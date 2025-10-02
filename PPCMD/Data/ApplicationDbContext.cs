@@ -51,6 +51,11 @@ namespace PPCMD.Data
         public DbSet<HC> HCs { get; set; }
 
 
+        // Payorder Entity
+        public DbSet<Payorder> Payorders { get; set; }
+        public DbSet<PayorderHeader> PayorderHeaders { get; set; }
+
+
         private void SetCurrentTenant()
         {
             var user = _httpContextAccessor.HttpContext?.User;
@@ -192,12 +197,6 @@ namespace PPCMD.Data
                 .HasForeignKey<BL>(b => b.PendingBLId)
                 .OnDelete(DeleteBehavior.Restrict); // no cascade loops
 
-            // PendingBL -> BL
-            //builder.Entity<PendingBL>()
-            //    .HasOne(pb => pb.BL)
-            //    .WithMany()
-            //    .HasForeignKey(pb => pb.BL) // adjust FK if BLId property exists
-            //    .OnDelete(DeleteBehavior.Restrict);
 
             // PendingBL -> IGM
             builder.Entity<PendingBL>()
@@ -249,6 +248,33 @@ namespace PPCMD.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
 
+            builder.Entity<Payorder>()
+            .HasOne(p => p.BL)
+            .WithMany(b => b.Payorders)
+            .HasForeignKey(p => p.BLId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Payorder>()
+                .HasOne(p => p.LC)
+                .WithMany(lc => lc.Payorders)
+                .HasForeignKey(p => p.LCId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Payorder>()
+                .HasOne(p => p.Company)
+                .WithMany()
+                .HasForeignKey(p => p.CompanyId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+
+            // PayorderHeader -> Company
+            builder.Entity<PayorderHeader>()
+                .HasOne(ph => ph.Company)
+                .WithMany() // or .WithMany(c => c.PayorderHeaders) if you have collection on Company
+                .HasForeignKey(ph => ph.CompanyId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+
 
 
 
@@ -266,8 +292,6 @@ namespace PPCMD.Data
             builder.Entity<ClientType>()
                 .HasQueryFilter(ct => !EnableTenantFilter || !_currentCompanyId.HasValue || ct.CompanyId == _currentCompanyId);
 
-            //builder.Entity<ClientEmail>()
-            //    .HasQueryFilter(ce => !EnableTenantFilter || !_currentCompanyId.HasValue || ce.CompanyId == _currentCompanyId);
 
             builder.Entity<Company>()
                 .HasQueryFilter(c => !EnableTenantFilter || !_currentCompanyId.HasValue || c.Id == _currentCompanyId);
@@ -316,7 +340,13 @@ namespace PPCMD.Data
 
             builder.Entity<DutyCharge>()
                 .HasQueryFilter(dc => !EnableTenantFilter || !_currentCompanyId.HasValue || dc.CompanyId == _currentCompanyId);
+            
+            builder.Entity<Payorder>()
+                .HasQueryFilter(p => !EnableTenantFilter || !_currentCompanyId.HasValue || p.CompanyId == _currentCompanyId);
 
+            builder.Entity<PayorderHeader>()
+                .HasQueryFilter(p => !EnableTenantFilter || !_currentCompanyId.HasValue || p.CompanyId == _currentCompanyId);
+        
         }
 
         // Optional: expose a method to set current tenant at runtime

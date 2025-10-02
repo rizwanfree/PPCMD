@@ -73,24 +73,19 @@ namespace PPCMD.Controllers
         }
 
 
-        [HttpGet]
-        public async Task<JsonResult> GetItemDuties(int itemId)
-        {
-            var duties = await _context.ItemDuties
-                .Where(id => id.ItemID == itemId)
-                .Include(id => id.DutyType)
-                .OrderBy(id => id.Order)
-                .Select(id => new
-                {
-                    dutyTypeId = id.DutyTypeId,
-                    dutyTypeName = id.DutyType.Name,
-                    rate = id.Rate,
-                    isPercentage = id.IsPercentage,
-                    order = id.Order
-                })
-                .ToListAsync();
 
-            return Json(duties);
+
+        [HttpGet]
+        public IActionResult GetClientContact(int clientId)
+        {
+            var client = _context.Clients
+                .AsNoTracking()
+                .FirstOrDefault(c => c.Id == clientId);
+
+            if (client == null)
+                return Json(new { success = false });
+
+            return Json(new { success = true, contactPerson = client.ContactPerson });
         }
     }
 }

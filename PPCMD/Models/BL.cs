@@ -40,5 +40,6 @@ namespace PPCMD.Models
         //public ICollection<IB> IBs { get; set; }
         //public ICollection<Exbond> Exbonds { get; set; }
         public ICollection<DutyCharge> DutyCharges { get; set; } = new List<DutyCharge>();
+        public ICollection<Payorder> Payorders { get; set; } = new List<Payorder>();
     }
 }

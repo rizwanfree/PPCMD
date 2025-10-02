@@ -21,15 +21,15 @@
     <style>
     body {
     font-family: "Huninn", sans-serif;
-    background-color: #f8f9fa; /* Light clean background */
+            background-color: ##f4eee4; /* Light clean background */
     }
 
     /* Sidebar base */
     .sidebar {
     width: 280px;
-    background: #0077b6; /* Navy Blue */
+    background: #352b1c; /* Navy Blue */
     border-right: 1px solid #1b263b;
-    color: #fff;
+    color: #f4eee4;
     flex-shrink: 0;
     }
 
@@ -82,10 +82,10 @@
     <!-- Sidebar -->
     <aside class="d-none d-md-flex flex-column sidebar vh-100">
         <!-- Logo -->
-        <div class="d-flex justify-content-center align-items-center border-bottom border-secondary"
-             style="height:64px;">
-            <img src="~/logoHolder.png" alt="Company Logo"
-                 class="rounded-circle shadow" style="height:40px; width:40px; object-fit:cover;">
+        <div class="d-flex justify-content-center pt-2"
+             style="height:120px;">
+            <img src="~/images/company/logo.png" alt="Company Logo"
+                 class="" style="height:56px; width:213px;">
             @* <span class="fw-bold ms-2">@ViewBag.CompanyName</span> *@
         </div>
 
@@ -139,7 +139,7 @@
             <div class="nav-item">
                 <a class="nav-link d-flex justify-content-between align-items-center"
                    data-bs-toggle="collapse" href="#bulkMenu" aria-expanded="false">
-                    <span><i class="bi bi-people me-2"></i>General Consignment</span>
+                    <span><i class="bi bi-people me-2"></i>Bulk Consignment</span>
                     <i class="bi bi-chevron-down small"></i>
                 </a>
                 <div class="collapse ms-3" id="bulkMenu">
@@ -155,7 +155,7 @@
     <div class="flex-grow-1 d-flex flex-column bg-white text-dark">
         <!-- Topbar -->
         <header class="d-flex justify-content-between align-items-center border-bottom px-4"
-                style="height:64px;">
+                style="height:64px; background-color: #352b1c;">
             <div class="fw-semibold">@ViewBag.CompanyName</div>
 
             <div class="dropdown">
@@ -184,7 +184,7 @@
         </header>
 
         <!-- Page Content -->
-        <main class="p-4 flex-grow-1">
+        <main class="p-4 flex-grow-1" style="background-color: #f4eee4;">
             @RenderBody()
         </main>
     </div>
