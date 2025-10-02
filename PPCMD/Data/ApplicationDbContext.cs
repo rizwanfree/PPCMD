@@ -41,6 +41,16 @@ namespace PPCMD.Data
         public DbSet<Port> Ports { get; set; }
 
 
+        // Consignment Entities
+        public DbSet<LC> LCs { get; set; }
+        public DbSet<BL> BLs { get; set; }
+        public DbSet<PendingBL> PendingBLs { get; set; }
+        public DbSet<BLItem> BLItems { get; set; }
+        public DbSet<IGM> IGMs { get; set; }
+        public DbSet<DutyCharge> DutyCharges { get; set; }
+        public DbSet<HC> HCs { get; set; }
+
+
         private void SetCurrentTenant()
         {
             var user = _httpContextAccessor.HttpContext?.User;
@@ -88,7 +98,7 @@ namespace PPCMD.Data
                 .HasOne(i => i.Company)
                 .WithMany(c => c.Items)
                 .HasForeignKey(i => i.CompanyId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
 
             // ItemDuty -> Item
             builder.Entity<ItemDuty>()
@@ -109,14 +119,14 @@ namespace PPCMD.Data
                 .HasOne(d => d.Company)
                 .WithMany()
                 .HasForeignKey(d => d.CompanyId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
 
             // DutyType -> Company
             builder.Entity<DutyType>()
                 .HasOne(dt => dt.Company)
                 .WithMany()
                 .HasForeignKey(dt => dt.CompanyId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
 
 
             // Client -> Company
@@ -124,7 +134,7 @@ namespace PPCMD.Data
                 .HasOne(c => c.Company)
                 .WithMany()
                 .HasForeignKey(c => c.CompanyId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
 
             // ClientType -> Company
             builder.Entity<ClientType>()
@@ -165,6 +175,82 @@ namespace PPCMD.Data
                 .WithMany()
                 .HasForeignKey(p => p.CompanyId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+
+
+
+            // BL -> Company
+            builder.Entity<BL>()
+                .HasOne(b => b.Company)
+                .WithMany()
+                .HasForeignKey(b => b.CompanyId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<BL>()
+                .HasOne(b => b.PendingBL)
+                .WithOne(pb => pb.BL)
+                .HasForeignKey<BL>(b => b.PendingBLId)
+                .OnDelete(DeleteBehavior.Restrict); // no cascade loops
+
+            // PendingBL -> BL
+            //builder.Entity<PendingBL>()
+            //    .HasOne(pb => pb.BL)
+            //    .WithMany()
+            //    .HasForeignKey(pb => pb.BL) // adjust FK if BLId property exists
+            //    .OnDelete(DeleteBehavior.Restrict);
+
+            // PendingBL -> IGM
+            builder.Entity<PendingBL>()
+                .HasOne(pb => pb.IGM)
+                .WithMany()
+                .HasForeignKey(pb => pb.IGMId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // BLItem -> PendingBL
+            builder.Entity<BLItem>()
+                .HasOne(bi => bi.PendingBL)
+                .WithMany(pb => pb.Items)
+                .HasForeignKey(bi => bi.PendingBLId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // BLItem -> Item
+            builder.Entity<BLItem>()
+                .HasOne(bi => bi.Item)
+                .WithMany()
+                .HasForeignKey(bi => bi.ItemId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // DutyCharge -> BL
+            builder.Entity<DutyCharge>()
+                .HasOne(dc => dc.BL)
+                .WithMany()
+                .HasForeignKey(dc => dc.BLId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // DutyCharge -> DutyType
+            builder.Entity<DutyCharge>()
+                .HasOne(dc => dc.DutyType)
+                .WithMany()
+                .HasForeignKey(dc => dc.DutyTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // HC -> BL (one BL can have many HomeConsumptions)
+            builder.Entity<HC>()
+                .HasOne(h => h.BL)
+                .WithMany(b => b.HomeConsumptions)   // ensure BL has ICollection<HC> HomeConsumptions
+                .HasForeignKey(h => h.BLId)
+                .OnDelete(DeleteBehavior.Restrict); // use Restrict to avoid accidental data loss
+
+            // HC -> Company (tenant)
+            builder.Entity<HC>()
+                .HasOne(h => h.Company)
+                .WithMany() // no navigation collection required, or you may add one on Company if desired
+                .HasForeignKey(h => h.CompanyId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+
+
+
 
 
             // 🔧 Global Tenant Filters
@@ -209,6 +295,28 @@ namespace PPCMD.Data
 
             builder.Entity<Port>()
                 .HasQueryFilter(p => !EnableTenantFilter || !_currentCompanyId.HasValue || p.CompanyId == _currentCompanyId);
+
+
+
+
+            builder.Entity<LC>()
+                .HasQueryFilter(lc => !EnableTenantFilter || !_currentCompanyId.HasValue || lc.CompanyId == _currentCompanyId);
+
+            builder.Entity<BL>()
+                .HasQueryFilter(bl => !EnableTenantFilter || !_currentCompanyId.HasValue || bl.CompanyId == _currentCompanyId);
+
+            builder.Entity<PendingBL>()
+                .HasQueryFilter(pb => !EnableTenantFilter || !_currentCompanyId.HasValue || pb.CompanyId == _currentCompanyId);
+
+            builder.Entity<BLItem>()
+                .HasQueryFilter(bi => !EnableTenantFilter || !_currentCompanyId.HasValue || bi.CompanyId == _currentCompanyId);
+
+            builder.Entity<IGM>()
+                .HasQueryFilter(igm => !EnableTenantFilter || !_currentCompanyId.HasValue || igm.CompanyId == _currentCompanyId);
+
+            builder.Entity<DutyCharge>()
+                .HasQueryFilter(dc => !EnableTenantFilter || !_currentCompanyId.HasValue || dc.CompanyId == _currentCompanyId);
+
         }
 
         // Optional: expose a method to set current tenant at runtime

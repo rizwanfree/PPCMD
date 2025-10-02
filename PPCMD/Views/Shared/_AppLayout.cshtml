@@ -19,61 +19,61 @@
     <link href="https://fonts.googleapis.com/css2?family=Huninn&display=swap" rel="stylesheet">
 
     <style>
-        body {
-            font-family: "Huninn", sans-serif;
-            background-color: #f8f9fa; /* Light clean background */
-        }
+    body {
+    font-family: "Huninn", sans-serif;
+    background-color: #f8f9fa; /* Light clean background */
+    }
 
-        /* Sidebar base */
-        .sidebar {
-            width: 240px;
-            background: #0077b6; /* Navy Blue */
-            border-right: 1px solid #1b263b;
-            color: #fff;
-            flex-shrink: 0;
-        }
+    /* Sidebar base */
+    .sidebar {
+    width: 280px;
+    background: #0077b6; /* Navy Blue */
+    border-right: 1px solid #1b263b;
+    color: #fff;
+    flex-shrink: 0;
+    }
 
-            /* Sidebar links */
-            .sidebar .nav-link {
-                padding: 0.6rem 1rem;
-                border-radius: 0.375rem;
-                color: #e0e0e0; /* light gray text */
-                font-weight: 500;
-                transition: all 0.2s;
-            }
+    /* Sidebar links */
+    .sidebar .nav-link {
+    padding: 0.6rem 1rem;
+    border-radius: 0.375rem;
+    color: #e0e0e0; /* light gray text */
+    font-weight: 500;
+    transition: all 0.2s;
+    }
 
-                .sidebar .nav-link:hover {
-                    background: #1b263b;
-                    color: #00b4d8; /* Bright cyan accent */
-                }
+    .sidebar .nav-link:hover {
+        background: #1b263b;
+        color: #00b4d8; /* Bright cyan accent */
+    }
 
-                /* Sub-menu links */
-                .sidebar .nav-link.text-white-50 {
-                    color: #adb5bd !important;
-                }
+    /* Sub-menu links */
+    .sidebar .nav-link.text-white-50 {
+        color: #adb5bd !important;
+    }
 
-                /* Active link highlight */
-                .sidebar .nav-link.active {
-                    background: #1b263b;
-                    color: #00b4d8;
-                    font-weight: 600;
-                }
+    /* Active link highlight */
+    .sidebar .nav-link.active {
+        background: #1b263b;
+        color: #00b4d8;
+        font-weight: 600;
+    }
 
-        /* Topbar */
-        header {
-            background-color: #4682B4; /* Maritime Blue */
-             color: #ffffff;
-        }
+    /* Topbar */
+    header {
+    background-color: #4682B4; /* Maritime Blue */
+    color: #ffffff;
+    }
 
-            header .btn,
-            header .dropdown-item {
-                color: #fff;
-            }
+    header .btn,
+    header .dropdown-item {
+    color: #fff;
+    }
 
-                header .dropdown-item:hover {
-                    background: #0096c7;
-                    color: #fff;
-                }
+    header .dropdown-item:hover {
+        background: #0096c7;
+        color: #fff;
+    }
     </style>
 </head>
 
@@ -121,6 +121,32 @@
                     <a href="#" class="nav-link text-white-50">Test Link 2</a>
                 </div>
             </div>
+
+            <div class="nav-item">
+                <a class="nav-link d-flex justify-content-between align-items-center"
+                   data-bs-toggle="collapse" href="#generalMenu" aria-expanded="false">
+                    <span><i class="bi bi-people me-2"></i>General Consignment</span>
+                    <i class="bi bi-chevron-down small"></i>
+                </a>
+                <div class="collapse ms-3" id="generalMenu">
+                    <a asp-action="Index" asp-controller="Client" class="nav-link text-white-50">Clients</a>
+                    <a href="#" class="nav-link text-white-50">Test Link 2</a>
+                </div>
+            </div>
+
+            <!--Premium Feature-->
+            <div class="nav-item">
+                <a class="nav-link d-flex justify-content-between align-items-center"
+                   data-bs-toggle="collapse" href="#bulkMenu" aria-expanded="false">
+                    <span><i class="bi bi-people me-2"></i>General Consignment</span>
+                    <i class="bi bi-chevron-down small"></i>
+                </a>
+                <div class="collapse ms-3" id="bulkMenu">
+                    <a asp-action="Index" asp-controller="Client" class="nav-link text-white-50">Clients</a>
+                    <a href="#" class="nav-link text-white-50">Test Link 2</a>
+                </div>
+            </div>
+
         </nav>
     </aside>
 
