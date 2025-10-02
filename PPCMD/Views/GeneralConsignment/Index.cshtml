@@ -1,0 +1,62 @@
+﻿@model IEnumerable<PPCMD.Models.BL>
+
+@{
+    ViewData["Title"] = "Consignments (BL Listing)";
+}
+
+<div class="card shadow-sm border-0 mt-3">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0 text-center">@ViewData["Title"]</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table id="blTable" class="table table-bordered table-striped table-sm" style="font-size: 0.875rem;">
+                <thead class="table-light">
+                    <tr>                        
+                        <th>BL #</th>
+                        <th>BL Date</th>
+                        <th>LC Ref</th>
+                        <th>Pending BL Ref</th>
+                        <th>Company</th>
+                        <th>Cash Ref</th>
+                        <th>GD Ref</th>
+                        <th style="width: 120px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var bl in Model)
+                    {
+                        <tr>
+                            <td>@bl.Id</td>
+                            <td>@bl.BLDate.ToString("yyyy-MM-dd")</td>
+                            <td>@bl.LCId</td>
+                            <td>@bl.PendingBL?.BLNumber</td>
+                            <td>@bl.Company?.CompanyName</td>
+                            <td>@bl.CashRef</td>
+                            <td>@bl.GDRef</td>
+                            <td>
+                                <a href="#" class="btn btn-sm btn-primary">View</a>
+                                <a href="#" class="btn btn-sm btn-warning">Edit</a>
+                                <a href="#" class="btn btn-sm btn-danger">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#blTable').DataTable({
+                pageLength: 10,
+                order: [[1, "desc"]],
+                columnDefs: [
+                    { orderable: false, targets: -1 } // Disable sorting on Actions column
+                ]
+            });
+        });
+    </script>
+}
