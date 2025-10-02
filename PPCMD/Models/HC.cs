@@ -12,6 +12,9 @@ namespace PPCMD.Models
         public int BLId { get; set; }
         public BL? BL { get; set; }
 
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? UpdatedAt { get; set; }
+
         // Multi-Tenant Support
         public int CompanyId { get; set; }           // Tenant ID
         public Company? Company { get; set; }        // Navigation property

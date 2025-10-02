@@ -1,130 +1,75 @@
-﻿@model IEnumerable<PPCMD.Models.Item>
+﻿@model IEnumerable<PPCMD.Models.BL>
 
 @{
-    ViewData["Title"] = "Items";
+    ViewData["Title"] = "Consignments (BL Listing)";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="h4 fw-bold">Items</h1>
-    <a asp-action="Create" class="btn btn-success d-flex align-items-center">
-        ➕ Add Item
-    </a>
-</div>
-
-<!-- Search Bar -->
-<div class="mb-4">
-    <input type="text"
-           id="searchInput"
-           placeholder="Search items..."
-           class="form-control w-100 w-md-50" />
-</div>
-
-<!-- Card Grid -->
-<div id="itemsGrid" class="row g-4">
-    @foreach (var item in Model)
-    {
-        <div class="col-12 col-sm-6 col-lg-3">
-            <div class="card h-100 shadow-sm border-0 item-card"
-                 data-name="@item.ItemName @item.HSCode">
-                <div class="card-body d-flex flex-column justify-content-between">
-
-                    <div>
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <h5 class="card-title mb-0 text-truncate">@item.ItemName</h5>
-                            <span class="text-muted small">@item.HSCode</span>
-                        </div>
-
-                        @if (item.Duties.Any())
-                        {
-                            <ul class="list-unstyled small mb-2 overflow-auto" style="max-height: 120px;">
-                                @foreach (var duty in item.Duties)
+<div class="card shadow-sm border-0 mt-3">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0 text-center">@ViewData["Title"]</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table id="blTable" class="table table-bordered table-striped table-sm" style="font-size: 0.875rem;">
+                <thead class="table-light">
+                    <tr>
+                        <th>Job #</th>
+                        <th>Client Name</th>
+                        <th>LC + Date</th>
+                        <th>BL + Date</th>
+                        <th>Item Name</th>
+                        <th>Quantity</th>
+                        <th style="width: 120px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var bl in Model)
+                    {
+                        <tr>
+                            <td>@bl.PendingBL?.JobNumber</td>
+                            <td>@bl.PendingBL?.Client?.ClientName</td>
+                            <td>
+                                @if (bl.LC != null)
                                 {
-                                    <li class="d-flex justify-content-between">
-                                        <span>@duty.DutyType.Name</span>
-                                        <span class="fw-semibold">
-                                            @(duty.IsPercentage
-                                                                            ? $"{duty.Rate.ToString("F2")} %"
-                                                                            : $"{duty.Rate.ToString("F2")} F")
-                            </span>
-                        </li>
-                                                }
-                            </ul>
-                        }
-                        else
-                        {
-                            <p class="text-muted fst-italic">No duties</p>
-                        }
-                    </div>
-
-                    <div class="d-flex justify-content-between mt-2">
-                        <a asp-action="Edit" asp-route-id="@item.ItemID"
-                           class="btn btn-outline-primary btn-sm">
-                            ✏️ Edit
-                        </a>
-                        <button type="button"
-                                class="btn btn-outline-danger btn-sm"
-                                data-item-id="@item.ItemID"
-                                data-item-name="@item.ItemName"
-                                onclick="confirmDelete(this)">
-                            🗑 Delete
-                        </button>
-                    </div>
-
-                </div>
-            </div>
+                                    <text>@bl.LC.LCNumber - @bl.LC.Date.ToString("yyyy-MM-dd")</text>
+                                }
+                            </td>
+                            <td>@bl.Id - @bl.BLDate.ToString("yyyy-MM-dd")</td>
+                            <td>
+                                @if (bl.PendingBL?.Items?.Any() == true)
+                                {
+                                    @string.Join(", ", bl.PendingBL.Items.Select(i => i.Item?.ItemName))
+                                }
+                            </td>
+                            <td>
+                                @if (bl.PendingBL?.Items?.Any() == true)
+                                {
+                                    @bl.PendingBL.Items.Sum(i => i.Quantity).ToString("N2")
+                                }
+                            </td>
+                            <td>
+                                <a href="#" class="btn btn-sm btn-primary">View</a>
+                                <a href="#" class="btn btn-sm btn-warning">Edit</a>
+                                <a href="#" class="btn btn-sm btn-danger">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
-    }
+    </div>
 </div>
 
-<!-- Pagination -->
-<div class="d-flex justify-content-center mt-4 gap-2">
-    <button onclick="changePage(-1)" class="btn btn-secondary btn-sm">
-        ⬅ Prev
-    </button>
-    <span id="pageIndicator" class="align-self-center small text-muted">Page 1</span>
-    <button onclick="changePage(1)" class="btn btn-secondary btn-sm">
-        Next ➡
-    </button>
-</div>
-
-<script>
-    const cardsPerPage = 8;
-    let currentPage = 1;
-
-    function filterCards() {
-        const searchTerm = document.getElementById("searchInput").value.toLowerCase();
-        const cards = document.querySelectorAll(".item-card");
-        cards.forEach(card => {
-            const name = card.dataset.name.toLowerCase();
-            card.style.display = name.includes(searchTerm) ? "" : "none";
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#blTable').DataTable({
+                pageLength: 10,
+                order: [[1, "desc"]],
+                columnDefs: [
+                    { orderable: false, targets: -1 } // Disable sorting on Actions column
+                ]
+            });
         });
-        currentPage = 1;
-        paginateCards();
-    }
-
-    function paginateCards() {
-        const cards = Array.from(document.querySelectorAll(".item-card"))
-            .filter(card => card.style.display !== "none");
-
-        const totalPages = Math.ceil(cards.length / cardsPerPage);
-        document.getElementById("pageIndicator").innerText =
-            `Page ${currentPage} of ${totalPages || 1}`;
-
-        cards.forEach((card, index) => {
-            const start = (currentPage - 1) * cardsPerPage;
-            const end = start + cardsPerPage;
-            card.parentElement.style.display = (index >= start && index < end) ? "" : "none";
-        });
-    }
-
-    function changePage(step) {
-        const cards = Array.from(document.querySelectorAll(".item-card"))
-            .filter(card => card.style.display !== "none");
-        const totalPages = Math.ceil(cards.length / cardsPerPage);
-        currentPage = Math.max(1, Math.min(currentPage + step, totalPages));
-        paginateCards();
-    }
-
-    document.getElementById("searchInput").addEventListener("input", filterCards);
-    document.addEventListener("DOMContentLoaded", paginateCards);
-</script>
+    </script>
+}

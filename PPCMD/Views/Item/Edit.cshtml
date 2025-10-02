@@ -7,7 +7,7 @@
 <h1 class="h4 fw-bold mb-4">Edit Item</h1>
 
 <form asp-action="Edit" method="post" class="mb-4" style="max-width: 600px;">
-    <input type="hidden" asp-for="ItemID" />
+    <input type="hidden" asp-for="Id" />
 
     <div class="mb-3">
         <label asp-for="ItemName" class="form-label">Item Name</label>
@@ -64,7 +64,7 @@ else
 }
 
 <form asp-action="AddDuty" method="post" class="row g-3 mt-3">
-    <input type="hidden" name="itemId" value="@Model.ItemID" />
+    <input type="hidden" name="itemId" value="@Model.Id" />
 
     <!-- Duty Type -->
     <div class="col-md-4">

@@ -7,13 +7,18 @@ namespace PPCMD.Models
     {
         [Key]
         public int Id { get; set; }
-        public int ClientId { get; set; }        
+        public int ClientId { get; set; }
+        [ForeignKey("ClientId")]
+        public Client? Client { get; set; }
         public string BLNumber { get; set; } = string.Empty;
+        public DateTime BLDate { get; set; }
         public decimal Quantity { get; set; }
         public decimal AssignedQuantity { get; set; }
         public int IndexNumber { get; set; }
         public int JobNumber { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public DateTime JobDate { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? UpdatedAt { get; set; }
 
         public int IGMId { get; set; }
         [ForeignKey("IGMId")]

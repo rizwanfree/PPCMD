@@ -21,15 +21,18 @@ namespace PPCMD.Models
         public int PendingBLId { get; set; }
         public PendingBL PendingBL { get; set; } = null!;
 
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? UpdatedAt { get; set; }
+
         // Multi-Tenant Support
         public int CompanyId { get; set; }           // Tenant ID
         public Company? Company { get; set; }        // Navigation property
 
         // Navigation
         //public ICollection<ST> STs { get; set; }
-        public ICollection<HC> HomeConsumptions { get; set; }
+        public ICollection<HC> HomeConsumptions { get; set; } = new List<HC>();
         //public ICollection<IB> IBs { get; set; }
         //public ICollection<Exbond> Exbonds { get; set; }
-        public ICollection<DutyCharge> DutyCharges { get; set; }
+        public ICollection<DutyCharge> DutyCharges { get; set; } = new List<DutyCharge>();
     }
 }

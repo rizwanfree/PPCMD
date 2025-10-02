@@ -39,6 +39,9 @@ namespace PPCMD.Models
         // Final duty amount (whole rupees)
         public int Amount { get; set; }
 
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? UpdatedAt { get; set; }
+
         // Multi-tenant
         public int CompanyId { get; set; }
         public Company? Company { get; set; }

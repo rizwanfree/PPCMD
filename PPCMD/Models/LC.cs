@@ -15,11 +15,16 @@ namespace PPCMD.Models
         public decimal ExchangeRate { get; set; }
         public int LandingCharges { get; set; }
 
+        public bool IsGeneral { get; set; } = true;
+
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? UpdatedAt { get; set; }
+
 
         // Multi-Tenant Support
         public int CompanyId { get; set; }           // Tenant ID
         public Company? Company { get; set; }        // Navigation property
 
-        public ICollection<BL> BLs { get; set; }
+        public ICollection<BL> BLs { get; set; } = new List<BL>();
     }
 }

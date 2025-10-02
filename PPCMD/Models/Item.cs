@@ -8,7 +8,7 @@ namespace PPCMD.Models
     public class Item
     {
         [Key]
-        public int ItemID { get; set; }
+        public int Id { get; set; }
 
         [Required, MaxLength(200)]
         public string ItemName { get; set; } = string.Empty;
@@ -53,6 +53,8 @@ namespace PPCMD.Models
     public class DutyType
     {
         public int Id { get; set; }
+
+        [Required, MaxLength(100)]
         public string Name { get; set; } = string.Empty; // "Custom Duty", "Sales Tax", etc.
         public string? Description { get; set; }
 

@@ -1,0 +1,366 @@
+﻿@model PPCMD.Models.BL // Using BL as main model, but form will collect data for all entities
+
+<form asp-action="Create" method="post">
+    <!-- Job Section -->
+    <div class="card mb-3">
+        <div class="card-header">Job Information</div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-1">
+                    <label asp-for="PendingBL.JobNumber" class="form-label">Job #</label>
+                    <input asp-for="PendingBL.JobNumber" class="form-control text-end" />
+                </div>
+                <div class="col-md-2">
+                    <label asp-for="PendingBL.JobDate" class="form-label">Date</label>                    
+                    <input asp-for="PendingBL.JobDate" class="form-control date-input" type="text" />
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="PendingBL.ClientId" class="form-label">Client</label>
+                    <select asp-for="PendingBL.ClientId" asp-items="ViewBag.Clients" class="form-select">
+                        <option value="">-- Select Client --</option>
+                    </select>
+                    <span asp-validation-for="PendingBL.ClientId" class="text-danger"></span>
+                </div>
+                <div class="col-md-3">
+                    <label asp-for="PendingBL.Client.ContactPerson" class="form-label">Contact Person</label>
+                    <input asp-for="PendingBL.Client.ContactPerson" class="form-control" disabled/>
+                </div>
+
+                <div class="col-md-2">
+                    <label asp-for="PendingBL.IGM.PortId" class="form-label">Port</label>
+                    <select asp-for="PendingBL.IGM.PortId" asp-items="ViewBag.Ports" class="form-select">
+                        <option value="">-- Select Port --</option>
+                    </select>
+                    <span asp-validation-for="PendingBL.IGM.PortId" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shipment Section -->
+    <div class="card mb-3">
+        <div class="card-header">Shipment Information</div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-1">
+                    <label asp-for="PendingBL.IGM.Number" class="form-label">IGM #</label>
+                    <input asp-for="PendingBL.IGM.Number" class="form-control text-end" />
+                </div>
+
+                <div class="col-md-1">
+                    <label asp-for="PendingBL.IGM.Date" class="form-label">IGM Date</label>
+                    <input asp-for="PendingBL.IGM.Date" class="form-control date-input" type="text" />
+                </div>
+
+                <div class="col-md-2">
+                    <label asp-for="PendingBL.IGM.Vessel" class="form-label">Vessel</label>
+                    <input asp-for="PendingBL.IGM.Vessel" class="form-control" />
+                </div>
+
+                <div class="col-md-1">
+                    <label asp-for="PendingBL.IndexNumber" class="form-label">Index #</label>
+                    <input asp-for="PendingBL.IndexNumber" class="form-control text-end" />
+                </div>
+
+                <div class="col-md-2">
+                    <label asp-for="PendingBL.BL.LC.LCNumber" class="form-label">LC/Contract #</label>
+                    <input asp-for="PendingBL.BL.LC.LCNumber" class="form-control" />
+                </div>
+
+                <div class="col-md-1">
+                    <label asp-for="PendingBL.BL.LC.Date" class="form-label">Date</label>
+                    <input asp-for="PendingBL.BL.LC.Date" class="form-control date-input" type="text" />
+                </div>
+
+                <div class="col-md-2">
+                    <label asp-for="PendingBL.BLNumber" class="form-label">BL #</label>
+                    <input asp-for="PendingBL.BLNumber" class="form-control" />
+                </div>
+
+                <div class="col-md-1">
+                    <label asp-for="PendingBL.BLDate" class="form-label">Date</label>
+                    <input asp-for="PendingBL.BLDate" class="form-control date-input" type="text" />
+                </div>
+
+                <div class="col-md-1">
+                    <label asp-for="PendingBL.BL.LC.ExchangeRate" class="form-label">Ex-Rate</label>
+                    <input asp-for="PendingBL.BL.LC.ExchangeRate" class="form-control" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Items Section -->
+    <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <span>Items</span>
+            <button type="button" class="btn btn-sm btn-success" id="addItem">+ Add Item</button>
+        </div>
+        <div class="card-body">
+            <div id="itemsContainer">
+                <!-- Dynamic items will be added here -->
+            </div>
+        </div>
+    </div>
+
+
+    <div class="mt-3">
+        <button type="submit" class="btn btn-primary">Create Consignment</button>
+    </div>
+</form>
+
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js"></script>
+    <script>
+        let itemIndex = 0;
+        const itemsWithDuties = @Html.Raw(Json.Serialize(ViewBag.ItemsWithDuties));
+
+        $(document).ready(function () {
+            $('.date-input').inputmask('99/99/9999', {
+                placeholder: 'DD/MM/YYYY',
+                clearIncomplete: true
+            });
+
+            // Add first item row by default
+            addItemRow();
+
+            $('#addItem').click(function () {
+                addItemRow();
+            });
+
+            // Remove item row
+            $(document).on('click', '.remove-item', function () {
+                $(this).closest('.item-row').remove();
+            });
+
+            // Add exchange rate change listener
+            $('[name="PendingBL.BL.LC.ExchangeRate"]').on('input', function() {
+                $('.item-row').each(function() {
+                    const itemIndex = $(this).index();
+                    calculateItemValues($(this).find('.quantity-input')[0], itemIndex);
+                });
+            });
+        });
+
+        function addItemRow() {
+            const index = itemIndex++;
+            const itemRow = `
+                <div class="item-row border p-3 mb-2">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label class="form-label">Item</label>
+                            <select name="Items[${index}].ItemId" class="form-select item-select" onchange="loadItemDuties(this, ${index})">
+                                <option value="">-- Select Item --</option>
+                                @foreach (var item in ViewBag.Items as SelectList)
+                                {
+                                        <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Quantity</label>
+                            <input type="number" name="Items[${index}].Quantity" class="form-control text-end quantity-input" step="0.01" oninput="calculateItemValues(this, ${index})" />
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Unit Value USD</label>
+                            <input type="number" name="Items[${index}].UnitValue" class="form-control text-end unit-value-input" step="0.01" oninput="calculateItemValues(this, ${index})" />
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Import Value USD</label>
+                            <input type="number" name="Items[${index}].ImportValue" class="form-control text-end import-value-usd" step="0.01" readonly/>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Import Value PKR</label>
+                            <input type="number" name="Items[${index}].ImportValuePKR" class="form-control text-end import-value-pkr" step="0.01" readonly/>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label class="form-label">Insurance USD</label>
+                            <input type="number" name="Items[${index}].InsuranceValue" class="form-control text-end insurance-usd" step="0.01" oninput="calculateItemValues(this, ${index})" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Insurance PKR</label>
+                            <input type="number" name="Items[${index}].InsuranceValuePKR" class="form-control text-end insurance-pkr" step="0.01" readonly/>
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label">Freight Charges</label>
+                            <input type="number" name="Items[${index}].FreightCharges" class="form-control text-end freight-input" step="0.01" oninput="calculateItemValues(this, ${index})" />
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">1% Landing Charges</label>
+                            <input type="number" name="Items[${index}].LandingCharges" class="form-control text-end landing-charges" step="0.01" readonly/>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Assessable Value</label>
+                            <input type="number" name="Items[${index}].AssessableValue" class="form-control text-end assessable-value" step="0.01" readonly/>
+                        </div>
+                    </div>
+
+                    <!-- Duty Calculation Section -->
+                    <div class="duty-section mt-3" style="display: none;">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="mb-0 text-primary">Duty Calculation</h6>
+                            <small class="text-muted">Based on item's duty types</small>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="text-center">Duty Type</th>
+                                        <th class="text-center" width="150">Rate</th>
+                                        <th class="text-center" width="150">Type</th>
+                                        <th class="text-center" width="200">Calculated Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="duty-tbody">
+                                    <!-- Duty rows will be populated here -->
+                                </tbody>
+                                <tfoot class="table-secondary">
+                                    <tr>
+                                        <th colspan="3" class="text-end">Total Duties:</th>
+                                        <th class="total-duty-amount text-end">0</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mt-2">
+                        <button type="button" class="btn btn-sm btn-outline-info toggle-duties">Show Duties</button>
+                        <button type="button" class="btn btn-sm btn-danger remove-item">Remove Item</button>
+                    </div>
+                </div>
+            `;
+            $('#itemsContainer').append(itemRow);
+
+            // Add toggle functionality
+            const newRow = $('#itemsContainer .item-row').last();
+            newRow.find('.toggle-duties').click(function() {
+                $(this).closest('.item-row').find('.duty-section').slideToggle();
+                $(this).text($(this).text() === 'Show Duties' ? 'Hide Duties' : 'Show Duties');
+            });
+        }
+
+        function calculateItemValues(inputElement, itemIndex) {
+            const itemRow = $(inputElement).closest('.item-row');
+            const exchangeRate = parseFloat($('[name="PendingBL.BL.LC.ExchangeRate"]').val()) || 0;
+
+            // Get input values
+            const quantity = parseFloat(itemRow.find('.quantity-input').val()) || 0;
+            const unitValue = parseFloat(itemRow.find('.unit-value-input').val()) || 0;
+            const insuranceUSD = parseFloat(itemRow.find('.insurance-usd').val()) || 0;
+            const freightCharges = parseFloat(itemRow.find('.freight-input').val()) || 0;
+
+            // Calculate values based on your formulas
+            const importValueUSD = quantity * unitValue;
+            const importValuePKR = Math.round(importValueUSD * exchangeRate);
+            const insurancePKR = Math.round(insuranceUSD * exchangeRate);
+
+            // Calculate 1% Landing Charges
+            const landingCharges = (importValuePKR + insurancePKR + freightCharges) * 0.01;
+
+            // Calculate Assessable Value (Import Value PKR + Insurance PKR + Freight Charges + Landing Charges)
+            const assessableValue = importValuePKR + insurancePKR + freightCharges + landingCharges;
+
+            // Update the readonly fields
+            itemRow.find('.import-value-usd').val(importValueUSD.toFixed(2));
+            itemRow.find('.import-value-pkr').val(importValuePKR.toFixed(0));
+            itemRow.find('.insurance-pkr').val(insurancePKR.toFixed(0));
+            itemRow.find('.landing-charges').val(landingCharges.toFixed(0));
+            itemRow.find('.assessable-value').val(assessableValue.toFixed(0));
+
+            // Update duty calculations if duties are loaded
+            updateDutyCalculations(itemRow, assessableValue);
+        }
+
+        function updateDutyCalculations(itemRow, assessableValue) {
+            const dutyRows = itemRow.find('.duty-tbody tr');
+            const quantity = parseFloat(itemRow.find('.quantity-input').val()) || 0;
+            let totalDuties = 0;
+
+            dutyRows.each(function() {
+                const row = $(this);
+                const rate = parseFloat(row.find('input[name*="Rate"]').val()) || 0;
+                const isPercentage = row.find('input[name*="IsPercentage"]').val() === 'true';
+                const dutyTypeName = row.find('td:first').text().toLowerCase();
+
+                let calculatedAmount = 0;
+
+                if (!isPercentage) {
+                    // Fixed rate duty: duty rate * quantity
+                    calculatedAmount = rate * quantity;
+                } else {
+                    // Percentage-based duty
+                    if (dutyTypeName.includes('custom') || dutyTypeName.includes('duty')) {
+                        // For custom duty: Assessable Value * duty rate
+                        calculatedAmount = assessableValue * (rate / 100);
+                    } else {
+                        // For other percentage duties: Use default percentage calculation
+                        calculatedAmount = assessableValue * (rate / 100);
+                    }
+                }
+
+                // Round to whole number
+                calculatedAmount = Math.round(calculatedAmount);
+                totalDuties += calculatedAmount;
+
+                // Update the table
+                row.find('.calculated-amount').text(calculatedAmount.toFixed(0));
+            });
+
+            // Update total duties
+            itemRow.find('.total-duty-amount').text(totalDuties.toFixed(0));
+        }
+            
+        
+        // Add toggle functionality
+        const newRow = $('#itemsContainer .item-row').last();
+        newRow.find('.toggle-duties').click(function() {
+            $(this).closest('.item-row').find('.duty-section').slideToggle();
+            $(this).text($(this).text() === 'Show Duties' ? 'Hide Duties' : 'Show Duties');
+                
+        });
+        
+
+        function loadItemDuties(selectElement, itemIndex) {
+            const itemId = parseInt(selectElement.value);
+            const dutySection = $(selectElement).closest('.item-row').find('.duty-section');
+            const dutyTbody = $(selectElement).closest('.item-row').find('.duty-tbody');
+
+            // Clear previous duties
+            dutyTbody.empty();
+            dutySection.hide();
+
+            if (!itemId) {
+                return;
+            }
+
+            // Find item in pre-loaded data
+            const item = itemsWithDuties.find(i => i.id === itemId);
+
+            if (item && item.duties && item.duties.length > 0) {
+                // Populate duties table
+                item.duties.forEach((duty, dutyIndex) => {
+                    const dutyRow = `
+                        <tr>
+                            <td>${duty.dutyTypeName}</td>
+                            <td class="text-end">${duty.rate}</td>
+                            <td class="text-center base-amount">${duty.isPercentage ? ' %' : ' Fixed'}</td>
+                            <td class="text-end calculated-amount">0.00</td>
+                            <input type="hidden" name="Items[${itemIndex}].DutyCalculations[${dutyIndex}].DutyTypeId" value="${duty.dutyTypeId}" />
+                            <input type="hidden" name="Items[${itemIndex}].DutyCalculations[${dutyIndex}].Rate" value="${duty.rate}" />
+                            <input type="hidden" name="Items[${itemIndex}].DutyCalculations[${dutyIndex}].IsPercentage" value="${duty.isPercentage}" />
+                        </tr>
+                    `;
+                    dutyTbody.append(dutyRow);
+                });
+
+                dutySection.show();
+            }
+        }
+    </script>
+}

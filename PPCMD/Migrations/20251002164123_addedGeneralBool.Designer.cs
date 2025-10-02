@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PPCMD.Data;
 
@@ -11,9 +12,11 @@ using PPCMD.Data;
 namespace PPCMD.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251002164123_addedGeneralBool")]
+    partial class addedGeneralBool
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -252,9 +255,6 @@ namespace PPCMD.Migrations
                     b.Property<int>("CompanyId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<DateTime?>("GDDate")
                         .HasColumnType("datetime2");
 
@@ -266,9 +266,6 @@ namespace PPCMD.Migrations
 
                     b.Property<int>("PendingBLId")
                         .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -564,9 +561,6 @@ namespace PPCMD.Migrations
                     b.Property<int>("CompanyId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("DutyTypeId")
                         .HasColumnType("int");
 
@@ -584,9 +578,6 @@ namespace PPCMD.Migrations
 
                     b.Property<decimal>("Rate")
                         .HasColumnType("decimal(10,4)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -617,8 +608,7 @@ namespace PPCMD.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -707,12 +697,6 @@ namespace PPCMD.Migrations
                     b.Property<int>("CompanyId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
                     b.HasKey("Id");
 
                     b.HasIndex("BLId");
@@ -733,9 +717,6 @@ namespace PPCMD.Migrations
                     b.Property<int>("CompanyId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
@@ -744,9 +725,6 @@ namespace PPCMD.Migrations
 
                     b.Property<int>("PortId")
                         .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("Vessel")
                         .IsRequired()
@@ -763,11 +741,11 @@ namespace PPCMD.Migrations
 
             modelBuilder.Entity("PPCMD.Models.Item", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("ItemID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ItemID"));
 
                     b.Property<int>("CompanyId")
                         .HasColumnType("int");
@@ -788,7 +766,7 @@ namespace PPCMD.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("Id");
+                    b.HasKey("ItemID");
 
                     b.HasIndex("CompanyId");
 
@@ -846,9 +824,6 @@ namespace PPCMD.Migrations
                     b.Property<int>("CompanyId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
@@ -872,9 +847,6 @@ namespace PPCMD.Migrations
 
                     b.Property<decimal>("Quantity")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -934,9 +906,6 @@ namespace PPCMD.Migrations
                     b.Property<decimal>("AssignedQuantity")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<DateTime>("BLDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("BLNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -959,21 +928,13 @@ namespace PPCMD.Migrations
                     b.Property<int>("IndexNumber")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("JobDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("JobNumber")
                         .HasColumnType("int");
 
                     b.Property<decimal>("Quantity")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("ClientId");
 
                     b.HasIndex("CompanyId");
 
@@ -1432,12 +1393,6 @@ namespace PPCMD.Migrations
 
             modelBuilder.Entity("PPCMD.Models.PendingBL", b =>
                 {
-                    b.HasOne("PPCMD.Models.Client", "Client")
-                        .WithMany()
-                        .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("PPCMD.Models.Company", "Company")
                         .WithMany()
                         .HasForeignKey("CompanyId")
@@ -1453,8 +1408,6 @@ namespace PPCMD.Migrations
                     b.HasOne("PPCMD.Models.IGM", null)
                         .WithMany("PendingBLs")
                         .HasForeignKey("IGMId1");
-
-                    b.Navigation("Client");
 
                     b.Navigation("Company");
 

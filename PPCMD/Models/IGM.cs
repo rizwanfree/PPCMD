@@ -17,12 +17,15 @@ namespace PPCMD.Models
         public int PortId { get; set; }
         public Port? Port { get; set; }
 
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? UpdatedAt { get; set; }
+
 
         // Multi-Tenant Support
         public int CompanyId { get; set; }           // Tenant ID
         public Company? Company { get; set; }        // Navigation property
 
         // Navigation
-        public ICollection<PendingBL> PendingBLs { get; set; }
+        public ICollection<PendingBL> PendingBLs { get; set; } = new List<PendingBL>();
     }
 }

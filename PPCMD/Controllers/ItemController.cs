@@ -61,7 +61,7 @@ namespace PPCMD.Controllers
 
                 _context.Add(item);             // Add to DbSet
                 await _context.SaveChangesAsync(); // Save changes
-                return RedirectToAction(nameof(Edit), new { id = item.ItemID }); // Redirect to Edit page
+                return RedirectToAction(nameof(Edit), new { id = item.Id }); // Redirect to Edit page
             }
 
             // If invalid, re-populate duty types and return view with errors
@@ -78,7 +78,7 @@ namespace PPCMD.Controllers
             var item = await _context.Items
                 .Include(i => i.Duties)          // Include duties
                     .ThenInclude(d => d.DutyType) // Include duty type details
-                .FirstOrDefaultAsync(i => i.ItemID == id);
+                .FirstOrDefaultAsync(i => i.Id == id);
 
             if (item != null)
             {
@@ -101,13 +101,13 @@ namespace PPCMD.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Item updatedItem)
         {
-            if (id != updatedItem.ItemID)
+            if (id != updatedItem.Id)
                 return NotFound(); // Ensure route id matches model id
 
             if (!ModelState.IsValid)
                 return View(updatedItem); // Return with validation errors
 
-            var existingItem = await _context.Items.FirstOrDefaultAsync(i => i.ItemID == id);
+            var existingItem = await _context.Items.FirstOrDefaultAsync(i => i.Id == id);
 
             if (existingItem == null)
                 return NotFound(); // Item not found
