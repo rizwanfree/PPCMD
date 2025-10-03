@@ -7,6 +7,12 @@ namespace PPCMD.Models
     {
         [Key]
         public int Id { get; set; }
+
+
+        public int? Containers { get; set; }
+        public int? Size { get; set; }
+        public string? Packages { get; set; }
+
         public DateTime BLDate { get; set; }
         public string? CashRef { get; set; }
         public DateTime? CashDate { get; set; }

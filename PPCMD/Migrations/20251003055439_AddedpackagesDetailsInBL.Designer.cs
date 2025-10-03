@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PPCMD.Data;
 
@@ -11,9 +12,11 @@ using PPCMD.Data;
 namespace PPCMD.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251003055439_AddedpackagesDetailsInBL")]
+    partial class AddedpackagesDetailsInBL
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -879,17 +882,8 @@ namespace PPCMD.Migrations
                     b.Property<int>("LandingCharges")
                         .HasColumnType("int");
 
-                    b.Property<int?>("LoloId")
-                        .HasColumnType("int");
-
                     b.Property<decimal>("Quantity")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<int?>("ShippingLineId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("TerminalId")
-                        .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -897,12 +891,6 @@ namespace PPCMD.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CompanyId");
-
-                    b.HasIndex("LoloId");
-
-                    b.HasIndex("ShippingLineId");
-
-                    b.HasIndex("TerminalId");
 
                     b.ToTable("LCs");
                 });
@@ -1440,25 +1428,7 @@ namespace PPCMD.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PPCMD.Models.Lolo", "Lolo")
-                        .WithMany()
-                        .HasForeignKey("LoloId");
-
-                    b.HasOne("PPCMD.Models.ShippingLine", "ShippingLine")
-                        .WithMany()
-                        .HasForeignKey("ShippingLineId");
-
-                    b.HasOne("PPCMD.Models.Terminal", "Terminal")
-                        .WithMany()
-                        .HasForeignKey("TerminalId");
-
                     b.Navigation("Company");
-
-                    b.Navigation("Lolo");
-
-                    b.Navigation("ShippingLine");
-
-                    b.Navigation("Terminal");
                 });
 
             modelBuilder.Entity("PPCMD.Models.Lolo", b =>

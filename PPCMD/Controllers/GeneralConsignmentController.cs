@@ -38,7 +38,17 @@ namespace PPCMD.Controllers
             // Populate ViewBag with dropdown data
             ViewBag.Clients = new SelectList(_context.Clients, "Id", "ClientName");
             ViewBag.Ports = new SelectList(_context.Ports, "Id", "Name");
+            ViewBag.ShippingLines = new SelectList(_context.ShippingLines, "Id", "Name");
+            ViewBag.Terminals = new SelectList(_context.Terminals, "Id", "Name");
+            ViewBag.Lolos = new SelectList(_context.Lolos, "Id", "Name");
             ViewBag.Items = new SelectList(_context.Items, "Id", "ItemName");
+            ViewBag.ConsignmentType = new List<SelectListItem>
+            {
+                new SelectListItem { Text = "Home Consumption", Value = "Home Consumption" },
+                new SelectListItem { Text = "Into-Bond", Value = "Into-Bond" },
+                new SelectListItem { Text = "Safe Transportation", Value = "Safe Transportation" },
+                new SelectListItem { Text = "Trans-Shipment", Value = "Trans-Shipment" }
+            };
 
             // Pre-load all items with their duties
             var itemsWithDuties = _context.Items
