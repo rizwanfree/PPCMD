@@ -22,6 +22,23 @@ select[readonly]:focus {
     outline: none; /* remove focus ring */
     box-shadow: none;
 }
+
+.card-body {
+    padding: 0.75rem !important;
+}
+/* Was py-2 px-2; now tighter */
+.card-header {
+    padding: 0.5rem !important;
+}
+
+.row {
+    margin-bottom: 0.5rem;
+}
+/* Less gap between rows */
+
+.toast {
+    z-index: 9999;
+}
 </style>
 <form asp-action="Create" method="post">
     <!-- Job Section -->
@@ -252,6 +269,18 @@ select[readonly]:focus {
                     calculateItemValues($(this).find('.quantity-input')[0], itemIndex);
                 });
             });
+
+
+             // IGM Number lookup functionality
+            $('input[name="PendingBL.IGM.Number"]').on('blur', function() {
+                const igmNumber = $(this).val();
+                const portId = $('select[name="PendingBL.IGM.PortId"]').val();
+                const currentYear = new Date().getFullYear();
+
+                if (igmNumber && portId) {
+                    lookupIGM(igmNumber, portId, currentYear);
+                }
+            });
         });
 
         function addItemRow() {
@@ -459,24 +488,47 @@ select[readonly]:focus {
             const row = `
                 <tr>
                     <td class="handle text-center">
-                        <i class="bi bi-list"></i> <!-- drag handle icon -->
+                        <i class="bi bi-list"></i>
                         <input type="hidden" name="Payorders[${payorderIndex}].Order" value="${payorderIndex}" class="order-field" />
                     </td>
                     <td>
-                        <input type="text" name="Payorders[${payorderIndex}].Particular" class="form-control form-control-sm" placeholder="Collector of Customs" />
+                        <select name="Payorders[${payorderIndex}].PayorderHeaderId" class="form-select form-select-sm payorder-header-select">
+                            <option value="">-- Select Payorder --</option>
+                            @foreach (var header in ViewBag.PayorderHeaders)
+                            {
+                                    <option value="@header.Id" data-description="@header.Description">@header.Name</option>
+                            }
+                        </select>
                     </td>
                     <td>
-                        <input type="text" name="Payorders[${payorderIndex}].Detail" class="form-control form-control-sm" placeholder="Details" />
+                        <input type="text" name="Payorders[${payorderIndex}].Detail" class="form-control form-control-sm payorder-detail" placeholder="Details" />
                     </td>
                     <td>
-                        <input type="number" name="Payorders[${payorderIndex}].Amount" class="form-control form-control-sm text-end" />
+                        <input type="number" name="Payorders[${payorderIndex}].Amount" class="form-control form-control-sm text-end" step="0.01" />
                     </td>
                     <td class="text-center">
-                        <button type="button" class="btn btn-sm btn-danger remove-payorder">×</button>
+                        <button type="button" class="btn btn-sm btn-danger remove-payorder">
+                            <i class="bi bi-trash"></i>
+                        </button>
                     </td>
                 </tr>`;
             $("#payordersTable tbody").append(row);
             payorderIndex++;
+        });
+
+        // Auto-populate description when payorder header is selected
+        $(document).on("change", ".payorder-header-select", function() {
+            const selectedOption = $(this).find('option:selected');
+            const description = selectedOption.data('description');
+            const detailInput = $(this).closest('tr').find('.payorder-detail');
+
+            console.log('Selected payorder:', selectedOption.text(), 'Description:', description); // Debug log
+
+            if (description && description.trim() !== '') {
+                detailInput.val(description);
+            } else {
+                detailInput.val(''); // Clear if no description
+            }
         });
 
         // Remove row
@@ -485,16 +537,16 @@ select[readonly]:focus {
             updatePayorderOrder();
         });
 
-
-        const tbody = document.querySelector("#payordersTable tbody");
-
-        new Sortable(tbody, {
-            handle: ".handle",  // only drag by the handle cell
-            animation: 150,
-            onEnd: function () {
-                updatePayorderOrder();
-            }
-        });
+        // Initialize Sortable
+        if (document.querySelector("#payordersTable tbody")) {
+            new Sortable(document.querySelector("#payordersTable tbody"), {
+                handle: ".handle",
+                animation: 150,
+                onEnd: function () {
+                    updatePayorderOrder();
+                }
+            });
+        }
 
         // Update visible order numbers + hidden fields when sorted
         function updatePayorderOrder() {
@@ -526,5 +578,59 @@ select[readonly]:focus {
                 }
             });
         });
-    </script>
+
+
+        function lookupIGM(igmNumber, portId, year) {
+            $.get(`/GeneralConsignment/GetIGMDetails?igmNumber=${igmNumber}&portId=${portId}&year=${year}`, function(data) {
+                if (data.success) {
+                    // Populate the fields with the fetched data
+                    $('input[name="PendingBL.IGM.Date"]').val(formatDateForInput(data.igmDate));
+                    $('input[name="PendingBL.IGM.Vessel"]').val(data.vessel);
+
+                    // Show success message
+                    showToast('IGM found', 'success');
+                } else {
+                    // Clear the fields if IGM not found
+                    $('input[name="PendingBL.IGM.Date"]').val('');
+                    $('input[name="PendingBL.IGM.Vessel"]').val('');
+
+                    // Show info message
+                    showToast('IGM not found for the selected port and year. Please enter details manually.', 'info');
+                }
+            }).fail(function() {
+                showToast('Error looking up IGM details.', 'error');
+            });
+        }
+
+        function formatDateForInput(dateString) {
+            if (!dateString) return '';
+
+            const date = new Date(dateString);
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+
+            return `${day}/${month}/${year}`;
+        }
+
+        function showToast(message, type = 'info') {
+            // Remove any existing toasts
+            $('.toast').remove();
+
+            const toast = $(`
+                <div class="toast align-items-center text-white bg-${type === 'success' ? 'success' : type === 'error' ? 'danger' : 'info'} border-0 position-fixed top-0 end-0 m-3" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            ${message}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+            `);
+
+            $('body').append(toast);
+            const bsToast = new bootstrap.Toast(toast[0]);
+            bsToast.show();
+        }
+</script>
 }

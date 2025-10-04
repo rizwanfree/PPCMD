@@ -336,6 +336,90 @@ namespace PPCMD.utils
             _context.Ports.AddRange(ports);
             await _context.SaveChangesAsync();
         }
+
+        public async Task SeedPayorderHeadersAsync(int companyId)
+        {
+            if (await _context.PayorderHeaders.AnyAsync(p => p.CompanyId == companyId))
+                return;
+
+            var headers = new List<PayorderHeader>
+            {
+                new PayorderHeader {
+                    Name = "Custom Duty",
+                    Description = "Collector Of Customs",
+                    CompanyId = companyId
+                },
+                new PayorderHeader {
+                    Name = "EXCISE DUTY",
+                    Description = "EXCISE & TAXATION OFFICER SEA DUES",
+                    CompanyId = companyId
+                    },
+                new PayorderHeader {
+                    Name = "TERMINAL WHARFAGE",
+                    Description = null,
+                    CompanyId = companyId
+                },
+                new PayorderHeader {
+                    Name = "DELIVERY ORDER",
+                    Description = null,
+                    CompanyId = companyId
+                },
+                new PayorderHeader {
+                    Name = "CONTAINER RENT",
+                    Description = null,
+                    CompanyId = companyId
+                },
+                new PayorderHeader {
+                    Name = "CONTAINER DEPOSIT",
+                    Description = null,
+                    CompanyId = companyId
+                },
+                new PayorderHeader {
+                    Name = "PSQCA",
+                    Description = "PSQCA SDC IMPORT & EXPORT",
+                    CompanyId = companyId
+                },
+                new PayorderHeader {
+                    Name = "PSQCA",
+                    Description = "COMMERCID TESTING OTHER RELATED AT NED UET D-CPE",
+                    CompanyId = companyId
+                },
+                new PayorderHeader {
+                    Name = "PSQCA",
+                    Description = "DIRECTOR QCC/PSQCA KARACHI",
+                    CompanyId = companyId
+                },
+                new PayorderHeader {
+                    Name = "TPL",
+                    Description = "TPL TRAKKER LIMITED NTN # 7504487",
+                    CompanyId = companyId
+                },
+                new PayorderHeader {
+                    Name = "LIFT ON LIFT OFF",
+                    Description = null,
+                    CompanyId = companyId
+                },
+                new PayorderHeader {
+                    Name = "CAA",
+                    Description = "CIVIL AVIATION AUTHORITY",
+                    CompanyId = companyId
+                },
+                new PayorderHeader {
+                    Name = "ENDORSEMENT",
+                    Description = null,
+                    CompanyId = companyId
+                },
+                new PayorderHeader {
+                    Name = "FRIEGHT",
+                    Description = null,
+                    CompanyId = companyId
+                }
+
+            };
+
+            _context.PayorderHeaders.AddRange(headers);
+            await _context.SaveChangesAsync();
+        }
     }
 
 }

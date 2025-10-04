@@ -33,8 +33,11 @@ namespace PPCMD.Controllers
 
 
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            var user = await _userManager.GetUserAsync(User);
+            if (user?.CompanyId == null) return Forbid();
+
             // Populate ViewBag with dropdown data
             ViewBag.Clients = new SelectList(_context.Clients, "Id", "ClientName");
             ViewBag.Ports = new SelectList(_context.Ports, "Id", "Name");
@@ -49,6 +52,12 @@ namespace PPCMD.Controllers
                 new SelectListItem { Text = "Safe Transportation", Value = "Safe Transportation" },
                 new SelectListItem { Text = "Trans-Shipment", Value = "Trans-Shipment" }
             };
+
+            // Add PayorderHeaders to ViewBag
+            ViewBag.PayorderHeaders = _context.PayorderHeaders
+                .Where(h => h.CompanyId == user.CompanyId.Value)
+                .OrderBy(h => h.Name)
+                .ToList();
 
             // Pre-load all items with their duties
             var itemsWithDuties = _context.Items
@@ -86,6 +95,43 @@ namespace PPCMD.Controllers
                 return Json(new { success = false });
 
             return Json(new { success = true, contactPerson = client.ContactPerson });
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetIGMDetails(int igmNumber, int portId, int year)
+        {
+            try
+            {
+                var user = await _userManager.GetUserAsync(User);
+                if (user?.CompanyId == null)
+                    return Json(new { success = false, message = "User not authenticated" });
+
+                // Find IGM for current company, port, year, and number
+                var igm = await _context.IGMs
+                    .Where(i => i.CompanyId == user.CompanyId.Value &&
+                               i.PortId == portId &&
+                               i.Number == igmNumber &&
+                               i.Date.Year == year)
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync();
+
+                if (igm == null)
+                    return Json(new { success = false, message = "IGM not found" });
+
+                return Json(new
+                {
+                    success = true,
+                    igmNumber = igm.Number,
+                    igmDate = igm.Date.ToString("yyyy-MM-dd"),
+                    vessel = igm.Vessel,
+                    portId = igm.PortId
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
         }
     }
 }

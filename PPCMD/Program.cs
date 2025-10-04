@@ -67,6 +67,7 @@ using (var scope = app.Services.CreateScope())
         await seeder.SeedTerminalsAsync(company.Id);
         await seeder.SeedCitiesAsync(company.Id);
         await seeder.SeedPortsAsync(company.Id);
+        await seeder.SeedPayorderHeadersAsync(company.Id);
     }
 }
 
