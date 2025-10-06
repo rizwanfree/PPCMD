@@ -1,636 +1,286 @@
-﻿@model PPCMD.Models.BL // Using BL as main model, but form will collect data for all entities
-
+﻿@model PPCMD.Models.BL
 
 <style>
-.card .form-label,
-.card input,
-.card select {
-    font-size: 0.85rem;
-}
+    .card .form-label,
+    .card input,
+    .card select {
+        font-size: 0.85rem;
+    }
 
-input[readonly],
-textarea[readonly],
-select[readonly] {
-    background-color: #e9ecef; /* slightly darker than default */
-    color: #495057; /* dark text */
-    cursor: not-allowed; /* shows "disabled" cursor */
-}
+    input[readonly],
+    textarea[readonly],
+    select[readonly] {
+        background-color: #e9ecef;
+        color: #495057;
+        cursor: not-allowed;
+    }
 
-input[readonly]:focus,
-textarea[readonly]:focus,
-select[readonly]:focus {
-    outline: none; /* remove focus ring */
-    box-shadow: none;
-}
+        input[readonly]:focus,
+        textarea[readonly]:focus,
+        select[readonly]:focus {
+            outline: none;
+            box-shadow: none;
+        }
 
-.card-body {
-    padding: 0.75rem !important;
-}
-/* Was py-2 px-2; now tighter */
-.card-header {
-    padding: 0.5rem !important;
-}
+    .card-body {
+        padding: 0.75rem !important;
+    }
 
-.row {
-    margin-bottom: 0.5rem;
-}
-/* Less gap between rows */
+    .card-header {
+        padding: 0.5rem !important;
+    }
 
-.toast {
-    z-index: 9999;
-}
+    .row {
+        margin-bottom: 0.5rem;
+    }
+
+    .toast {
+        z-index: 9999;
+    }
+
+    .nav-tabs .nav-link.active {
+        font-weight: bold;
+        background-color: #f8f9fa;
+        border-bottom-color: #f8f9fa;
+    }
 </style>
-<form asp-action="Create" method="post">
-    <!-- Job Section -->
-    <div class="card mb-2 shadow-sm">
-        <div class="card-header py1 bg-primary text-white">Job Information</div>
-        <div class="card-body py-2 px-2">
-            <div class="row">
-                <div class="col-md-1">
-                    <label asp-for="PendingBL.JobNumber" class="form-label">Job #</label>
-                    <input asp-for="PendingBL.JobNumber" class="form-control form-control-sm text-end" />
-                </div>
-                <div class="col-md-1">
-                    <label asp-for="PendingBL.JobDate" class="form-label">Date</label>                    
-                    <input asp-for="PendingBL.JobDate" class="form-control form-control-sm date-input" type="text" />
-                </div>
-                <div class="col-md-3">
-                    <label asp-for="PendingBL.ClientId" class="form-label">Client</label>
-                    <select asp-for="PendingBL.ClientId" asp-items="ViewBag.Clients"
-                            class="form-select form-select-sm" id="clientSelect">
-                        <option value="">-- Select Client --</option>
-                    </select>
-                    <span asp-validation-for="PendingBL.ClientId" class="text-danger"></span>
-                </div>
-                <div class="col-md-3">
-                    <label asp-for="PendingBL.Client.ContactPerson" class="form-label">Contact Person</label>
-                    <input asp-for="PendingBL.Client.ContactPerson"
-                           class="form-control form-control-sm" id="contactPerson" disabled />
+
+<div class="card shadow-sm mt-3">
+    <div class="card-header bg-primary text-white fw-bold">Create General Consignment</div>
+    <div class="card-body">
+        <!-- TABS -->
+        <ul class="nav nav-tabs mb-3" id="createTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="job-tab" data-bs-toggle="tab" data-bs-target="#jobSection" type="button" role="tab">Job & Shipment Info</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="items-tab" data-bs-toggle="tab" data-bs-target="#itemsSection" type="button" role="tab">Items</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="payorder-tab" data-bs-toggle="tab" data-bs-target="#payorderSection" type="button" role="tab">Payorders</button>
+            </li>
+        </ul>
+
+        <form asp-action="Create" method="post" id="consignmentForm">
+            <div class="tab-content border rounded p-3 bg-light" id="createTabsContent">
+
+                <!-- TAB 1: JOB & SHIPMENT -->
+                <div class="tab-pane fade show active" id="jobSection" role="tabpanel" aria-labelledby="job-tab">
+                    <div id="jobShipmentContent">
+                        <!-- Job Section -->
+                        <div class="card mb-2 shadow-sm">
+                            <div class="card-header py1 bg-primary text-white">Job Information</div>
+                            <div class="card-body py-2 px-2">
+                                <div class="row">
+                                    <div class="col-md-1">
+                                        <label asp-for="PendingBL.JobNumber" class="form-label">Job #</label>
+                                        <input asp-for="PendingBL.JobNumber" class="form-control form-control-sm text-end" />
+                                    </div>
+                                    <div class="col-md-1">
+                                        <label asp-for="PendingBL.JobDate" class="form-label">Date</label>
+                                        <input asp-for="PendingBL.JobDate" class="form-control form-control-sm date-input" type="text" />
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label asp-for="PendingBL.ClientId" class="form-label">Client</label>
+                                        <select asp-for="PendingBL.ClientId" asp-items="ViewBag.Clients"
+                                                class="form-select form-select-sm" id="clientSelect">
+                                            <option value="">-- Select Client --</option>
+                                        </select>
+                                        <span asp-validation-for="PendingBL.ClientId" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label asp-for="PendingBL.Client.ContactPerson" class="form-label">Contact Person</label>
+                                        <input asp-for="PendingBL.Client.ContactPerson"
+                                               class="form-control form-control-sm" id="contactPerson" disabled />
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        <label asp-for="PendingBL.IGM.PortId" class="form-label">Port</label>
+                                        <select asp-for="PendingBL.IGM.PortId" asp-items="ViewBag.Ports" class="form-select form-select-sm">
+                                            <option value="">-- Select Port --</option>
+                                        </select>
+                                        <span asp-validation-for="PendingBL.IGM.PortId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Shipment Section -->
+                        <div class="card mb-2 shadow-sm">
+                            <div class="card-header py-1 bg-primary text-white">Shipment Information</div>
+                            <div class="card-body py-2 px-2">
+                                <div class="row">
+                                    <div class="col-md-1">
+                                        <label asp-for="PendingBL.IGM.Number" class="form-label">IGM #</label>
+                                        <input asp-for="PendingBL.IGM.Number" class="form-control form-control-sm text-end" />
+                                    </div>
+
+                                    <div class="col-md-1">
+                                        <label asp-for="PendingBL.IGM.Date" class="form-label">IGM Date</label>
+                                        <input asp-for="PendingBL.IGM.Date" class="form-control form-control-sm date-input" type="text" />
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        <label asp-for="PendingBL.IGM.Vessel" class="form-label">Vessel</label>
+                                        <input asp-for="PendingBL.IGM.Vessel" class="form-control form-control-sm" />
+                                    </div>
+
+                                    <div class="col-md-1">
+                                        <label asp-for="PendingBL.IndexNumber" class="form-label">Index #</label>
+                                        <input asp-for="PendingBL.IndexNumber" class="form-control form-control-sm text-end" />
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        <label asp-for="PendingBL.BL.LC.LCNumber" class="form-label">LC/Contract #</label>
+                                        <input asp-for="PendingBL.BL.LC.LCNumber" class="form-control form-control-sm" />
+                                    </div>
+
+                                    <div class="col-md-1">
+                                        <label asp-for="PendingBL.BL.LC.Date" class="form-label">Date</label>
+                                        <input asp-for="PendingBL.BL.LC.Date" class="form-control form-control-sm date-input" type="text" />
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        <label asp-for="PendingBL.BLNumber" class="form-label">BL #</label>
+                                        <input asp-for="PendingBL.BLNumber" class="form-control form-control-sm" />
+                                    </div>
+
+                                    <div class="col-md-1">
+                                        <label asp-for="PendingBL.BLDate" class="form-label">Date</label>
+                                        <input asp-for="PendingBL.BLDate" class="form-control form-control-sm date-input" type="text" />
+                                    </div>
+
+                                    <div class="col-md-1">
+                                        <label asp-for="PendingBL.BL.LC.ExchangeRate" class="form-label">Ex-Rate</label>
+                                        <input asp-for="PendingBL.BL.LC.ExchangeRate" class="form-control form-control-sm" />
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-1">
+                                        <label asp-for="PendingBL.BL.Containers" class="form-label">Containers</label>
+                                        <input asp-for="PendingBL.BL.Containers" class="form-control form-control-sm text-end" />
+                                    </div>
+
+                                    <div class="col-md-1">
+                                        <label asp-for="PendingBL.BL.Size" class="form-label">Size</label>
+                                        <select name="ConsignmentType" class="form-select form-select-sm" required>
+                                            <option value="">-- Select Size --</option>
+                                            <option value="20">20 Feet</option>
+                                            <option value="40">40 Feet</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        <label asp-for="PendingBL.BL.Packages" class="form-label">Packages</label>
+                                        <input asp-for="PendingBL.BL.Packages" class="form-control form-control-sm" placeholder="Example: 1500 Bags or 20 Pallets" />
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <label asp-for="PendingBL.BL.LC.ShippingLineId" class="form-label">Shipping Line</label>
+                                        <select asp-for="PendingBL.BL.LC.ShippingLineId" asp-items="ViewBag.ShippingLines" class="form-select form-select-sm" id="shippingLineSelect">
+                                            <option value=""> -- Select Shipping Line -- </option>
+                                        </select>
+                                        <span asp-validation-for="PendingBL.BL.LC.ShippingLineId" class="text-danger"></span>
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        <label asp-for="PendingBL.BL.LC.LoloId" class="form-label">Lolo</label>
+                                        <select asp-for="PendingBL.BL.LC.LoloId" asp-items="ViewBag.Lolos" class="form-select form-select-sm" id="loloSelect">
+                                            <option value="">-- Select Lolo --</option>
+                                        </select>
+                                        <span asp-validation-for="PendingBL.BL.LC.LoloId" class="text-danger"></span>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <label asp-for="PendingBL.BL.LC.TerminalId" class="form-label">Terminals</label>
+                                        <select asp-for="PendingBL.BL.LC.TerminalId" asp-items="ViewBag.Terminals" class="form-select form-select-sm" id="terminalSelect">
+                                            <option value="">-- Select Terminal --</option>
+                                        </select>
+                                        <span asp-validation-for="PendingBL.BL.LC.TerminalId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-end mt-3">
+                        <button type="button" class="btn btn-primary next-tab" data-next="#itemsSection">Next →</button>
+                    </div>
                 </div>
 
-                <div class="col-md-2">
-                    <label asp-for="PendingBL.IGM.PortId" class="form-label">Port</label>
-                    <select asp-for="PendingBL.IGM.PortId" asp-items="ViewBag.Ports" class="form-select form-select-sm">
-                        <option value="">-- Select Port --</option>
-                    </select>
-                    <span asp-validation-for="PendingBL.IGM.PortId" class="text-danger"></span>
+                <!-- TAB 2: ITEMS -->
+                <div class="tab-pane fade" id="itemsSection" role="tabpanel" aria-labelledby="items-tab">
+                    <div class="card mb-2 shadow-sm">
+                        <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                            <span>Items</span>
+                            <button type="button" class="btn btn-sm btn-success" id="addItem">+ Add Item</button>
+                        </div>
+                        <div class="card-body">
+                            <div id="itemsContainer">
+                                <!-- Dynamic items will be added here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-end mt-3">
+                        <button type="button" class="btn btn-secondary prev-tab" data-prev="#jobSection">← Back</button>
+                        <button type="button" class="btn btn-primary next-tab" data-next="#payorderSection">Next →</button>
+                    </div>
                 </div>
 
-                <div class="col-md-2">
-                    <label class="form-label">Consignment Type</label>
-                    <select name="ConsignmentType" class="form-select form-select-sm" required>
-                        <option value="">-- Select Consignment --</option>
-                        @foreach (var c in ViewBag.ConsignmentType as List<SelectListItem>)
-                        {
-                            <option value="@c.Value">@c.Text</option>
-                        }
-                    </select>
+                <!-- TAB 3: PAYORDERS -->
+                <div class="tab-pane fade" id="payorderSection" role="tabpanel" aria-labelledby="payorder-tab">
+                    <div class="card mb-2 shadow-sm">
+                        <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                            <span>Payorders</span>
+                            <small class="text-light">Enter amounts for applicable payorders. Leave as 0.00 to exclude.</small>
+                        </div>
+                        <div class="card-body py-2 px-2">
+                            <div class="table-responsive">
+                                <table class="table table-sm table-bordered align-middle" id="payordersTable">
+                                    <thead class="table-light">
+                                        <tr class="text-center">
+                                            <th style="width: 5%">#</th>
+                                            <th style="width: 25%">Particular</th>
+                                            <th style="width: 50%">Detail</th>
+                                            <th style="width: 20%">Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Dynamic rows will be populated by JavaScript -->
+                                    </tbody>
+                                    <tfoot class="table-secondary">
+                                        <tr>
+                                            <th colspan="3" class="text-end">Total Amount:</th>
+                                            <th class="text-center" id="totalPayorderAmount">0.00</th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-end mt-3">
+                        <button type="button" class="btn btn-secondary prev-tab">← Back</button>
+                        <button type="submit" class="btn btn-success">Create Consignment</button>
+                    </div>
                 </div>
             </div>
-        </div>
+        </form>
     </div>
-
-    <!-- Shipment Section -->
-    <div class="card mb-2 shadow-sm">
-        <div class="card-header py-1 bg-primary text-white">Shipment Information</div>
-        <div class="card-body py-2 px-2">
-            <div class="row">
-                <div class="col-md-1">
-                    <label asp-for="PendingBL.IGM.Number" class="form-label">IGM #</label>
-                    <input asp-for="PendingBL.IGM.Number" class="form-control form-control-sm text-end" />
-                </div>
-
-                <div class="col-md-1">
-                    <label asp-for="PendingBL.IGM.Date" class="form-label">IGM Date</label>
-                    <input asp-for="PendingBL.IGM.Date" class="form-control form-control-sm date-input" type="text" />
-                </div>
-
-                <div class="col-md-2">
-                    <label asp-for="PendingBL.IGM.Vessel" class="form-label">Vessel</label>
-                    <input asp-for="PendingBL.IGM.Vessel" class="form-control form-control-sm" />
-                </div>
-
-                <div class="col-md-1">
-                    <label asp-for="PendingBL.IndexNumber" class="form-label">Index #</label>
-                    <input asp-for="PendingBL.IndexNumber" class="form-control form-control-sm text-end" />
-                </div>
-
-                <div class="col-md-2">
-                    <label asp-for="PendingBL.BL.LC.LCNumber" class="form-label">LC/Contract #</label>
-                    <input asp-for="PendingBL.BL.LC.LCNumber" class="form-control form-control-sm" />
-                </div>
-
-                <div class="col-md-1">
-                    <label asp-for="PendingBL.BL.LC.Date" class="form-label">Date</label>
-                    <input asp-for="PendingBL.BL.LC.Date" class="form-control form-control-sm date-input" type="text" />
-                </div>
-
-                <div class="col-md-2">
-                    <label asp-for="PendingBL.BLNumber" class="form-label">BL #</label>
-                    <input asp-for="PendingBL.BLNumber" class="form-control form-control-sm" />
-                </div>
-
-                <div class="col-md-1">
-                    <label asp-for="PendingBL.BLDate" class="form-label">Date</label>
-                    <input asp-for="PendingBL.BLDate" class="form-control form-control-sm date-input" type="text" />
-                </div>
-
-                <div class="col-md-1">
-                    <label asp-for="PendingBL.BL.LC.ExchangeRate" class="form-label">Ex-Rate</label>
-                    <input asp-for="PendingBL.BL.LC.ExchangeRate" class="form-control form-control-sm" />
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-1">
-                    <label asp-for="PendingBL.BL.Containers" class="form-label">Containers</label>
-                    <input asp-for="PendingBL.BL.Containers" class="form-control form-control-sm text-end" />
-                </div>
-
-                <div class="col-md-1">
-                    <label asp-for="PendingBL.BL.Size" class="form-label">Size</label>                    
-                        
-                    <select name="ConsignmentType" class="form-select form-select-sm" required>
-                        <option value="">-- Select Size --</option>
-                        <option value="20">20 Feet</option>
-                        <option value="40">40 Feet</option>                        
-                    </select>                    
-                </div>
-
-                <div class="col-md-2">
-                    <label asp-for="PendingBL.BL.Packages" class="form-label">Packages</label>
-                    <input asp-for="PendingBL.BL.Packages" class="form-control form-control-sm" placeholder="Example: 1500 Bags or 20 Pallets" />
-                </div>
-
-
-                <div class="col-md-3">
-                    <label asp-for="PendingBL.BL.LC.ShippingLineId" class="form-label">Shipping Line</label>
-                    <select asp-for="PendingBL.BL.LC.ShippingLineId" asp-items="ViewBag.ShippingLines" class="form-select form-select-sm">
-                        <option value="">-- Select Shipping Line --</option>
-                    </select>
-                    <span asp-validation-for="PendingBL.IGM.PortId" class="text-danger"></span>
-                </div>
-
-                <div class="col-md-2">
-                    <label asp-for="PendingBL.BL.LC.LoloId" class="form-label">Lolo</label>
-                    <select asp-for="PendingBL.BL.LC.LoloId" asp-items="ViewBag.Lolos" class="form-select form-select-sm">
-                        <option value="">-- Select Lolo --</option>
-                    </select>
-                    <span asp-validation-for="PendingBL.BL.LC.LoloId" class="text-danger"></span>
-                </div>
-
-                <div class="col-md-3">
-                    <label asp-for="PendingBL.BL.LC.TerminalId" class="form-label">Terminals</label>
-                    <select asp-for="PendingBL.BL.LC.TerminalId" asp-items="ViewBag.Terminals" class="form-select form-select-sm">
-                        <option value="">-- Select Terminal --</option>
-                    </select>
-                    <span asp-validation-for="PendingBL.BL.LC.TerminalId" class="text-danger"></span>
-                </div>
-                
-            </div>
-        </div>
-    </div>
-
-    <!-- Items Section -->
-    <div class="card mb-2 shadow-sm">
-        <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
-            <span>Items</span>
-            <button type="button" class="btn btn-sm btn-success" id="addItem">+ Add Item</button>
-        </div>
-        <div class="card-body">
-            <div id="itemsContainer">
-                <!-- Dynamic items will be added here -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Payorders Section -->
-    <div class="card mb-2 shadow-sm">
-        <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
-            <span>Payorders</span>
-            <button type="button" class="btn btn-sm btn-success" id="addPayorder">+ Add Payorder</button>
-        </div>
-        <div class="card-body py-2 px-2">
-            <div class="table-responsive">
-                <table class="table table-sm table-bordered align-middle" id="payordersTable">
-                    <thead class="table-light">
-                        <tr class="text-center">
-                            <th style="width: 5%">#</th>
-                            <th style="width: 30%">Particular</th>
-                            <th style="width: 40%">Detail</th>
-                            <th style="width: 20%">Amount</th>
-                            <th style="width: 5%"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Dynamic rows -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-
-    <div class="mt-3">
-        <button type="submit" class="btn btn-primary">Create Consignment</button>
-    </div>
-</form>
-
+</div>
 
 @section Scripts {
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+
     <script>
-        let itemIndex = 0;
-        const itemsWithDuties = @Html.Raw(Json.Serialize(ViewBag.ItemsWithDuties));
+        // Global variables
+        window.itemsWithDuties = @Html.Raw(Json.Serialize(ViewBag.ItemsWithDuties));
+        window.payorderHeaders = @Html.Raw(Json.Serialize(ViewBag.PayorderHeaders));
+    </script>
 
-        $(document).ready(function () {
-            $('.date-input').inputmask('99/99/9999', {
-                placeholder: 'DD/MM/YYYY',
-                clearIncomplete: true
-            });
-
-            // Add first item row by default
-            addItemRow();
-
-            $('#addItem').click(function () {
-                addItemRow();
-            });
-
-            // Remove item row
-            $(document).on('click', '.remove-item', function () {
-                $(this).closest('.item-row').remove();
-            });
-
-            // Add exchange rate change listener
-            $('[name="PendingBL.BL.LC.ExchangeRate"]').on('input', function() {
-                $('.item-row').each(function() {
-                    const itemIndex = $(this).index();
-                    calculateItemValues($(this).find('.quantity-input')[0], itemIndex);
-                });
-            });
-
-
-             // IGM Number lookup functionality
-            $('input[name="PendingBL.IGM.Number"]').on('blur', function() {
-                const igmNumber = $(this).val();
-                const portId = $('select[name="PendingBL.IGM.PortId"]').val();
-                const currentYear = new Date().getFullYear();
-
-                if (igmNumber && portId) {
-                    lookupIGM(igmNumber, portId, currentYear);
-                }
-            });
-        });
-
-        function addItemRow() {
-            const index = itemIndex++;
-            const itemRow = `
-                <div class="item-row border p-2 mb-1">
-                    <div class="row g-1 align-items-center">
-                        <div class="col-2">
-                            <label class="form-label">Item</label>
-                            <select name="Items[${index}].ItemId" class="form-select form-select-sm item-select" onchange="loadItemDuties(this, ${index})">
-                                <option value="">-- Select Item --</option>
-                                @foreach (var item in ViewBag.Items as SelectList)
-                                {
-                                        <option value="@item.Value">@item.Text</option>
-                                }
-                            </select>
-                        </div>
-                        <div class="col-1">
-                            <label class="form-label">Quantity</label>
-                            <input type="number" name="Items[${index}].Quantity" class="form-control form-control-sm text-end quantity-input" step="0.01" oninput="calculateItemValues(this, ${index})" />
-                        </div>
-                        <div class="col-1">
-                            <label class="form-label">Unit Value $</label>
-                            <input type="number" name="Items[${index}].UnitValue" class="form-control form-control-sm text-end unit-value-input" step="0.01" oninput="calculateItemValues(this, ${index})" />
-                        </div>
-                        <div class="col-2">
-                            <label class="form-label">Invoice Value $</label>
-                            <input type="number" name="Items[${index}].ImportValue" class="form-control form-control-sm text-end import-value-usd" step="0.01" readonly/>
-                        </div>
-                        <div class="col-2">
-                            <label class="form-label">Invoice Value PK</label>
-                            <input type="number" name="Items[${index}].InvoiceValuePKR" class="form-control form-control-sm text-end import-value-pkr" step="0.01" readonly/>
-                        </div>
-
-                        <div class="col-1">
-                            <label class="form-label">Insurance $</label>
-                            <input type="number" name="Items[${index}].InsuranceValue" class="form-control form-control-sm text-end insurance-usd" step="0.01" oninput="calculateItemValues(this, ${index})" />
-                        </div>
-                        <div class="col-1">
-                            <label class="form-label">Insurance PKR</label>
-                            <input type="number" name="Items[${index}].InsuranceValuePKR" class="form-control form-control-sm text-end insurance-pkr" step="0.01" readonly/>
-                        </div>
-
-                        <div class="col-1">
-                            <label class="form-label">Landing Ch</label>
-                            <input type="number" name="Items[${index}].LandingCharges" class="form-control form-control-sm text-end landing-charges" step="0.01" readonly/>
-                        </div>
-                        <div class="col-md-1">
-                            <label class="form-label">Import Value</label>
-                            <input type="number" name="Items[${index}].AssessableValue" class="form-control form-control-sm text-end assessable-value" step="0.01" readonly/>
-                        </div>
-                    </div>
-
-
-                    <!-- Duty Calculation Section -->
-                    <div class="duty-section mt-3" style="display: none;">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <h6 class="mb-0 text-primary">Duty Calculation</h6>
-                            <small class="text-muted">Based on item's duty types</small>
-                        </div>
-                        <div class="table-responsive">
-
-                            <table class="table table-sm table-bordered duty-table">
-                                <thead class="table-light">
-                                    <tr class="duty-headers text-center">
-                                        <!-- Headers populated dynamically: DutyType Rate -->
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr class="duty-values text-center">
-                                        <!-- Calculated amounts will go here -->
-                                    </tr>
-                                </tbody>
-                                <tfoot class="table-secondary">                                    
-                                        <tr>
-                                            <th colspan="100%" class="text-center">
-                                                Total Duties: <span class="total-duty-amount">0</span>
-                                            </th>
-                                        </tr>                                    
-                                </tfoot>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div class="d-flex justify-content-between align-items-center mt-2">
-                        <button type="button" class="btn btn-sm btn-outline-info toggle-duties">Show Duties</button>
-                        <button type="button" class="btn btn-sm btn-danger remove-item">Remove Item</button>
-                    </div>
-                </div>
-            `;
-            $('#itemsContainer').append(itemRow);
-
-            // Add toggle functionality
-            const newRow = $('#itemsContainer .item-row').last();
-            newRow.find('.toggle-duties').click(function() {
-                $(this).closest('.item-row').find('.duty-section').slideToggle();
-                $(this).text($(this).text() === 'Show Duties' ? 'Hide Duties' : 'Show Duties');
-            });
-        }
-
-        function calculateItemValues(inputElement, itemIndex) {
-            const itemRow = $(inputElement).closest('.item-row');
-            const exchangeRate = parseFloat($('[name="PendingBL.BL.LC.ExchangeRate"]').val()) || 0;
-
-            // Get input values
-            const quantity = parseFloat(itemRow.find('.quantity-input').val()) || 0;
-            const unitValue = parseFloat(itemRow.find('.unit-value-input').val()) || 0;
-            const insuranceUSD = parseFloat(itemRow.find('.insurance-usd').val()) || 0;
-            const freightCharges = parseFloat(itemRow.find('.freight-input').val()) || 0;
-
-            // Calculate values based on your formulas
-            const importValueUSD = quantity * unitValue;
-            const importValuePKR = Math.round(importValueUSD * exchangeRate);
-            const insurancePKR = Math.round(insuranceUSD * exchangeRate);
-
-            // Calculate 1% Landing Charges
-            const landingCharges = (importValuePKR + insurancePKR) * 0.01;
-
-            // Calculate Assessable Value (Import Value PKR + Insurance PKR + Freight Charges + Landing Charges)
-            const assessableValue = importValuePKR + insurancePKR + landingCharges;
-
-            // Update the readonly fields
-            itemRow.find('.import-value-usd').val(importValueUSD.toFixed(2));
-            itemRow.find('.import-value-pkr').val(importValuePKR.toFixed(0));
-            itemRow.find('.insurance-pkr').val(insurancePKR.toFixed(0));
-            itemRow.find('.landing-charges').val(landingCharges.toFixed(0));
-            itemRow.find('.assessable-value').val(assessableValue.toFixed(0));
-
-            // Update duty calculations if duties are loaded
-            updateDutyCalculations(itemRow, assessableValue);
-        }
-
-        function updateDutyCalculations(itemRow, assessableValue) {
-            const dutyValuesRow = itemRow.find('.duty-values');
-            const quantity = parseFloat(itemRow.find('.quantity-input').val()) || 0;
-            let previousDutiesTotal = 0;
-
-            // Loop through each duty in ascending order (Order should be data attribute)
-            dutyValuesRow.find('td.calculated-amount').each(function(index) {
-                const rate = parseFloat($(this).siblings(`input[name*="Rate"]`).eq(index).val()) || 0;
-                const isPercentage = $(this).siblings(`input[name*="IsPercentage"]`).eq(index).val() === 'true';
-
-                let dutyAmount = 0;
-                if (!isPercentage) {
-                    dutyAmount = rate * quantity;
-                } else {
-                    dutyAmount = (assessableValue + previousDutiesTotal) * (rate / 100);
-                }
-
-                dutyAmount = Math.round(dutyAmount);
-                previousDutiesTotal += dutyAmount;
-
-                $(this).text(dutyAmount.toFixed(0));
-            });
-
-            itemRow.find('.total-duty-amount').text(previousDutiesTotal.toFixed(0));
-        }
-            
-        
-        // Add toggle functionality
-        const newRow = $('#itemsContainer .item-row').last();
-        newRow.find('.toggle-duties').click(function() {
-            $(this).closest('.item-row').find('.duty-section').slideToggle();
-            $(this).text($(this).text() === 'Show Duties' ? 'Hide Duties' : 'Show Duties');
-                
-        });
-        
-
-        function loadItemDuties(selectElement, itemIndex) {
-            const itemId = parseInt(selectElement.value);
-            const dutySection = $(selectElement).closest('.item-row').find('.duty-section');
-            const dutyTable = $(selectElement).closest('.item-row').find('.duty-table');
-            const dutyHeaderRow = dutyTable.find('.duty-headers');
-            const dutyValuesRow = dutyTable.find('.duty-values');
-
-            dutyHeaderRow.empty();
-            dutyValuesRow.empty();
-            dutySection.hide();
-
-            if (!itemId) return;
-
-            const item = itemsWithDuties.find(i => i.id === itemId);
-            if (item && item.duties && item.duties.length > 0) {
-                item.duties.forEach((duty, dutyIndex) => {
-                    // Header: DutyType Rate
-                    dutyHeaderRow.append(`<th>${duty.dutyTypeName} @@ ${duty.rate}${duty.isPercentage ? '%' : 'F'}</th>`);
-
-                    // Value: 0 initially
-                    dutyValuesRow.append(`
-                        <td class="calculated-amount text-center" data-duty-index="${dutyIndex}">0</td>
-                        <input type="hidden" name="Items[${itemIndex}].DutyCalculations[${dutyIndex}].DutyTypeId" value="${duty.dutyTypeId}" />
-                        <input type="hidden" name="Items[${itemIndex}].DutyCalculations[${dutyIndex}].Rate" value="${duty.rate}" />
-                        <input type="hidden" name="Items[${itemIndex}].DutyCalculations[${dutyIndex}].IsPercentage" value="${duty.isPercentage}" />
-                    `);
-                });
-
-                dutySection.show();
-            }
-        }
-
-
-        let payorderIndex = 0;
-
-        $(document).on("click", "#addPayorder", function () {
-            const row = `
-                <tr>
-                    <td class="handle text-center">
-                        <i class="bi bi-list"></i>
-                        <input type="hidden" name="Payorders[${payorderIndex}].Order" value="${payorderIndex}" class="order-field" />
-                    </td>
-                    <td>
-                        <select name="Payorders[${payorderIndex}].PayorderHeaderId" class="form-select form-select-sm payorder-header-select">
-                            <option value="">-- Select Payorder --</option>
-                            @foreach (var header in ViewBag.PayorderHeaders)
-                            {
-                                    <option value="@header.Id" data-description="@header.Description">@header.Name</option>
-                            }
-                        </select>
-                    </td>
-                    <td>
-                        <input type="text" name="Payorders[${payorderIndex}].Detail" class="form-control form-control-sm payorder-detail" placeholder="Details" />
-                    </td>
-                    <td>
-                        <input type="number" name="Payorders[${payorderIndex}].Amount" class="form-control form-control-sm text-end" step="0.01" />
-                    </td>
-                    <td class="text-center">
-                        <button type="button" class="btn btn-sm btn-danger remove-payorder">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </td>
-                </tr>`;
-            $("#payordersTable tbody").append(row);
-            payorderIndex++;
-        });
-
-        // Auto-populate description when payorder header is selected
-        $(document).on("change", ".payorder-header-select", function() {
-            const selectedOption = $(this).find('option:selected');
-            const description = selectedOption.data('description');
-            const detailInput = $(this).closest('tr').find('.payorder-detail');
-
-            console.log('Selected payorder:', selectedOption.text(), 'Description:', description); // Debug log
-
-            if (description && description.trim() !== '') {
-                detailInput.val(description);
-            } else {
-                detailInput.val(''); // Clear if no description
-            }
-        });
-
-        // Remove row
-        $(document).on("click", ".remove-payorder", function () {
-            $(this).closest("tr").remove();
-            updatePayorderOrder();
-        });
-
-        // Initialize Sortable
-        if (document.querySelector("#payordersTable tbody")) {
-            new Sortable(document.querySelector("#payordersTable tbody"), {
-                handle: ".handle",
-                animation: 150,
-                onEnd: function () {
-                    updatePayorderOrder();
-                }
-            });
-        }
-
-        // Update visible order numbers + hidden fields when sorted
-        function updatePayorderOrder() {
-            $("#payordersTable tbody tr").each(function (i) {
-                // update hidden field
-                $(this).find(".order-field").val(i);
-
-                // update visible order number (first column)
-                $(this).find("td:first").contents().filter(function () {
-                    return this.nodeType === 3; // text node
-                }).remove(); // remove old number if exists
-
-                $(this).find("td:first").prepend((i + 1) + ". ");
-            });
-        }
-
-        $(document).on("change", "#clientSelect", function () {
-            const clientId = $(this).val();
-            if (!clientId) {
-                $("#contactPerson").val("");
-                return;
-            }
-
-            $.get(`/GeneralConsignment/GetClientContact?clientId=${clientId}`, function (data) {
-                if (data.success) {
-                    $("#contactPerson").val(data.contactPerson);
-                } else {
-                    $("#contactPerson").val("");
-                }
-            });
-        });
-
-
-        function lookupIGM(igmNumber, portId, year) {
-            $.get(`/GeneralConsignment/GetIGMDetails?igmNumber=${igmNumber}&portId=${portId}&year=${year}`, function(data) {
-                if (data.success) {
-                    // Populate the fields with the fetched data
-                    $('input[name="PendingBL.IGM.Date"]').val(formatDateForInput(data.igmDate));
-                    $('input[name="PendingBL.IGM.Vessel"]').val(data.vessel);
-
-                    // Show success message
-                    showToast('IGM found', 'success');
-                } else {
-                    // Clear the fields if IGM not found
-                    $('input[name="PendingBL.IGM.Date"]').val('');
-                    $('input[name="PendingBL.IGM.Vessel"]').val('');
-
-                    // Show info message
-                    showToast('IGM not found for the selected port and year. Please enter details manually.', 'info');
-                }
-            }).fail(function() {
-                showToast('Error looking up IGM details.', 'error');
-            });
-        }
-
-        function formatDateForInput(dateString) {
-            if (!dateString) return '';
-
-            const date = new Date(dateString);
-            const day = String(date.getDate()).padStart(2, '0');
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const year = date.getFullYear();
-
-            return `${day}/${month}/${year}`;
-        }
-
-        function showToast(message, type = 'info') {
-            // Remove any existing toasts
-            $('.toast').remove();
-
-            const toast = $(`
-                <div class="toast align-items-center text-white bg-${type === 'success' ? 'success' : type === 'error' ? 'danger' : 'info'} border-0 position-fixed top-0 end-0 m-3" role="alert" aria-live="assertive" aria-atomic="true">
-                    <div class="d-flex">
-                        <div class="toast-body">
-                            ${message}
-                        </div>
-                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                    </div>
-                </div>
-            `);
-
-            $('body').append(toast);
-            const bsToast = new bootstrap.Toast(toast[0]);
-            bsToast.show();
-        }
-</script>
+    <script src="~/js/consignments/job-shipment-tab.js"></script>
+    <script src="~/js/consignments/items-tab.js"></script>
+    <script src="~/js/consignments/payorder-tab.js"></script>
+    <script src="~/js/consignments/tab-navigation.js"></script>
 }
