@@ -13,6 +13,20 @@ namespace PPCMD.Models
         public int? Size { get; set; }
         public string? Packages { get; set; }
 
+        public decimal BLQuantity { get; set; }
+        public decimal DeclaredValue { get; set; }
+        public decimal AssessedValue { get; set; }
+        public decimal ExchangeRate { get; set; }
+
+        public int? ShippingLineId { get; set; }
+        public ShippingLine? ShippingLine { get; set; }
+
+        public int? TerminalId { get; set; }
+        public Terminal? Terminal { get; set; }
+
+        public int? LoloId { get; set; }
+        public Lolo? Lolo { get; set; }
+
         public DateTime BLDate { get; set; }
         public string? CashRef { get; set; }
         public DateTime? CashDate { get; set; }

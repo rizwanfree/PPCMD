@@ -181,6 +181,31 @@ namespace PPCMD.Controllers
                     AssignedQuantity = decimal.Parse(AssignedQuantityStr)
                 };
 
+                // Step 4
+                // Extract BL Item and Add to PendingBL.Items
+
+                BLItem blItem = new BLItem
+                {
+                    CompanyId = user.CompanyId.Value,
+                    ItemId = int.Parse(form["BL.Items[0].ItemId"].ToString()),
+                    Quantity = decimal.Parse(form["BL.Items[0].Quantity"].ToString() ?? "0"),
+                    ImportValue = decimal.Parse(form["BL.Items[0].ImportValue"].ToString() ?? "0"),
+                    InsuranceValue = decimal.Parse(form["BL.Items[0].InsuranceValue"].ToString() ?? "0"),
+                    FreightCharges = decimal.Parse(form["BL.Items[0].FreightCharges"].ToString() ?? "0")
+                };
+
+
+
+                // Step 5
+                // Extract BL Details
+
+
+                // Step 6
+                // Extract LC Details
+
+                var lcNumberStr = form["PendingBL.BL.LC.LCNumber"].ToString();
+                var lcDateStr = form["PendingBL.BL.LC.Date"].ToString();
+
 
             }
             catch (Exception ex)

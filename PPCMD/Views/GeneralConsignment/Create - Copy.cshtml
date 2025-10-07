@@ -136,8 +136,8 @@ select[readonly]:focus {
                 </div>
 
                 <div class="col-md-1">
-                    <label asp-for="PendingBL.BL.LC.ExchangeRate" class="form-label">Ex-Rate</label>
-                    <input asp-for="PendingBL.BL.LC.ExchangeRate" class="form-control form-control-sm" />
+                    <label asp-for="PendingBL.BL.ExchangeRate" class="form-label">Ex-Rate</label>
+                    <input asp-for="PendingBL.BL.ExchangeRate" class="form-control form-control-sm" />
                 </div>
             </div>
 
@@ -164,27 +164,27 @@ select[readonly]:focus {
 
 
                 <div class="col-md-3">
-                    <label asp-for="PendingBL.BL.LC.ShippingLineId" class="form-label">Shipping Line</label>
-                    <select asp-for="PendingBL.BL.LC.ShippingLineId" asp-items="ViewBag.ShippingLines" class="form-select form-select-sm">
+                    <label asp-for="PendingBL.BL.ShippingLineId" class="form-label">Shipping Line</label>
+                    <select asp-for="PendingBL.BL.ShippingLineId" asp-items="ViewBag.ShippingLines" class="form-select form-select-sm">
                         <option value="">-- Select Shipping Line --</option>
                     </select>
-                    <span asp-validation-for="PendingBL.IGM.PortId" class="text-danger"></span>
+                    <span asp-validation-for="PendingBL.BL.ShippingLineId" class="text-danger"></span>
                 </div>
 
                 <div class="col-md-2">
-                    <label asp-for="PendingBL.BL.LC.LoloId" class="form-label">Lolo</label>
-                    <select asp-for="PendingBL.BL.LC.LoloId" asp-items="ViewBag.Lolos" class="form-select form-select-sm">
+                    <label asp-for="PendingBL.BL.LoloId" class="form-label">Lolo</label>
+                    <select asp-for="PendingBL.BL.LoloId" asp-items="ViewBag.Lolos" class="form-select form-select-sm">
                         <option value="">-- Select Lolo --</option>
                     </select>
-                    <span asp-validation-for="PendingBL.BL.LC.LoloId" class="text-danger"></span>
+                    <span asp-validation-for="PendingBL.BL.LoloId" class="text-danger"></span>
                 </div>
 
                 <div class="col-md-3">
-                    <label asp-for="PendingBL.BL.LC.TerminalId" class="form-label">Terminals</label>
-                    <select asp-for="PendingBL.BL.LC.TerminalId" asp-items="ViewBag.Terminals" class="form-select form-select-sm">
+                    <label asp-for="PendingBL.BL.TerminalId" class="form-label">Terminals</label>
+                    <select asp-for="PendingBL.BL.TerminalId" asp-items="ViewBag.Terminals" class="form-select form-select-sm">
                         <option value="">-- Select Terminal --</option>
                     </select>
-                    <span asp-validation-for="PendingBL.BL.LC.TerminalId" class="text-danger"></span>
+                    <span asp-validation-for="PendingBL.BL.TerminalId" class="text-danger"></span>
                 </div>
                 
             </div>

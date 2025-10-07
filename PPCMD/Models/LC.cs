@@ -8,23 +8,12 @@ namespace PPCMD.Models
         public int Id { get; set; }
         public string? LCNumber { get; set; }
         public DateTime Date { get; set; }
-        public int EntryType { get; set; }
-        public decimal Quantity { get; set; }
-        public decimal DeclaredValue { get; set; }
-        public decimal AssessedValue { get; set; }
-        public decimal ExchangeRate { get; set; }
+        //public int EntryType { get; set; }
+        public decimal TotalQuantity { get; set; }
+
         public int LandingCharges { get; set; }
 
         public bool IsGeneral { get; set; } = true;
-
-        public int? ShippingLineId { get; set; }
-        public ShippingLine? ShippingLine { get; set; }
-
-        public int? TerminalId { get; set; }
-        public Terminal? Terminal { get; set; }
-
-        public int? LoloId { get; set; }
-        public Lolo? Lolo { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; set; }

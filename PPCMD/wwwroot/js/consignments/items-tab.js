@@ -141,7 +141,7 @@ function populateItemDropdown(rowElement) {
 
 function calculateItemValues(inputElement, itemIndex) {
     const itemRow = $(inputElement).closest('.item-row');
-    const exchangeRate = parseFloat($('[name="PendingBL.BL.LC.ExchangeRate"]').val()) || 0;
+    const exchangeRate = parseFloat($('[name="PendingBL.BL.ExchangeRate"]').val()) || 0;
 
     // Get input values
     const quantity = parseFloat(itemRow.find('.quantity-input').val()) || 0;

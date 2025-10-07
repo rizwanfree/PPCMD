@@ -50,9 +50,7 @@ namespace PPCMD.Models
 
         // Extra details per item in this BL
         public decimal Quantity { get; set; }
-        public decimal ImportValue { get; set; }
-        public decimal InsuranceValue { get; set; }
-        public decimal FreightCharges { get; set; }
+        public decimal? UnitValue { get; set; }
 
         // Multi-tenant
         public int CompanyId { get; set; }
