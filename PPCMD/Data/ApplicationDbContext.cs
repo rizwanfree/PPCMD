@@ -49,6 +49,7 @@ namespace PPCMD.Data
         public DbSet<IGM> IGMs { get; set; }
         public DbSet<DutyCharge> DutyCharges { get; set; }
         public DbSet<HC> HCs { get; set; }
+        public DbSet<Consignment> Consignments { get; set; }
 
 
         // Payorder Entity
@@ -275,6 +276,22 @@ namespace PPCMD.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
 
+            // Consignment -> LC (One-to-One: One Consignment has One LC)
+            builder.Entity<Consignment>()
+                .HasOne(c => c.LC)
+                .WithOne() // If LC has ICollection<Consignment>, use: .WithMany(lc => lc.Consignments)
+                .HasForeignKey<Consignment> (c => c.LCId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Consignment -> Company (Many-to-One: Many Consignments belong to one Company)
+            builder.Entity<Consignment>()
+                .HasOne(c => c.Company)
+                .WithMany(c => c.Consignments) // Company has many Consignments
+                .HasForeignKey(c => c.CompanyId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+
+
 
 
 
@@ -346,7 +363,11 @@ namespace PPCMD.Data
 
             builder.Entity<PayorderHeader>()
                 .HasQueryFilter(p => !EnableTenantFilter || !_currentCompanyId.HasValue || p.CompanyId == _currentCompanyId);
-        
+
+            // Global Query Filter for Consignment
+            builder.Entity<Consignment>()
+                .HasQueryFilter(c => !EnableTenantFilter || !_currentCompanyId.HasValue || c.CompanyId == _currentCompanyId);
+
         }
 
         // Optional: expose a method to set current tenant at runtime

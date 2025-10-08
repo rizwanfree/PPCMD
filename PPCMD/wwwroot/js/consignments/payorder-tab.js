@@ -37,6 +37,7 @@ function populateAllPayorders() {
                     <i class="bi bi-list"></i>
                     <input type="hidden" name="Payorders[${rowIndex}].Order" value="${index}" class="order-field" />
                     <input type="hidden" name="Payorders[${rowIndex}].PayorderHeaderId" value="${header.id}" />
+                    <input type="hidden" name="Payorders[${rowIndex}].Particular" value="${header.name}" />
                 </td>
                 <td>
                     <strong>${header.name}</strong>

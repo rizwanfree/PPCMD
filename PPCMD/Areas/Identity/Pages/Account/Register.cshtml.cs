@@ -102,14 +102,14 @@ namespace PPCMD.Areas.Identity.Pages.Account
             public string Email { get; set; } = string.Empty;
 
             [Display(Name = "Website")]
-            public string? Website { get; set; }
+            public string Website { get; set; }
 
             [Required]
             [Display(Name = "Landline 1")]
             public string Landline1 { get; set; } = string.Empty;
 
             [Display(Name = "Landline 2")]
-            public string? Landline2 { get; set; }
+            public string Landline2 { get; set; }
 
             [Required]
             [Display(Name = "Mobile")]

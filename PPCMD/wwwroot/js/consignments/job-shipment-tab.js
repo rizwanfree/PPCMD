@@ -24,7 +24,7 @@ function initializeClientLookup() {
             return;
         }
 
-        $.get(`/GeneralConsignment/GetClientContact?clientId=${clientId}`, function (data) {
+        $.get(`/HC/GetClientContact?clientId=${clientId}`, function (data) {
             if (data.success) {
                 $("#contactPerson").val(data.contactPerson);
             } else {
@@ -72,7 +72,7 @@ function performIGMLookup() {
 
     showToast('Looking up IGM details...', 'info');
 
-    $.get(`/GeneralConsignment/GetIGMDetails?igmNumber=${igmNumber}&portId=${portId}&year=${currentYear}`, function (data) {
+    $.get(`/HC/GetIGMDetails?igmNumber=${igmNumber}&portId=${portId}&year=${currentYear}`, function (data) {
         if (data.success) {
             // Set the lookup performed flag to prevent double execution
             $('input[name="PendingBL.IGM.Number"]').data('lookup-performed', true);
@@ -156,7 +156,7 @@ function initializeShippingLineLookup() {
             return;
         }
 
-        $.get(`/GeneralConsignment/GetShippingLineDetails?id=${shippingLineId}`, function (data) {
+        $.get(`/HC/GetShippingLineDetails?id=${shippingLineId}`, function (data) {
             if (data.success) {
                 // Display shipping line info
                 $('#shippingLineName').text(data.name);
@@ -178,7 +178,7 @@ function initializeLoloLookup() {
         const loloId = $(this).val();
         if (!loloId) return;
 
-        $.get(`/GeneralConsignment/GetLoloDetails?id=${loloId}`, function (data) {
+        $.get(`/HC/GetLoloDetails?id=${loloId}`, function (data) {
             if (data.success) {
                 autoPopulateLoloPayorders(data.name, data.ntn);
             }
@@ -191,7 +191,7 @@ function initializeTerminalLookup() {
         const terminalId = $(this).val();
         if (!terminalId) return;
 
-        $.get(`/GeneralConsignment/GetTerminalDetails?id=${terminalId}`, function (data) {
+        $.get(`/HC/GetTerminalDetails?id=${terminalId}`, function (data) {
             if (data.success) {
                 autoPopulateTerminalPayorders(data.name, data.ntn);
             }

@@ -59,6 +59,7 @@ namespace PPCMD.Models
         public decimal? LandingCharges { get; set; }
         public decimal? AssessableValue { get; set; }
 
+        public ICollection<DutyCharge> DutyCharges { get; set; } = new List<DutyCharge>();
 
         // Multi-tenant
         public int CompanyId { get; set; }

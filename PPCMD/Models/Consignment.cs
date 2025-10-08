@@ -24,10 +24,6 @@ namespace PPCMD.Models
         public DateTime? UpdatedAt { get; set; }
         public DateTime? CompletedAt { get; set; }
 
-        // Navigation properties you might need:
-        public ICollection<BL> BLs { get; set; } = new List<BL>();
-        public ICollection<Payorder> Payorders { get; set; } = new List<Payorder>();
-
         // Multi-Tenant Support
         public int CompanyId { get; set; }
         public Company? Company { get; set; }

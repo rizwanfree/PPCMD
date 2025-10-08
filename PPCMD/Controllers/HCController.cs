@@ -7,28 +7,27 @@ using PPCMD.Models;
 
 namespace PPCMD.Controllers
 {
-    public class GeneralConsignmentController : BaseController
+    public class HCController : BaseController
     {
 
-        public GeneralConsignmentController(ApplicationDbContext context,UserManager<ApplicationUser> userManager) 
+        public HCController(ApplicationDbContext context,UserManager<ApplicationUser> userManager) 
             : base(context, userManager) { }
 
 
         // GET: /GeneralConsignment/
         public IActionResult Index()
         {
-            var bls = _context.BLs
-                .Include(b => b.PendingBL)
+            var consignments = _context.Consignments
+                .Include(c => c.LC)
+                .ThenInclude(lc => lc.BLs)
+                .ThenInclude(b => b.PendingBL)
                 .ThenInclude(pb => pb.Client)
-                .Include(b => b.PendingBL)
-                .ThenInclude(pb => pb.Items)
-                .ThenInclude(bi => bi.Item)
-                .Include(b => b.LC)
-                .Include(b => b.Company)
+                .Include(c => c.Company)
+                .Where(c => c.ConsignmentTitle == "Home Consumption")
                 .AsNoTracking()
                 .ToList();
 
-            return View(bls);
+            return View(consignments);
         }
 
 
@@ -82,7 +81,7 @@ namespace PPCMD.Controllers
         }
 
 
-
+        // CEATE: /HC/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(IFormCollection form)
@@ -102,14 +101,13 @@ namespace PPCMD.Controllers
 
                 try
                 {
-                    // Step 1: Save IGM
-                    Console.WriteLine("Step 1: Saving IGM...");
+                    // Step 1: Save IGM (only if new)
+                    Console.WriteLine("Step 1: Processing IGM...");
                     var igm = await ExtractAndValidateIGM(form, user);
                     if (!ModelState.IsValid) return await PopulateViewAndReturn();
 
-                    await _context.IGMs.AddAsync(igm);
-                    await _context.SaveChangesAsync();
-                    Console.WriteLine($"IGM Saved - ID: {igm.Id}, Number: {igm.Number}");
+                    // ✅ The ExtractAndValidateIGM method now handles saving internally for new IGMs
+                    Console.WriteLine($"IGM Processed - ID: {igm.Id}, Number: {igm.Number}");
 
 
 
@@ -127,11 +125,12 @@ namespace PPCMD.Controllers
 
                     // Step 3: Save PendingBL
                     Console.WriteLine("Step 3: Saving PendingBL...");
-                    var pendingBL = await ExtractAndValidatePendingBL(form, user, igm);
+                    var pendingBL = ExtractAndValidatePendingBL(form, user, igm);
                     if (!ModelState.IsValid) return await PopulateViewAndReturn();
 
                     pendingBL.BLQuantity = blQuantity;
-                    pendingBL.IGMId = igm.Id;
+                    pendingBL.AssignedQuantity = blQuantity;
+                    //pendingBL.IGMId = igm.Id;
 
 
                     await _context.PendingBLs.AddAsync(pendingBL);
@@ -163,41 +162,39 @@ namespace PPCMD.Controllers
 
 
 
-                    // Step 6: Save BLItems with PendingBLId
-                    Console.WriteLine("Step 6: Saving BLItems...");
+                    // Step 6: Save BLItems with their DutyCharges
+                    Console.WriteLine("Step 6: Saving BLItems with DutyCharges...");
+
+                    var itemIndex = 0;
+
                     foreach (var item in blItems)
                     {
-                        // Reset Id to 0 to be safe
-                        if (item.Id != 0)
+                        // Save BLItem first
+                        item.PendingBLId = pendingBL.Id;
+                        await _context.BLItems.AddAsync(item);
+                        await _context.SaveChangesAsync(); // Save to get the BLItem ID
+
+                        Console.WriteLine($"BLItem Saved - ID: {item.Id}, ItemId: {item.ItemId}");
+
+                        // Now extract and save DutyCharges for this specific item
+                        var dutyCharges = ExtractDutyChargesForItem(form, itemIndex, user, item.Id);
+                        foreach (var dutyCharge in dutyCharges)
                         {
-                            Console.WriteLine($"Resetting BLItem Id from {item.Id} to 0");
-                            item.Id = 0;
+                            dutyCharge.BLItemId = item.Id; // Link to the BLItem we just saved
+                            await _context.DutyCharges.AddAsync(dutyCharge);
+                            Console.WriteLine($"DutyCharge Saved - TypeId: {dutyCharge.DutyTypeId}, Amount: {dutyCharge.Amount}");
                         }
 
-                        item.PendingBLId = pendingBL.Id; // Set foreign key
-                        await _context.BLItems.AddAsync(item);
+                        await _context.SaveChangesAsync(); // Save DutyCharges for this item
+                        Console.WriteLine($"DutyCharges Saved for BLItem {item.Id} - Count: {dutyCharges.Count}");
+
+                        itemIndex++;
                     }
-                    await _context.SaveChangesAsync();
-                    Console.WriteLine($"BLItems Saved - Count: {blItems.Count}");
+                    Console.WriteLine($"All BLItems and DutyCharges Saved - Total Items: {blItems.Count}");
 
 
 
-                    // Step 7: Save DutyCharges with BLItemId
-                    Console.WriteLine("Step 7: Saving DutyCharges...");
-                    var dutyCharges = ExtractDutyCharges(form, user);
-                    // Need to link duty charges to BLItems - this is tricky without proper mapping
-                    // For now, let's just save them without BLItemId
-                    foreach (var dutyCharge in dutyCharges)
-                    {
-                        // dutyCharge.BLItemId = ? // We need to map this properly
-                        await _context.DutyCharges.AddAsync(dutyCharge);
-                    }
-                    await _context.SaveChangesAsync();
-                    Console.WriteLine($"DutyCharges Saved - Count: {dutyCharges.Count}");
-
-
-
-                    // Step 8: Save Payorders
+                    // Step 7: Save Payorders
                     Console.WriteLine("Step 8: Saving Payorders...");
                     var payorders = ExtractPayorders(form, user);
                     foreach (var payorder in payorders)
@@ -209,14 +206,15 @@ namespace PPCMD.Controllers
                     await _context.SaveChangesAsync();
                     Console.WriteLine($"Payorders Saved - Count: {payorders.Count}");
 
-                    // Step 9: Save Consignment
-                    //Console.WriteLine("Step 9: Saving Consignment...");
-                    //var consignment = CreateConsignment(lc);
-                    //consignment.LCId = lc.Id; // Set foreign key
+                    // Step 8
+                    // : Save Consignment
+                    Console.WriteLine("Step 9: Saving Consignment...");
+                    var consignment = CreateConsignment(lc);
+                    
 
-                    //await _context.Consignments.AddAsync(consignment);
-                    //await _context.SaveChangesAsync();
-                    //Console.WriteLine($"Consignment Saved - ID: {consignment.Id}, Title: {consignment.ConsignmentTitle}");
+                    await _context.Consignments.AddAsync(consignment);
+                    await _context.SaveChangesAsync();
+                    Console.WriteLine($"Consignment Saved - ID: {consignment.Id}, Title: {consignment.ConsignmentTitle}");
 
                     await transaction.CommitAsync();
 
@@ -243,10 +241,93 @@ namespace PPCMD.Controllers
 
         private async Task<IActionResult> PopulateViewAndReturn()
         {
-            throw new NotImplementedException();
+            var user = await _userManager.GetUserAsync(User);
+            if (user?.CompanyId == null) return Forbid();
+
+            // Repopulate all the ViewBag data that was in the GET Create method
+            ViewBag.Clients = new SelectList(_context.Clients, "Id", "ClientName");
+            ViewBag.Ports = new SelectList(_context.Ports, "Id", "Name");
+            ViewBag.ShippingLines = new SelectList(_context.ShippingLines, "Id", "Name");
+            ViewBag.Terminals = new SelectList(_context.Terminals, "Id", "Name");
+            ViewBag.Lolos = new SelectList(_context.Lolos, "Id", "Name");
+            ViewBag.Items = new SelectList(_context.Items, "Id", "ItemName");
+            ViewBag.ConsignmentType = new List<SelectListItem>
+            {
+                new SelectListItem { Text = "Home Consumption", Value = "Home Consumption" },
+                new SelectListItem { Text = "Into-Bond", Value = "Into-Bond" },
+                new SelectListItem { Text = "Safe Transportation", Value = "Safe Transportation" },
+                new SelectListItem { Text = "Trans-Shipment", Value = "Trans-Shipment" }
+            };
+
+            // Add PayorderHeaders to ViewBag
+            ViewBag.PayorderHeaders = _context.PayorderHeaders
+                .Where(h => h.CompanyId == user.CompanyId.Value)
+                .OrderBy(h => h.Name)
+                .ToList();
+
+            // Pre-load all items with their duties
+            var itemsWithDuties = _context.Items
+                .Include(i => i.Duties)
+                    .ThenInclude(d => d.DutyType)
+                .Select(i => new {
+                    i.Id,
+                    i.ItemName,
+                    Duties = i.Duties.Select(d => new {
+                        d.DutyTypeId,
+                        DutyTypeName = d.DutyType.Name,
+                        d.Rate,
+                        d.IsPercentage,
+                        d.Order
+                    }).OrderBy(d => d.Order).ToList()
+                })
+                .ToList();
+
+            ViewBag.ItemsWithDuties = itemsWithDuties;
+
+            // Return the view with the current ModelState (which contains validation errors)
+            return View();
         }
 
 
+
+        // Edit: /HC/Edit/5
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user?.CompanyId == null) return Forbid();
+
+            var consignment = await _context.Consignments
+                .Include(c => c.LC)                    // Get the LC
+                    .ThenInclude(lc => lc.BLs)         // Then get BLs from that LC
+                        .ThenInclude(b => b.PendingBL) // Then get PendingBL from each BL
+                            .ThenInclude(pb => pb.IGM) // Then get IGM from PendingBL
+                .Include(c => c.LC)
+                    .ThenInclude(lc => lc.BLs)
+                        .ThenInclude(b => b.PendingBL)
+                            .ThenInclude(pb => pb.Items) // Then get Items from PendingBL
+                                .ThenInclude(bi => bi.Item) // Then get Item details
+                .Include(c => c.LC)
+                    .ThenInclude(lc => lc.BLs)
+                        .ThenInclude(b => b.PendingBL)
+                            .ThenInclude(pb => pb.Items)
+                                .ThenInclude(bi => bi.DutyCharges) // Then get DutyCharges
+                .Include(c => c.LC)
+                    .ThenInclude(lc => lc.BLs)
+                        .ThenInclude(b => b.Payorders) // Then get Payorders from each BL
+                .FirstOrDefaultAsync(c => c.Id == id && c.CompanyId == user.CompanyId.Value);
+
+            if (consignment == null)
+            {
+                return NotFound();
+            }
+
+            // Populate ViewBag (same as Create)
+            await PopulateViewBag(user);
+    
+            return View(consignment);
+        }
 
 
         // Helper Methods
@@ -265,21 +346,21 @@ namespace PPCMD.Controllers
             if (string.IsNullOrEmpty(igmPortId))
                 ModelState.AddModelError("PendingBL.IGM.PortId", "Port is required");
 
-            if (!ModelState.IsValid) return null;
+            if (!ModelState.IsValid) return null!;
 
             // Parse the date first
             if (!DateTime.TryParse(igmDate, out DateTime parsedIgmDate))
             {
                 ModelState.AddModelError("PendingBL.IGM.Date", "Invalid IGM Date format");
-                return null;
+                return null!;
             }
 
-            // FIXED: Use DateTime comparison instead of ToString()
+            // Check if IGM already exists
             var igm = await _context.IGMs
-                .Where(i => i.CompanyId == user.CompanyId.Value &&
+                .Where(i => i.CompanyId == user.CompanyId!.Value &&
                            i.PortId == int.Parse(igmPortId) &&
                            i.Number == int.Parse(igmNumber) &&
-                           i.Date.Date == parsedIgmDate.Date) // Compare dates directly
+                           i.Date.Date == parsedIgmDate.Date)
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
 
@@ -293,19 +374,24 @@ namespace PPCMD.Controllers
                     Date = parsedIgmDate,
                     Vessel = igmVessel.ToUpper(),
                     PortId = int.Parse(igmPortId),
-                    CompanyId = user.CompanyId.Value
+                    CompanyId = user.CompanyId!.Value
                 };
                 Console.WriteLine($"New IGM created: CompanyId={igm.CompanyId}, PortId={igm.PortId}, Number={igm.Number}, Date={igm.Date}, Vessel={igm.Vessel}");
+
+                // ✅ Only save if it's a NEW IGM
+                await _context.IGMs.AddAsync(igm);
+                await _context.SaveChangesAsync();
             }
             else
             {
                 Console.WriteLine($"Existing IGM found: ID={igm.Id}, Number={igm.Number}");
+                // ✅ Don't save existing IGM - just use its ID
             }
 
             return igm;
         }
 
-        private async Task<PendingBL> ExtractAndValidatePendingBL(IFormCollection form, ApplicationUser user, IGM igm)
+        private PendingBL ExtractAndValidatePendingBL(IFormCollection form, ApplicationUser user, IGM igm)
         {
             var jobNumber = form["PendingBL.JobNumber"].ToString();
             var jobDate = form["PendingBL.JobDate"].ToString();
@@ -328,7 +414,7 @@ namespace PPCMD.Controllers
             if (string.IsNullOrEmpty(indexNumber))
                 ModelState.AddModelError("PendingBL.IndexNumber", "Index Number is required");
 
-            if (!ModelState.IsValid) return null;
+            if (!ModelState.IsValid) return null!;
 
             return new PendingBL
             {
@@ -338,8 +424,8 @@ namespace PPCMD.Controllers
                 BLNumber = blNumber.ToUpper(),
                 BLDate = DateTime.Parse(blDate),
                 IndexNumber = int.Parse(indexNumber),
-                CompanyId = user.CompanyId.Value,
-                IGM = igm
+                CompanyId = user.CompanyId!.Value,
+                IGMId = igm.Id
             };
         }
 
@@ -404,9 +490,42 @@ namespace PPCMD.Controllers
                 InsurancePKR = string.IsNullOrEmpty(insurancePKR) ? null : decimal.Parse(insurancePKR),
                 LandingCharges = string.IsNullOrEmpty(landingCharges) ? null : decimal.Parse(landingCharges),
                 AssessableValue = string.IsNullOrEmpty(assessableValue) ? null : decimal.Parse(assessableValue),
-                CompanyId = user.CompanyId.Value
+                CompanyId = user.CompanyId!.Value
             };
         }
+
+
+        private List<DutyCharge> ExtractDutyChargesForItem(IFormCollection form, int itemIndex, ApplicationUser user, int blItemId)
+        {
+            var dutyCharges = new List<DutyCharge>();
+            var dutyIndex = 0;
+
+            while (true)
+            {
+                var dutyTypeId = form[$"Items[{itemIndex}].DutyCalculations[{dutyIndex}].DutyTypeId"].ToString();
+                if (string.IsNullOrEmpty(dutyTypeId)) break;
+
+                var rate = form[$"Items[{itemIndex}].DutyCalculations[{dutyIndex}].Rate"].ToString();
+                var isPercentage = form[$"Items[{itemIndex}].DutyCalculations[{dutyIndex}].IsPercentage"].ToString();
+                var amount = form[$"Items[{itemIndex}].DutyCalculations[{dutyIndex}].Amount"].ToString();
+
+                var dutyCharge = new DutyCharge
+                {
+                    BLItemId = blItemId, // This will be set properly
+                    DutyTypeId = int.Parse(dutyTypeId),
+                    Rate = decimal.Parse(rate),
+                    IsPercentage = bool.Parse(isPercentage),
+                    Amount = string.IsNullOrEmpty(amount) ? 0 : int.Parse(amount),
+                    CompanyId = user.CompanyId!.Value
+                };
+
+                dutyCharges.Add(dutyCharge);
+                dutyIndex++;
+            }
+
+            return dutyCharges;
+        }
+
 
         private async Task<LC> ExtractAndValidateLC(IFormCollection form, decimal blQuantity, ApplicationUser user)
         {
@@ -418,11 +537,11 @@ namespace PPCMD.Controllers
             if (string.IsNullOrEmpty(lcDate))
                 ModelState.AddModelError("PendingBL.BL.LC.Date", "LC Date is required");
 
-            if (!ModelState.IsValid) return null;
+            if (!ModelState.IsValid) return null!;
 
             // Check if LC already exists
             var existingLC = await _context.LCs
-                .FirstOrDefaultAsync(l => l.CompanyId == user.CompanyId.Value &&
+                .FirstOrDefaultAsync(l => l.CompanyId == user.CompanyId!.Value &&
                                          l.LCNumber == lcNumber);
 
             if (existingLC != null)
@@ -437,7 +556,7 @@ namespace PPCMD.Controllers
                 LCNumber = lcNumber,
                 Date = DateTime.Parse(lcDate),
                 TotalQuantity = blQuantity,
-                CompanyId = user.CompanyId.Value
+                CompanyId = user.CompanyId!.Value
             };
         }
 
@@ -455,7 +574,7 @@ namespace PPCMD.Controllers
             if (string.IsNullOrEmpty(exchangeRate))
                 ModelState.AddModelError("PendingBL.BL.ExchangeRate", "Exchange Rate is required");
 
-            if (!ModelState.IsValid) return null;
+            if (!ModelState.IsValid) return null!;
 
             return new BL
             {
@@ -467,7 +586,7 @@ namespace PPCMD.Controllers
                 TerminalId = string.IsNullOrEmpty(terminalId) ? null : int.Parse(terminalId),
                 LoloId = string.IsNullOrEmpty(loloId) ? null : int.Parse(loloId),
                 LC = lc,
-                CompanyId = user.CompanyId.Value
+                CompanyId = user.CompanyId!.Value
             };
         }
 
@@ -507,7 +626,7 @@ namespace PPCMD.Controllers
                     Rate = decimal.Parse(rate),
                     IsPercentage = bool.Parse(isPercentage),
                     Amount = string.IsNullOrEmpty(amount) ? 0 : int.Parse(amount),
-                    CompanyId = user.CompanyId.Value
+                    CompanyId = user.CompanyId!.Value
                 };
 
                 dutyCharges.Add(dutyCharge);
@@ -520,33 +639,51 @@ namespace PPCMD.Controllers
             var payorders = new List<Payorder>();
             var payorderIndex = 0;
 
+            Console.WriteLine("Starting payorder extraction...");
+
             while (true)
             {
+                // Get the particular text directly from the form
                 var particular = form[$"Payorders[{payorderIndex}].Particular"].ToString();
-                if (string.IsNullOrEmpty(particular)) break;
+
+                Console.WriteLine($"Checking payorder index {payorderIndex}: Particular='{particular}'");
+
+                if (string.IsNullOrEmpty(particular))
+                {
+                    Console.WriteLine($"No payorder found at index {payorderIndex} - stopping extraction");
+                    break;
+                }
 
                 var amount = form[$"Payorders[{payorderIndex}].Amount"].ToString();
                 var detail = form[$"Payorders[{payorderIndex}].Detail"].ToString();
                 var order = form[$"Payorders[{payorderIndex}].Order"].ToString();
+
+                Console.WriteLine($"  Amount: {amount}, Detail: {detail}, Order: {order}");
 
                 // Only create payorder if amount is greater than 0
                 if (!string.IsNullOrEmpty(amount) && decimal.Parse(amount) > 0)
                 {
                     var payorder = new Payorder
                     {
-                        Particular = particular,
+                        Particular = particular, // Use the text from the form
                         Amount = decimal.Parse(amount),
                         Detail = detail,
                         Order = string.IsNullOrEmpty(order) ? payorderIndex : int.Parse(order),
-                        CompanyId = user.CompanyId.Value
+                        CompanyId = user.CompanyId!.Value
                     };
 
                     payorders.Add(payorder);
+                    Console.WriteLine($"  ✅ Added payorder: {particular}");
+                }
+                else
+                {
+                    Console.WriteLine($"  ⚠️ Skipped payorder (amount 0 or empty): {particular}");
                 }
 
                 payorderIndex++;
             }
 
+            Console.WriteLine($"Payorder extraction complete - Found: {payorders.Count} payorders");
             return payorders;
         }
 
@@ -555,7 +692,7 @@ namespace PPCMD.Controllers
             return new Consignment
             {
                 ConsignmentTitle = "Home Consumption",
-                LC = lc,
+                LCId = lc.Id,
                 IsSelf = false,
                 CompanyId = lc.CompanyId // Use same company ID as LC
             };
