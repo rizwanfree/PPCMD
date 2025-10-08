@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PPCMD.Data;
 
@@ -11,9 +12,11 @@ using PPCMD.Data;
 namespace PPCMD.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251008124026_modifiedLCBL")]
+    partial class modifiedLCBL
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -594,10 +597,10 @@ namespace PPCMD.Migrations
                     b.Property<int>("Amount")
                         .HasColumnType("int");
 
-                    b.Property<int?>("BLId")
+                    b.Property<int>("BLId")
                         .HasColumnType("int");
 
-                    b.Property<int>("BLItemId")
+                    b.Property<int?>("BLId1")
                         .HasColumnType("int");
 
                     b.Property<int>("CompanyId")
@@ -609,8 +612,17 @@ namespace PPCMD.Migrations
                     b.Property<int>("DutyTypeId")
                         .HasColumnType("int");
 
+                    b.Property<decimal>("ImportValue")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("InsuranceValue")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<bool>("IsPercentage")
                         .HasColumnType("bit");
+
+                    b.Property<decimal>("LadingCharges")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("Rate")
                         .HasColumnType("decimal(10,4)");
@@ -622,7 +634,7 @@ namespace PPCMD.Migrations
 
                     b.HasIndex("BLId");
 
-                    b.HasIndex("BLItemId");
+                    b.HasIndex("BLId1");
 
                     b.HasIndex("CompanyId");
 
@@ -1380,15 +1392,15 @@ namespace PPCMD.Migrations
 
             modelBuilder.Entity("PPCMD.Models.DutyCharge", b =>
                 {
-                    b.HasOne("PPCMD.Models.BL", null)
-                        .WithMany("DutyCharges")
-                        .HasForeignKey("BLId");
-
-                    b.HasOne("PPCMD.Models.BLItem", "BLItem")
+                    b.HasOne("PPCMD.Models.BL", "BL")
                         .WithMany()
-                        .HasForeignKey("BLItemId")
+                        .HasForeignKey("BLId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("PPCMD.Models.BL", null)
+                        .WithMany("DutyCharges")
+                        .HasForeignKey("BLId1");
 
                     b.HasOne("PPCMD.Models.Company", "Company")
                         .WithMany()
@@ -1402,7 +1414,7 @@ namespace PPCMD.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("BLItem");
+                    b.Navigation("BL");
 
                     b.Navigation("Company");
 

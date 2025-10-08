@@ -219,17 +219,17 @@ namespace PPCMD.Data
                 .HasForeignKey(bi => bi.ItemId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // DutyCharge -> BL
+            // DutyCharge -> BLItem (CHANGED FROM BL)
             builder.Entity<DutyCharge>()
-                .HasOne(dc => dc.BL)
-                .WithMany()
-                .HasForeignKey(dc => dc.BLId)
+                .HasOne(dc => dc.BLItem)
+                .WithMany() // If BLItem has collection of DutyCharges, use: .WithMany(bli => bli.DutyCharges)
+                .HasForeignKey(dc => dc.BLItemId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // DutyCharge -> DutyType
             builder.Entity<DutyCharge>()
                 .HasOne(dc => dc.DutyType)
-                .WithMany()
+                .WithMany() // If DutyType has collection of DutyCharges, use: .WithMany(dt => dt.DutyCharges)
                 .HasForeignKey(dc => dc.DutyTypeId)
                 .OnDelete(DeleteBehavior.Restrict);
 

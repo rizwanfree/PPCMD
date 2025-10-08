@@ -8,24 +8,12 @@ namespace PPCMD.Models
         [Key]
         public int Id { get; set; }
 
-        // 🔗 Link to BL
-        [ForeignKey(nameof(BL))]
-        public int BLId { get; set; }
-        public BL? BL { get; set; }
+        // 🔗 Link to BLItem (CHANGED FROM BL)
+        [ForeignKey(nameof(BLItem))]
+        public int BLItemId { get; set; }
+        public BLItem? BLItem { get; set; }
 
-        // Base values for calculation
-        [Column(TypeName = "decimal(18,2)")]
-        public decimal ImportValue { get; set; }
-
-
-        [Column(TypeName = "decimal(18,2)")]
-        public decimal InsuranceValue { get; set; }
-
-
-        [Column(TypeName = "decimal(18,2)")]
-        public decimal LadingCharges { get; set; }
-
-        // 🔗 Link to DutyType
+        // Link to DutyType
         [ForeignKey(nameof(DutyType))]
         public int DutyTypeId { get; set; }
         public DutyType DutyType { get; set; } = null!;

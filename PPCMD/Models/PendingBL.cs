@@ -12,7 +12,7 @@ namespace PPCMD.Models
         public Client? Client { get; set; }
         public string BLNumber { get; set; } = string.Empty;
         public DateTime BLDate { get; set; }
-        public decimal Quantity { get; set; }
+        public decimal BLQuantity { get; set; }       // Total quantity of items related to this PendingBL
         public decimal AssignedQuantity { get; set; }
         public int IndexNumber { get; set; }
         public int JobNumber { get; set; }
@@ -46,11 +46,19 @@ namespace PPCMD.Models
 
         [ForeignKey(nameof(Item))]
         public int ItemId { get; set; }
-        public Item Item { get; set; } = null!;
+        public Item? Item { get; set; }
 
         // Extra details per item in this BL
         public decimal Quantity { get; set; }
-        public decimal? UnitValue { get; set; }
+        public decimal DeclaredValue { get; set; }
+        public decimal? AssessedValue { get; set; }
+        public decimal? InvoiceValue { get; set; }
+        public decimal? InvoiceValuePKR { get; set; }
+        public decimal? InsuranceUSD { get; set; }
+        public decimal? InsurancePKR { get; set; }
+        public decimal? LandingCharges { get; set; }
+        public decimal? AssessableValue { get; set; }
+
 
         // Multi-tenant
         public int CompanyId { get; set; }

@@ -191,11 +191,15 @@ function updateDutyCalculations(itemRow, assessableValue) {
         dutyAmount = Math.round(dutyAmount);
         previousDutiesTotal += dutyAmount;
 
+        // Update displayed amount
         $(this).text(dutyAmount.toFixed(0));
 
-        // Update the hidden input field with the current rate
+        // Update hidden input fields
         const hiddenRateInput = itemRow.find(`input[name*="DutyCalculations[${index}].Rate"]`);
+        const hiddenAmountInput = itemRow.find(`input[name*="DutyCalculations[${index}].Amount"]`);
+
         hiddenRateInput.val(rate);
+        hiddenAmountInput.val(dutyAmount);
     });
 
     itemRow.find('.total-duty-amount').text(previousDutiesTotal.toFixed(0));
@@ -246,6 +250,7 @@ function loadItemDuties(selectElement, itemIndex) {
                 <input type="hidden" name="Items[${itemIndex}].DutyCalculations[${dutyIndex}].DutyTypeId" value="${duty.dutyTypeId}" />
                 <input type="hidden" name="Items[${itemIndex}].DutyCalculations[${dutyIndex}].Rate" value="${duty.rate}" />
                 <input type="hidden" name="Items[${itemIndex}].DutyCalculations[${dutyIndex}].IsPercentage" value="${duty.isPercentage}" />
+                <input type="hidden" name="Items[${itemIndex}].DutyCalculations[${dutyIndex}].Amount" value="0" />
             `);
         });
 

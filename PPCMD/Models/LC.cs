@@ -8,12 +8,7 @@ namespace PPCMD.Models
         public int Id { get; set; }
         public string? LCNumber { get; set; }
         public DateTime Date { get; set; }
-        //public int EntryType { get; set; }
-        public decimal TotalQuantity { get; set; }
-
-        public int LandingCharges { get; set; }
-
-        public bool IsGeneral { get; set; } = true;
+        public decimal TotalQuantity { get; set; }  // Total BL Quantity
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; set; }

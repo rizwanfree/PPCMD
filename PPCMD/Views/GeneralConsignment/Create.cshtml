@@ -277,10 +277,25 @@
         // Global variables
         window.itemsWithDuties = @Html.Raw(Json.Serialize(ViewBag.ItemsWithDuties));
         window.payorderHeaders = @Html.Raw(Json.Serialize(ViewBag.PayorderHeaders));
+
+                // Add to your form submission
+        $('#consignmentForm').on('submit', function(e) {
+            console.log('Form submitted with data:');
+            console.log('Items:', $('.item-row').length);
+            console.log('Payorders:', $('.payorder-amount').length);
+
+            // Log all form data
+            var formData = new FormData(this);
+            for (var pair of formData.entries()) {
+                console.log(pair[0] + ': ' + pair[1]);
+            }
+        });
     </script>
 
     <script src="~/js/consignments/job-shipment-tab.js"></script>
     <script src="~/js/consignments/items-tab.js"></script>
     <script src="~/js/consignments/payorder-tab.js"></script>
     <script src="~/js/consignments/tab-navigation.js"></script>
+
+
 }
