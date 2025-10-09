@@ -1,4 +1,4 @@
-﻿@model IEnumerable<PPCMD.Models.BL>
+﻿@model IEnumerable<PPCMD.Models.Consignment>
 
 @{
     ViewData["Title"] = "Consignments (BL Listing)";
@@ -24,22 +24,25 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var bl in Model)
+                    @foreach (var consignment in Model)
                     {
-                        <tr>
-                            <td>@bl.Id</td>
-                            <td>@bl.PendingBL.BLDate.ToString("yyyy-MM-dd")</td>
-                            <td>@bl.LCId</td>
-                            <td>@bl.PendingBL?.BLNumber</td>
-                            <td>@bl.Company?.CompanyName</td>
-                            <td>@bl.CashRef</td>
-                            <td>@bl.GDRef</td>
-                            <td>
-                                <a href="#" class="btn btn-sm btn-primary">View</a>
-                                <a href="#" class="btn btn-sm btn-warning">Edit</a>
-                                <a href="#" class="btn btn-sm btn-danger">Delete</a>
-                            </td>
-                        </tr>
+                        @foreach (var bl in consignment.LC?.BLs ?? new List<BL>())
+                        {
+                            <tr>
+                                <td>@bl.Id</td>
+                                <td>@bl.PendingBL?.BLDate.ToString("yyyy-MM-dd")</td>
+                                <td>@bl.LCId</td>
+                                <td>@bl.PendingBL?.BLNumber</td>
+                                <td>@bl.Company?.CompanyName</td>
+                                <td>@bl.CashRef</td>
+                                <td>@bl.GDRef</td>
+                                <td>
+                                    <a href="#" class="btn btn-sm btn-primary">View</a>
+                                    <a href="#" class="btn btn-sm btn-warning">Edit</a>
+                                    <a href="#" class="btn btn-sm btn-danger">Delete</a>
+                                </td>
+                            </tr>
+                        }
                     }
                 </tbody>
             </table>

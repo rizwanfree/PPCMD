@@ -220,10 +220,10 @@ namespace PPCMD.Data
                 .HasForeignKey(bi => bi.ItemId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // DutyCharge -> BLItem (CHANGED FROM BL)
+            // DutyCharge -> BLItem (FIXED)
             builder.Entity<DutyCharge>()
                 .HasOne(dc => dc.BLItem)
-                .WithMany() // If BLItem has collection of DutyCharges, use: .WithMany(bli => bli.DutyCharges)
+                .WithMany(bi => bi.DutyCharges) // ✅ Add the navigation property
                 .HasForeignKey(dc => dc.BLItemId)
                 .OnDelete(DeleteBehavior.Restrict);
 

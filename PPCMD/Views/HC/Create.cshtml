@@ -43,25 +43,80 @@
         background-color: #f8f9fa;
         border-bottom-color: #f8f9fa;
     }
+
+    .validation-tab-error {
+        position: relative;
+    }
+
+    .validation-tab-error::after {
+            content: "!";
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #dc3545;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+    }
+
+    .error-toast {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        min-width: 350px;
+    }
 </style>
 
 <div class="card shadow-sm mt-3">
     <div class="card-header bg-primary text-white fw-bold">Create General Consignment</div>
     <div class="card-body">
-        <!-- TABS -->
-        <ul class="nav nav-tabs mb-3" id="createTabs" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="job-tab" data-bs-toggle="tab" data-bs-target="#jobSection" type="button" role="tab">Job & Shipment Info</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="items-tab" data-bs-toggle="tab" data-bs-target="#itemsSection" type="button" role="tab">Items</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="payorder-tab" data-bs-toggle="tab" data-bs-target="#payorderSection" type="button" role="tab">Payorders</button>
-            </li>
-        </ul>
+        <!-- Error Toast Container -->
+        <div id="errorToast" class="toast error-toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header bg-danger text-white">
+                <strong class="me-auto">Error</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="toastMessage"></div>
+        </div>
+
+        <div class="card shadow-sm mt-3">
+            <div class="card-header bg-primary text-white fw-bold d-flex justify-content-between align-items-center">
+                <span>Create General Consignment</span>
+                <div id="formStatus"></div>
+            </div>
+            <div class="card-body">                
+                <ul class="nav nav-tabs mb-3" id="createTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="job-tab" data-bs-toggle="tab" data-bs-target="#jobSection" type="button" role="tab">
+                            Job & Shipment Info
+                            <span class="validation-tab-error d-none" id="jobTabError"></span>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="items-tab" data-bs-toggle="tab" data-bs-target="#itemsSection" type="button" role="tab">
+                            Items
+                            <span class="validation-tab-error d-none" id="itemsTabError"></span>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="payorder-tab" data-bs-toggle="tab" data-bs-target="#payorderSection" type="button" role="tab">
+                            Payorders
+                            <span class="validation-tab-error d-none" id="payorderTabError"></span>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
 
         <form asp-action="Create" method="post" id="consignmentForm">
+            <!-- Add Validation Summary -->
+            
             <div class="tab-content border rounded p-3 bg-light" id="createTabsContent">
 
                 <!-- TAB 1: JOB & SHIPMENT -->
@@ -272,7 +327,6 @@
 </div>
 
 @section Scripts {
-
     <script>
         // Global variables
         window.itemsWithDuties = @Html.Raw(Json.Serialize(ViewBag.ItemsWithDuties));

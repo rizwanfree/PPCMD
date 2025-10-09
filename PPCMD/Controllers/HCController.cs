@@ -14,7 +14,7 @@ namespace PPCMD.Controllers
             : base(context, userManager) { }
 
 
-        // GET: /GeneralConsignment/
+        // GET: /HC/
         public IActionResult Index()
         {
             var consignments = _context.Consignments
@@ -96,6 +96,15 @@ namespace PPCMD.Controllers
                 }
 
                 _context.SetTenant(user.CompanyId.Value);
+
+                // Pre-validate critical fields before transaction
+                var validationResult = await PreValidateForm(form, user);
+                if (!validationResult.IsValid)
+                {
+                    await PopulateViewAndReturn();
+                    TempData["Error"] = validationResult.ErrorMessage;
+                    return View();
+                }
 
                 using var transaction = await _context.Database.BeginTransactionAsync();
 
@@ -251,21 +260,12 @@ namespace PPCMD.Controllers
             ViewBag.Terminals = new SelectList(_context.Terminals, "Id", "Name");
             ViewBag.Lolos = new SelectList(_context.Lolos, "Id", "Name");
             ViewBag.Items = new SelectList(_context.Items, "Id", "ItemName");
-            ViewBag.ConsignmentType = new List<SelectListItem>
-            {
-                new SelectListItem { Text = "Home Consumption", Value = "Home Consumption" },
-                new SelectListItem { Text = "Into-Bond", Value = "Into-Bond" },
-                new SelectListItem { Text = "Safe Transportation", Value = "Safe Transportation" },
-                new SelectListItem { Text = "Trans-Shipment", Value = "Trans-Shipment" }
-            };
 
-            // Add PayorderHeaders to ViewBag
             ViewBag.PayorderHeaders = _context.PayorderHeaders
                 .Where(h => h.CompanyId == user.CompanyId.Value)
                 .OrderBy(h => h.Name)
                 .ToList();
 
-            // Pre-load all items with their duties
             var itemsWithDuties = _context.Items
                 .Include(i => i.Duties)
                     .ThenInclude(d => d.DutyType)
@@ -284,11 +284,51 @@ namespace PPCMD.Controllers
 
             ViewBag.ItemsWithDuties = itemsWithDuties;
 
-            // Return the view with the current ModelState (which contains validation errors)
-            return View();
+            return View("Create");
         }
 
 
+
+        // Custom exception for validation errors
+        public class FormValidationException : Exception
+        {
+            public FormValidationException(string message) : base(message) { }
+        }
+
+        // Pre-validation method
+        private async Task<(bool IsValid, string ErrorMessage)> PreValidateForm(IFormCollection form, ApplicationUser user)
+        {
+            var errors = new List<string>();
+
+            // Check required fields
+            if (string.IsNullOrEmpty(form["PendingBL.JobNumber"]))
+                errors.Add("Job Number is required");
+
+            if (string.IsNullOrEmpty(form["PendingBL.ClientId"]))
+                errors.Add("Client is required");
+
+            if (string.IsNullOrEmpty(form["PendingBL.BL.LC.LCNumber"]))
+                errors.Add("LC Number is required");
+
+            // Check if items exist
+            var hasItems = false;
+            for (int i = 0; i < 10; i++) // Reasonable limit
+            {
+                if (!string.IsNullOrEmpty(form[$"Items[{i}].ItemId"]))
+                {
+                    hasItems = true;
+                    break;
+                }
+            }
+
+            if (!hasItems)
+                errors.Add("At least one item is required");
+
+            if (errors.Any())
+                return (false, string.Join("; ", errors));
+
+            return (true, string.Empty);
+        }
 
         // Edit: /HC/Edit/5
 
@@ -324,7 +364,7 @@ namespace PPCMD.Controllers
             }
 
             // Populate ViewBag (same as Create)
-            await PopulateViewBag(user);
+            //await PopulateViewBag(user);
     
             return View(consignment);
         }
